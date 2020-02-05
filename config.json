@@ -1,0 +1,46 @@
+{
+	"name": "Data Model Browser",
+
+	"namespace": "Vanderbilt\\DataModelBrowserExternalModule",
+	"framework-version": 3,
+	"authors": [
+		{
+			"name": "Eva Bascompte Moragas",
+			"email": "datacore@vumc.org",
+			"institution": "Vanderbilt University Medical Center"
+		}
+	],
+
+	"permissions": ["hook_every_page_before_render"],
+
+	"links": {
+		"project": [
+			{
+				"name": "Data Model Browser",
+				"icon": "database_table",
+				"url": "browser.php"
+			}
+		]
+	},
+
+	"description": "This tool helps import one or more big CSV files without the need to split them.",
+
+	"project-settings": [
+		{
+			"key": "import-email",
+			"name": "List of emails, <b>separated by commas</b> <br/>to send the notification to once the import has finished",
+			"type": "textarea"
+		},
+		{
+			"key": "import-from",
+			"name": "Sender email (by default <b>noreply@vumc.org</b>)",
+			"type": "text"
+		}
+	],
+	"compatibility": {
+		"php-version-min": "5.5.0",
+		"php-version-max": "",
+		"redcap-version-min": "8.10.1",
+		"redcap-version-max": ""
+	}
+}
