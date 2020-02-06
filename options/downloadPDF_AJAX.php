@@ -72,7 +72,7 @@ if($option == "2"){
 
     $page_num = '<style>.footer .page-number:after { content: counter(page); } .footer { position: fixed; bottom: 0px;color:grey }a{text-decoration: none;}</style>';
 
-    $img = 'data:image/png;base64,'.base64_encode(file_get_contents(loadImg($settings['des_logo'],$secret_key,$secret_iv,'../../img/IeDEA-logo-200px.png','pdf')));
+    $img = 'data:image/png;base64,'.base64_encode(file_get_contents($module->loadImg($settings['des_logo'],'../../img/IeDEA-logo-200px.png','pdf')));
 
     $html_pdf = "<html><body style='font-family:\"Calibri\";font-size:10pt;'>".$page_num
         ."<div class='footer' style='left: 590px;'><span class='page-number'>Page </span></div>"

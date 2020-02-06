@@ -37,7 +37,7 @@ $dataTable = getTablesInfo($module,DES_DATAMODEL,$tid);
                             }
                         } else if ($data['has_codes'][$vid] == '1') {
                             if(!empty($data['code_list_ref'][$vid])){
-                                $codeformat = getProjectInfoArray(DES_CODELIST,array('record_id' => $data['code_list_ref'][$vid]),'simple')[0];
+                                $codeformat = getProjectInfoArray(DES_CODELIST,array('record_id' => $data['code_list_ref'][$vid]))[0];
 
                                 if ($codeformat['code_format'] == '1') {
                                     $dataFormat .= " <span><i>(coded)</i></span><br/><br/>";

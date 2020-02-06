@@ -26,7 +26,6 @@ use ExternalModules\ExternalModules;
 
     <script>
         var startDDProjects_url = <?=json_encode($module->getUrl('startDDProjects.php'))?>;
-        var changeStatus_url = <?=json_encode($module->getUrl('options/changeStatus.php'))?>;
         var pid = <?=json_encode($_GET['pid'])?>;
     </script>
 
@@ -46,6 +45,10 @@ if($UserRights['user_rights'] == '1'){
     $isAdmin = true;
 }
 
+//$module->createPdf();
+
+
+
 $dd_array = \REDCap::getDataDictionary('array');
 if(count($dd_array) == 1 && $isAdmin && !array_key_exists('project_constant',$dd_array) && !array_key_exists('project_id',$dd_array)){
     echo '  <div class="container" style="margin-top: 60px">  
@@ -59,6 +62,8 @@ if(count($dd_array) == 1 && $isAdmin && !array_key_exists('project_constant',$dd
             </div>';
 }else{
     include_once("projects.php");
+    $settings = \REDCap::getData(array('project_id'=>DES_SETTINGS),'array')[1][$module->framework->getEventId(DES_SETTINGS)];
+
     include_once("functions.php");
     include_once("main.php");
 }

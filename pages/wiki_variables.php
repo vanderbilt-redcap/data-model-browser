@@ -123,7 +123,7 @@ $dataTable = getTablesInfo($module,DES_DATAMODEL,$tid);
 
                                                 if($data['variable_replacedby'][$id] != ""){
                                                     $variable_replacedby = explode("|",$data['variable_replacedby'][$id]);
-                                                    $table = getProjectInfoArray(DES_DATAMODEL,array('record_id' => $variable_replacedby[0]),"simple");
+                                                    $table = getProjectInfoArray(DES_DATAMODEL,array('record_id' => $variable_replacedby[0]))[0];
                                                     $table_name = $table['table_name'];
                                                     $var_name = $table['variable_name'][$variable_replacedby[1]];
 
@@ -159,7 +159,7 @@ $dataTable = getTablesInfo($module,DES_DATAMODEL,$tid);
                                             echo $dataFormat;
                                         } else if ($data['has_codes'][$id] == '1') {
                                             if(!empty($data['code_list_ref'][$id])){
-                                                $codeformat = getProjectInfoArray(DES_CODELIST,array('record_id' => $data['code_list_ref'][$id]),'simple')[0];
+                                                $codeformat = getProjectInfoArray(DES_CODELIST,array('record_id' => $data['code_list_ref'][$id]))[0];
 
                                                 if ($codeformat['code_format'] == '1') {
                                                     $codeOptions = empty($codeformat['code_list']) ? $data['code_text'][$id] : explode(" | ", $codeformat['code_list']);

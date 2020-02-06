@@ -21,6 +21,13 @@ if(defined(ENVIRONMENT."_DES_PROJECTS")) {
     define("DES_PROJECTS", constant(ENVIRONMENT."_DES_PROJECTS"));
 }
 
+if(APP_PATH_WEBROOT[0] == '/'){
+    $APP_PATH_WEBROOT_ALL = substr(APP_PATH_WEBROOT, 1);
+}
+define('APP_PATH_WEBROOT_ALL',APP_PATH_WEBROOT_FULL.$APP_PATH_WEBROOT_ALL);
+define('APP_PATH_PLUGIN',APP_PATH_WEBROOT_FULL."plugins/".substr(__DIR__,strlen(dirname(__DIR__))+1));
+
+
 # Define the projects stored in DES_PROJECTS
 $projects = \REDCap::getData(array('project_id'=>DES_PROJECTS),'array');
 $linkedProjects = array();
@@ -37,5 +44,3 @@ foreach($linkedProjects as $projectTitle) {
         define($projectTitle, constant(ENVIRONMENT."_".$projectTitle));
     }
 }
-
-$settings = \REDCap::getData(array('project_id'=>DES_SETTINGS),'array')[1][$module->framework->getEventId(DES_SETTINGS)];

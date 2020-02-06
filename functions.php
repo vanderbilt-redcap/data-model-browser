@@ -1,5 +1,19 @@
 <?php
+function getCrypt($string, $action = 'e',$secret_key="",$secret_iv="" ) {
+    $output = false;
+    $encrypt_method = "AES-256-CBC";
+    $key = hash( 'sha256', $secret_key );
+    $iv = substr( hash( 'sha256', $secret_iv ), 0, 16 );
 
+    if( $action == 'e' ) {
+        $output = base64_encode( openssl_encrypt( $string, $encrypt_method, $key, 0, $iv ) );
+    }
+    else if( $action == 'd' ){
+        $output = openssl_decrypt( base64_decode( $string ), $encrypt_method, $key, 0, $iv );
+    }
+
+    return $output;
+}
 function printFile($module,$edoc, $type){
     $file = "";
     if($edoc != ""){
@@ -30,25 +44,7 @@ function printFile($module,$edoc, $type){
  * @param string $type, if its single or a multidimensional array
  * @return array, the info array
  */
-function getProjectInfoArray($project, $info_array="", $type="", $fieldName="", $order=false){
-//    $Project = new \Plugin\Project($project);
-//    if(empty($info_array)){
-//        $RecordSet = new \Plugin\RecordSet($Project, array(\Plugin\RecordSet::getKeyComparatorPair($Project->getFirstFieldName(),"!=") => ""));
-//    }else{
-//        $RecordSet = new \Plugin\RecordSet($Project, $info_array);
-//    }
-//
-//    if(!empty($fieldName)) {
-//        #Order by fieldname
-//        $RecordSet->mergeSortRecords($fieldName,$order);
-//    }
-//
-//    if($type == "simple"){
-//        $wgroup = $RecordSet->getDetails()[0];
-//    }else{
-//        $wgroup = $RecordSet->getDetails();
-//    }
-
+function getProjectInfoArray($project, $info_array=""){
     $array = array();
     $records = \REDCap::getData($project,'array',$info_array);
     foreach ($records as $event) {
@@ -99,8 +95,6 @@ function getDataRepeatingInstrumentsGroupByField($module,$project_id,$vars=""){
                                         $array[$index][$data_ditionary['A'][$key]] = array();
                                     }
                                     else if(is_array($array[$index][$data_ditionary['A'][$key]]) && !empty($array[$index][$data_ditionary['A'][$key]]) && count($instancedata[$data_ditionary['A'][$key]]) == 1 && $count==0){
-//                                        print_array($data_ditionary['A'][$key]);
-//                                        print_array($array[$index][$data_ditionary['A'][$key]]);
                                         $array[$index][$data_ditionary['A'][$key]] = array();
                                     }
                                     array_push($array[$index][$data_ditionary['A'][$key]],$instancedata[$data_ditionary['A'][$key]]);
@@ -260,7 +254,7 @@ function generateTablesHTML_pdf($dataTable,$draft,$deprecated){
                             }
                         } else if ($data['has_codes'][$id] == '1') {
                             if (!empty($data['code_list_ref'][$id])) {
-                                $codeformat = getProjectInfoArray(DES_CODELIST, array('record_id' => $data['code_list_ref'][$id]), 'simple');
+                                $codeformat = getProjectInfoArray(DES_CODELIST, array('record_id' => $data['code_list_ref'][$id]))[0];
 
                                 if ($codeformat['code_format'] == '1') {
                                     $codeOptions = empty($codeformat['code_list']) ? $data['code_text'][$id] : explode(" | ", $codeformat['code_list']);
@@ -358,7 +352,7 @@ function getHtmlTableCodesTableArrayExcel($dataTable){
 
                     if ($data['has_codes'][$id] == '1') {
                         if (!empty($data['code_list_ref'][$id])) {
-                            $codeformat = getProjectInfoArray(DES_CODELIST, array('record_id' => $data['code_list_ref'][$id]), 'simple');
+                            $codeformat = getProjectInfoArray(DES_CODELIST, array('record_id' => $data['code_list_ref'][$id]))[0];
                             if ($codeformat['code_format'] == '1') {
                                 $codeOptions = empty($codeformat['code_list']) ? $data['code_text'][$id] : explode(" | ", $codeformat['code_list']);
                                 foreach ($codeOptions as $option) {
@@ -467,204 +461,100 @@ function generateRequestedTablesList_pdf($dataTable,$draft,$deprecated){
     return $requested_tables;
 }
 
-function getImageToDisplay($edoc){
-    $img_logo = '';
-    if($edoc != ''){
-        $sql = "SELECT stored_name,doc_name,doc_size FROM redcap_edocs_metadata WHERE doc_id='" . db_escape($edoc)."'";
-        $q = db_query($sql);
+/**
+ * Function that creates a JSON copy of the Harmonist 0A: Data Model
+ * @return string , the JSON
+ */
+function createProject0AJSON($module){
+    $dataFormat = $module->getChoiceLabels('data_format', DES_DATAMODEL);
 
-        if ($error = db_error()) {
-            die($sql . ': ' . $error);
-        }
-
-        while ($row = db_fetch_assoc($q)) {
-            $img_logo = 'options/downloadFile.php?sname=' . $row['stored_name'] . '&file=' . $row['doc_name'];
-        }
-    }
-
-    return $img_logo;
-}
-
-function loadImg($imgEdoc,$secret_key,$secret_iv,$default,$option=""){
-    $img = $default;
-    if($imgEdoc != ''){
-        $sql = "SELECT stored_name,doc_name,doc_size FROM redcap_edocs_metadata WHERE doc_id='" . db_escape($imgEdoc)."'";
-        $q = db_query($sql);
-
-        while ($row = db_fetch_assoc($q)) {
-            if($option == 'pdf'){
-                $img = EDOC_PATH.$row['stored_name'];
-            }else{
-                $img = 'downloadFile.php?sname='.$row['stored_name']."&file=". urlencode($row['doc_name']);
-            }
-        }
-    }
-    return $img;
-}
-
-function getCrypt($string, $action = 'e',$secret_key="",$secret_iv="" ) {
-    $output = false;
-    $encrypt_method = "AES-256-CBC";
-    $key = hash( 'sha256', $secret_key );
-    $iv = substr( hash( 'sha256', $secret_iv ), 0, 16 );
-
-    if( $action == 'e' ) {
-        $output = base64_encode( openssl_encrypt( $string, $encrypt_method, $key, 0, $iv ) );
-    }
-    else if( $action == 'd' ){
-        $output = openssl_decrypt( base64_decode( $string ), $encrypt_method, $key, 0, $iv );
-    }
-
-    return $output;
-}
-
-function hasJsoncopyBeenUpdated($type,$settings){
-    if(ENVIRONMENT == "DEV"){
-        $sqltype = "SELECT MAX(record) as record FROM redcap_data WHERE project_id='".db_escape(DES_JSONCOPY)."' AND field_name='".db_escape('type')."' and value='".db_escape($type)."' order by record";
-    }else{
-        $sqltype = "SELECT MAX(CAST(record AS Int)) as record FROM redcap_data WHERE project_id='".db_escape(DES_JSONCOPY)."' AND field_name='".db_escape('type')."' and value='".db_escape($type)."' order by record";
-    }
-
-    $qtype = db_query($sqltype);
-
-    if ($error = db_error()) {
-        die($sqltype . ': ' . $error);
-    }
-
-    $rowtype = db_fetch_assoc($qtype);
-    $projectCopy = new \Plugin\Project(DES_JSONCOPY);
-    $RecordSetCopy = new \Plugin\RecordSet($projectCopy, array('record_id' => $rowtype['record']));
-    $jsoncocpy = $RecordSetCopy->getDetails()[0];
-    $today = date("Y-m-d");
-    if($jsoncocpy["jsoncopy_file"] != "" && strtotime(date("Y-m-d",strtotime($jsoncocpy['json_copy_update_d']))) == strtotime($today)){
-        return true;
-    }else if(strtotime(date("Y-m-d",strtotime($jsoncocpy['json_copy_update_d']))) == "" || !array_key_exists('json_copy_update_d',$jsoncocpy) || !array_key_exists('des_pdf',$settings) || $settings['des_pdf'] == ""){
-        $record = \Plugin\Record::createRecordFromId($projectCopy,$rowtype['record']);
-        $record->updateDetails(array('json_copy_update_d' => date("Y-m-d H:i:s")),true);
-        return true;
-    }
-    return false;
-}
-
-function createAndSavePDFCron($settings,$secret_key,$secret_iv){
-   $dataTable = getTablesInfo($module,DES_DATAMODEL);
-
-    if(!empty($dataTable)) {
-        $tableHtml = generateTablesHTML_pdf($dataTable,false,false);
-    }
-    #FIRST PAGE
-    $first_page = "<tr><td align='center'>";
-    $first_page .= "<p><span style='font-size: 16pt;font-weight: bold;'>".$settings['des_pdf_title']."</span></p>";
-    $first_page .= "<p><span style='font-size: 16pt;font-weight: bold;'>".$settings['des_pdf_subtitle']."</span></p><br/>";
-    $first_page .= "<p><span style='font-size: 14pt;font-weight: bold;'>Version: ".date('d F Y')."</span></p><br/>";
-    $first_page .= "<p><span style='font-size: 14pt;font-weight: bold;'>".$settings['des_pdf_text']."</span></p><br/>";
-    $first_page .= "<span style='font-size: 12pt'>";
-    $first_page .= "</span></td></tr></table>";
-
-    #SECOND PAGE
-    $second_page = "<p><span style='font-size: 12pt'>".$tableHtml[1]."</span></p>";
-
-    $page_num = '<style>.footer .page-number:after { content: counter(page); } .footer { position: fixed; bottom: 0px;color:grey }a{text-decoration: none;}</style>';
-
-    $img = 'data:image/png;base64,'.base64_encode(file_get_contents(loadImg($settings['des_logo'],$secret_key,$secret_iv,'../../img/IeDEA-logo-200px.png','pdf')));
-
-    $html_pdf = "<html><body style='font-family:\"Calibri\";font-size:10pt;'>".$page_num
-        ."<div class='footer' style='left: 590px;'><span class='page-number'>Page </span></div>"
-        ."<div class='mainPDF'><table style='width: 100%;'><tr><td align='center'><img src='".$img."' style='width:200px;padding-bottom: 30px;'></td></tr></table></div>"
-        ."<div class='mainPDF' id='page_html_style'><table style='width: 100%;'>".$first_page."<div style='page-break-before: always;'></div>"
-        ."<div class='mainPDF'>".$second_page."<div style='page-break-before: always;'></div>"
-        ."<p><span style='font-size:16pt'><strong>DES Tables</strong></span></p>"
-        .$tableHtml[0]
-        ."</div></div>"
-        . "</body></html>";
-
-   $filename = $settings['des_wkname']."_DES_".date("Y-m-d_hi",time());
-    //SAVE PDF ON DB
-    $reportHash = $filename;
-    $storedName = md5($reportHash);
-
-    //DOMPDF
-    $dompdf = new \Dompdf\Dompdf();
-    $dompdf->loadHtml($html_pdf);
-    $dompdf->setPaper('A4', 'portrait');
-    ob_start();
-    $dompdf->render();
-    //#Download option
-    $output = $dompdf->output();
-    $filesize = file_put_contents(EDOC_PATH.$storedName, $output);
-
-    //Save document on DB
-    $sql = "INSERT INTO redcap_edocs_metadata (stored_name,mime_type,doc_name,doc_size,file_extension,gzipped,project_id,stored_date) VALUES
-          ('".db_escape($storedName)."','".db_escape('application/octet-stream')."','".db_escape($reportHash.".pdf")."',".db_escape($filesize).",'".db_escape('.pdf')."','".db_escape('0')."','".db_escape(DES_SETTINGS)."','".db_escape(date('Y-m-d h:i:s'))."')";
-    db_query($sql);
-    $docId = db_insert_id();
-
-
-    //Add document DB ID to project
-    $project = new \Plugin\Project(DES_SETTINGS);
-    $record = \Plugin\Record::createRecordFromId($project,1);
-    $record->updateDetails(array('des_update_d' => date("Y-m-d H:i:s")),true);
-    $record->updateDetails(array('des_pdf' => $docId),true);
-    \Records::addRecordToRecordListCache($project->getProjectId(), $record->getId(),$project->getArmNum());
-
-    if($settings['des_pdf_notification_email'] != "") {
-        $link = APP_PATH_PLUGIN."/downloadFile.php?code=".getCrypt("sname=".$storedName."&file=". $filename.".pdf&edoc=".$docId,'e',$secret_key,$secret_iv);
-        $goto = APP_PATH_WEBROOT_ALL . "DataEntry/index.php?pid=".DES_SETTINGS."&page=pdf&id=1";
-
-        $subject = "New DES PDF Generated";
-        $message = "<div>Changes have been detected and a new PDF has been generated.</div><br/>".
-            "<div>You can <a href='".$link."'>download the pdf</a> or <a href='".$goto."'>go to the settings project</a>.</div><br/>";
-
-        $environment = "";
-        if(ENVIRONMENT == 'DEV' || ENVIRONMENT == 'TEST'){
-            $environment = " ".ENVIRONMENT;
-        }
-
-        $emails = explode(';', $settings['des_pdf_notification_email']);
-        foreach ($emails as $email) {
-            \REDCap::email($email, $settings['accesslink_sender_email'], $subject.$environment, $message,"","",$settings['accesslink_sender_name']);
-        }
-    }
-}
-
-function createAndSaveJSONCron($settings,$secret_key,$secret_iv){
     $dataTable = getProjectInfoArray(DES_DATAMODEL);
-    $ProjectTable = new \Plugin\Project(DES_DATAMODEL);
-    $dataFormat = \Plugin\Project::convertEnumToArray($ProjectTable->getMetadata('data_format')->getElementEnum());
     foreach ($dataTable as $data) {
-        $jsonVarArrayAux = array();
-        foreach ($data['variable_order'] as $id => $value) {
-            if($data['variable_name'][$id] != ''){
-                $url = 'index.php?pid=' . DES_DATAMODEL . '&tid=' . $data['record_id'] . '&vid=' . $id . '&page=variableInfo';
+        if($data['table_name'] != "") {
+            $jsonVarArray['variables'] = array();
+            foreach ($data['variable_order'] as $id => $value) {
+                if ($data['variable_name'][$id] != '') {
+                    $has_codes = 'N';
+                    if ($data['has_codes'][$id] == '1')
+                        $has_codes = 'Y';
 
-                $jsonVarArrayAux[trim($data['variable_name'][$id])] = array();
-                $variables_array  = array(
-                    "instance" => $id,
-                    "description" => $data['description'][$id],
-                    "description_extra" => $data['description_extra'][$id],
-                    "code_list_ref" => $data['code_list_ref'][$id],
-                    "data_format" => trim($dataFormat[$data['data_format'][$id]]),
-                    "code_text" => $data['code_text'][$id],
-                    "variable_link" => $url
-                );
-                $jsonVarArrayAux[$data['variable_name'][$id]] = $variables_array;
+                    $code_list_ref = $data['code_list_ref'][$id];
+                    if ($data['code_list_ref'][$id] == '') {
+                        $code_list_ref = 'NULL';
+                    }
+
+                    $jsonVarArray['variables'][trim($data['variable_name'][$id])] = array();
+                    $variables_array = array(
+                        "data_format" => trim($dataFormat[$data['data_format'][$id]]),
+                        "variable_status" => $data['variable_status'][$id],
+                        "description" => $data['description'][$id],
+                        "variable_required" => $data['variable_required'][$id][0],
+                        "variable_key" => $data['variable_key'][$id][0],
+                        "variable_deprecated_d" => $data['variable_deprecated_d'][$id],
+                        "variable_replacedby" => $data['variable_replacedby'][$id],
+                        "variable_deprecatedinfo" => $data['variable_deprecatedinfo'][$id],
+                        "has_codes" => $has_codes,
+                        "code_list_ref" => $code_list_ref,
+                        "variable_order" => $data['variable_order'][$id],
+                        "variable_missingaction" => $data['variable_missingaction'][$id]
+                    );
+                    $jsonVarArray['variables'][$data['variable_name'][$id]] = $variables_array;
+                }
             }
+            $jsonVarArray['table_required'] = $data['table_required'][0];
+            $jsonVarArray['table_category'] = $data['table_category'];
+            $jsonVarArray['table_order'] = $data['table_order'];
+            $jsonArray[trim($data['table_name'])] = $jsonVarArray;
         }
-        $jsonVarArray = $jsonVarArrayAux;
-        $urltid = 'index.php?pid=' . DES_DATAMODEL . '&tid=' . $data['record_id'] . '&page=variables';
-        $jsonVarArray['table_link'] = $urltid;
-        $jsonArray[trim($data['table_name'])] = $jsonVarArray;
     }
 
     #we save the new JSON
     if(!empty($jsonArray)){
-        saveJSONCopy($jsonArray);
+        $record_id = saveJSONCopy('0a', $jsonArray,$module);
     }
-}
 
-function saveJSONCopy($jsonArray){
+    return array('jsonArray' => json_encode($jsonArray,JSON_FORCE_OBJECT),'record_id' =>$record_id);
+}
+/**
+ * Function that creates a JSON copy of the Harmonist 0A: Data Model
+ * @return string, the JSON
+ */
+function createProject0BJSON($module){
+    $dataTable = getProjectInfoArray(DES_CODELIST);
+    foreach ($dataTable as $data) {
+        $jsonArray[$data['record_id']] = array();
+        if ($data['code_format'] == '1') {
+            $jsonVarContentArray  = array();
+            $codeOptions = explode(" | ", $data['code_list']);
+            foreach ($codeOptions as $option) {
+                list($key, $val) = explode("=", $option);
+                $jsonVarContentArray[trim($key)] = trim($val);
+            }
+
+        }else if($data['code_format'] == '3'){
+            $jsonVarContentArray  = array();
+            $csv = parseCSVtoArray($data['code_file']);
+            foreach ($csv as $header=>$content){
+                if($header != 0){
+                    //Convert to UTF-8 to avoid weird characters
+                    $value = mb_convert_encoding($content['Definition'], 'UTF-8','HTML-ENTITIES');
+                    $jsonVarContentArray[trim($content['Code'])] = trim($value);
+                }
+            }
+        }
+        $jsonArray[$data['record_id']]=$jsonVarContentArray;
+    }
+
+    #we save the new JSON
+    if(!empty($jsonArray)){
+        $record_id = saveJSONCopy('0b', $jsonArray,$module);
+    }
+
+    return array('jsonArray' => json_encode($jsonArray,JSON_FORCE_OBJECT),'record_id' =>$record_id);
+}
+function saveJSONCopy($type, $jsonArray,$module){
     #create and save file with json
-    $filename = "jsoncopy_file_variable_search_".date("YmdsH").".txt";
+    $filename = "jsoncopy_file_".$type."_".date("YmdsH").".txt";
     $storedName = date("YmdsH")."_pid".DES_JSONCOPY."_".getRandomIdentifier(6).".txt";
 
     $file = fopen(EDOC_PATH.$storedName,"wb");
@@ -674,18 +564,53 @@ function saveJSONCopy($jsonArray){
     $output = file_get_contents(EDOC_PATH.$storedName);
     $filesize = file_put_contents(EDOC_PATH.$storedName, $output);
 
-    $sql = "INSERT INTO redcap_edocs_metadata (stored_name,doc_name,doc_size,file_extension,mime_type,gzipped,project_id,stored_date) VALUES ('".db_escape($storedName)."','".db_escape($filename)."','".db_escape($filesize)."','".db_escape('txt')."','".db_escape('application/octet-stream')."','".db_escape('0')."','".db_escape(DES_SETTINGS)."','".db_escape(date('Y-m-d h:i:s'))."')";
-    $q = db_query($sql);
+    //Save document on DB
+    $q = $module->query("INSERT INTO redcap_edocs_metadata (stored_name,doc_name,doc_size,file_extension,mime_type,gzipped,project_id,stored_date) VALUES(?,?,?,?,?,?,?,?)",
+        [$storedName,$filename,$filesize,'txt','application/octet-stream','0',DES_JSONCOPY,date('Y-m-d h:i:s')]);
     $docId = db_insert_id();
 
+    #we check the version
+    $data = returnJSONCopyVersion($type);
+    $lastversion = $data['lastversion'] + 1;
+
     #save the project
-    $project = new \Plugin\Project(DES_SETTINGS);
-    $record = \Plugin\Record::createRecordFromId($project,1);
-    $record->updateDetails(array('des_variable_search' => $docId),true);
+    $Proj = new \Project(DES_JSONCOPY);
+    $event_id = $Proj->firstEventId;
+    $record_id = $module->framework->addAutoNumberedRecord(DES_JSONCOPY);
+    $json = json_encode(array(array('record_id'=>$record_id,'jsoncopy' => json_encode($jsonArray,JSON_FORCE_OBJECT),'type'=>$type,'jsoncopy_file'=>$docId,'json_copy_update_d'=>date("Y-m-d H:i:s"),"version" => $lastversion)));
+    $results = \Records::saveData(DES_JSONCOPY, 'json', $json,'normal', 'YMD', 'flat', '', true, true, true, false, true, array(), true, false);
+    \Records::addRecordToRecordListCache(DES_JSONCOPY, $record_id,$event_id);
 
-    \Records::addRecordToRecordListCache($project->getProjectId(), $record->getId(),$project->getArmNum());
+    return $record_id;
 }
+/**
+ * Function that returns the version of the JSON Copy project
+ * @param $type, the project type
+ * @return int|string, the version
+ */
+function returnJSONCopyVersion($type){
+    $datatype = getProjectInfoArray(IEDEA_JSONCOPY, array("type" => $type));
+    $lastversion = 0;
+    $record_id = 0;
+    $data = array();
+    if(empty($datatype)){
+        $lastversion = '0';
+    }else{
+        #we get the last version
+        foreach($datatype as $data)
+        {
+            if($data['version'] > $lastversion)
+            {
+                $lastversion = $data['version'];
+                $record_id = $data['record_id'];
+            }
+        }
+    }
+    $data['lastversion'] = $lastversion;
+    $data['id'] = $record_id;
 
+    return $data;
+}
 function getFileLink($edoc, $secret_key,$secret_iv){
     $file_row = '';
     if($edoc != "") {
@@ -748,5 +673,58 @@ function parseCSVtoLink($DocID){
         $link = "sname=" . $rowTableCSV['stored_name'] . "&file=" . $rowTableCSV['doc_name'];
     }
     return $link;
+}
+
+function getRandomIdentifier($length = 6) {
+    $output = "";
+    $startNum = pow(32,5) + 1;
+    $endNum = pow(32,6);
+    while($length > 0) {
+
+        # Generate a number between 32^5 and 32^6, then convert to a 6 digit string
+        $randNum = mt_rand($startNum,$endNum);
+        $randAlphaNum = numberToBase($randNum,32);
+
+        if($length >= 6) {
+            $output .= $randAlphaNum;
+        }
+        else {
+            $output .= substr($randAlphaNum,0,$length);
+        }
+        $length -= 6;
+    }
+
+    return $output;
+}
+
+function numberToBase($number, $base) {
+    $newString = "";
+    while($number > 0) {
+        $lastDigit = $number % $base;
+        $newString = convertDigit($lastDigit, $base).$newString;
+        $number -= $lastDigit;
+        $number /= $base;
+    }
+
+    return $newString;
+}
+
+function convertDigit($number, $base) {
+    if($base > 192) {
+        chr($number);
+    }
+    else if($base == 32) {
+        $stringArray = "ABCDEFGHJLKMNPQRSTUVWXYZ23456789";
+
+        return substr($stringArray,$number,1);
+    }
+    else {
+        if($number < 192) {
+            return chr($number + 32);
+        }
+        else {
+            return "";
+        }
+    }
 }
 ?>

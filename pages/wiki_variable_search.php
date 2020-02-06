@@ -66,9 +66,8 @@
                         <?php
                             if($settings["des_variable_search"] != "") {
                                 $table = "";
-                                $sql = "SELECT stored_name,doc_name,doc_size,mime_type FROM redcap_edocs_metadata WHERE doc_id='" . db_escape($settings["des_variable_search"]) . "'";
-                                $q = db_query($sql);
-                                while ($row = db_fetch_assoc($q)) {
+                                $q = $module->query("SELECT stored_name,doc_name,doc_size,mime_type FROM redcap_edocs_metadata WHERE doc_id=?",[$settings["des_variable_search"]]);
+                                while ($row = $q->fetch_assoc()) {
                                     $path = EDOC_PATH.$row['stored_name'];
                                     $strJsonFileContents = file_get_contents($path);
                                     $json_array = json_decode($strJsonFileContents, true);
