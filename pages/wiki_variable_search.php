@@ -73,13 +73,14 @@
                                     $json_array = json_decode($strJsonFileContents, true);
                                     foreach ($json_array as $tablename=>$variables){
                                         foreach ($variables as $varname=>$data){
-                                            if($varname != "table_link")
-                                            $table .= "<tr>".
-                                                        "<td style='width:130px'><a href='".$variables['table_link']."'>".$tablename."</a></td>".
-                                                        "<td style='width:130px'><a href='".$data['variable_link']."'>".$varname."</a></td>".
-                                                        "<td style='width:130px'>".$data['data_format']."</td>".
-                                                        "<td><div>".$data['description']."</div><div><i>".$data['description_extra']."</i></div><div><i>".$data['code_text']."</i></div></td>".
-                                                "</tr>";
+                                            if($varname != "table_link") {
+                                                $table .= "<tr>" .
+                                                    "<td style='width:130px'><a href='" . $variables['table_link'] . "'>" . $tablename . "</a></td>" .
+                                                    "<td style='width:130px'><a href='" . $data['variable_link'] . "'>" . $varname . "</a></td>" .
+                                                    "<td style='width:130px'>" . $data['data_format'] . "</td>" .
+                                                    "<td><div>" . $data['description'] . "</div><div><i>" . $data['description_extra'] . "</i></div><div><i>" . $data['code_text'] . "</i></div></td>" .
+                                                    "</tr>";
+                                            }
                                         }
                                     }
                                 }
