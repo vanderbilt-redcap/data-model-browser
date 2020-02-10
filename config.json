@@ -11,7 +11,7 @@
 		}
 	],
 
-	"permissions": ["hook_every_page_before_render"],
+	"permissions": [],
 
 	"links": {
 		"project": [
@@ -23,18 +23,53 @@
 		]
 	},
 
-	"description": "This tool helps import one or more big CSV files without the need to split them.",
+	"no-auth-pages":["configure","downloadFile","startDDProjects","functions"],
+
+	"description": "This tool will help you install and create a data model browser.",
 
 	"project-settings": [
 		{
-			"key": "import-email",
-			"name": "List of emails, <b>separated by commas</b> <br/>to send the notification to once the import has finished",
-			"type": "textarea"
+			"key": "des-privacy-description",
+			"name": "<div>Select a privacy type for the Data Model Browser:</div><br><div class='alert alert-info' style='border-color:#bce8f1 !important'><ul><li><strong>Public</strong> (no login required; anyone with the link can view/access the FAQ page)</li><li><strong>This Project's users only</strong> (REDCap login required; only users on this project can access the FAQ page)</li><li><strong>A different Project's users</strong> (REDCap login required; only users from another project can access the FAQ page)</li></ul></div>",
+			"type": "descriptive"
 		},
 		{
-			"key": "import-from",
-			"name": "Sender email (by default <b>noreply@vumc.org</b>)",
-			"type": "text"
+			"key": "des-privacy",
+			"name": "Privacy type",
+			"required": true,
+			"choices": [
+				{
+					"name": "Public",
+					"value": "public"
+				},
+				{
+					"name": "This Project's users only",
+					"value": "main"
+				},
+				{
+					"name": "A different Project's users",
+					"value": "other"
+				}
+			],
+			"type":"radio"
+		},
+		{
+			"key": "projects",
+			"name": "Select the project/s whose people can access the FAQ",
+			"type": "sub_settings",
+			"repeatable":true,
+			"branchingLogic": {
+				"field": "des-privacy",
+				"op":"=",
+				"value": "other"
+			},
+			"sub_settings":[
+				{
+					"key": "des-project",
+					"name": "Project",
+					"type": "project-id"
+				}
+			]
 		}
 	],
 	"crons": [

@@ -611,21 +611,12 @@ function returnJSONCopyVersion($type){
 
     return $data;
 }
-function getFileLink($edoc, $secret_key,$secret_iv){
-    $file_row = '';
-    if($edoc != "") {
-        $sql = "SELECT stored_name,doc_name,doc_size FROM redcap_edocs_metadata WHERE doc_id='" . db_escape($edoc)."'";
-        $q = db_query($sql);
-
-        if ($error = db_error()) {
-            die($sql . ': ' . $error);
-        }
-
-        while ($row = db_fetch_assoc($q)) {
-            $file_row = APP_PATH_PLUGIN."/downloadFile.php?code=" . getCrypt("sname=" . $row['stored_name'] . "&file=" . urlencode($row['doc_name']) . "&edoc=" . $edoc , 'e', $secret_key, $secret_iv);
-        }
+function isUserExpiredOrSuspended($module,$username,$field){
+    $result = $module->query("SELECT * FROM redcap_user_information WHERE username = ? AND ".$field." IS NOT NULL",[$username]);
+    if (db_num_rows($result) > 0) {
+        return true;
     }
-    return $file_row;
+    return false;
 }
 /**
  * Function that searches the file name in the database, parses it and returns an array with the content

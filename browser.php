@@ -45,10 +45,6 @@ if($UserRights['user_rights'] == '1'){
     $isAdmin = true;
 }
 
-//$module->createPdf();
-
-
-
 $dd_array = \REDCap::getDataDictionary('array');
 if(count($dd_array) == 1 && $isAdmin && !array_key_exists('project_constant',$dd_array) && !array_key_exists('project_id',$dd_array)){
     echo '  <div class="container" style="margin-top: 60px">  
@@ -63,8 +59,53 @@ if(count($dd_array) == 1 && $isAdmin && !array_key_exists('project_constant',$dd
 }else{
     include_once("projects.php");
     $settings = \REDCap::getData(array('project_id'=>DES_SETTINGS),'array')[1][$module->framework->getEventId(DES_SETTINGS)];
-
     include_once("functions.php");
-    include_once("main.php");
+
+    $des_privacy = $module->getProjectSetting('des-privacy');
+    $has_permission = false;
+
+    ?>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="">
+        <meta name="author" content="">
+        <link rel="icon" href="<?=printFile($module,$settings['des_favicon'],'url')?>">
+
+        <title><?=$settings['des_doc_title']?></title>
+
+        <script type='text/javascript'>
+            var app_path_webroot = '<?=APP_PATH_WEBROOT?>';
+            var app_path_webroot_full = '<?=APP_PATH_WEBROOT?>';
+            var app_path_images = '<?=APP_PATH_IMAGES?>';
+        </script>
+
+        <style>
+            table thead .glyphicon{ color: blue; }
+        </style>
+        <?php include('header.php'); ?>
+        <?php include('navbar.php'); ?>
+    </head>
+    <?php
+    if($des_privacy == 'public' || $des_privacy == ""){
+        $has_permission = true;
+        include_once("main.php");
+    }else{
+        include_once("main_private.php");
+    }
+
+
+    if(!$has_permission){
+        echo '<div class="container" style="margin-top: 60px"><div class="alert alert-warning" role="alert">You don\'t have permissions to access this Browser. Please contact an administrator.</div></div>';
+        exit;
+    }
+    ?>
+    <br/>
+    </body>
+    </html>
+<?php
 }
 ?>
