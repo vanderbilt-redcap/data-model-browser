@@ -333,10 +333,9 @@ function getHtmlCodesTable($code_file,$htmlCodes,$id){
     return $htmlCodes;
 }
 
-function getHtmlTableCodesTableArrayExcel($dataTable){
+function getHtmlTableCodesTableArrayExcel($module,$dataTable){
     $data_array = array();
-    $ProjectTable = new \Plugin\Project(DES_DATAMODEL);
-    $dataFormat = \Plugin\Project::convertEnumToArray($ProjectTable->getMetadata('data_format')->getElementEnum());
+    $dataFormat = $module->getChoiceLabels('data_format', DES_DATAMODEL);
     foreach ($dataTable as $data) {
         if (!empty($data['record_id']) && ($data['table_status'] == "1"  || !array_key_exists('table_status',$data))) {
             $data_code_array = array();

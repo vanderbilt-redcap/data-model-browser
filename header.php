@@ -8,11 +8,11 @@
                 <span class="icon-bar"></span>
             </button>
             <div class="imgNavbar">
-                <a href="index.php" style="text-decoration: none;float:left">
+                <a href="<?=$module->getUrl("browser.php")?>" style="text-decoration: none;float:left">
                     <img src='<?=printFile($module,$settings['des_logo'],'url')?>?>' class='wiki_logo_img'  style="height:40px" alt="<?=$settings['des_wkname']." Logo"?>">
                 </a>
 
-                <a href="index.php" style="text-decoration: none;float:left" class="hub_header_title">
+                <a href="<?=$module->getUrl("browser.php")?>" style="text-decoration: none;float:left" class="hub_header_title">
                     <span class=""><?=$settings['des_doc_title']?></span>
                 </a>
             </div>
