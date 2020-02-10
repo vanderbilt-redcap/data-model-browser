@@ -167,7 +167,7 @@ function generateTablesHTML_pdf($dataTable,$draft,$deprecated){
         if (!empty($data['record_id'])) {
             $found = false;
             $htmlCodes = '';
-            if($data['table_status'] == "1" || !array_key_exists("table_status",$data) || ($data['table_status'] == "2" && $deprecated == "true") || ($data['table_status'] == "0" && $draft == "true")) {
+            if($data['table_status'] == "1" || !array_key_exists("table_status",$data) || $data['table_status'] == "" || ($data['table_status'] == "2" && $deprecated == "true") || ($data['table_status'] == "0" && $draft == "true")) {
                 $requested_tables .= "<li><a href='#anchor_" . $data['record_id'] . "' style='text-decoration:none'>" . $data["table_name"] . "</a></li>";
                 foreach ($data['variable_order'] as $id => $value) {
                     $record_varname = !array_key_exists($id, $data['variable_name']) ? $data['variable_name'][''] : $data['variable_name'][$id];

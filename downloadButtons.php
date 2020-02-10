@@ -10,7 +10,7 @@
                 <a onclick="$('#downloadPDF2').submit();" class="btn btn-default btn-md"><i class="fa fa-arrow-down"></i> Codes CSV</a>
             </form>
         </div>
-        <div style="display: inline-block;float: right;">
+        <div style="display: inline-block;float: right;padding-right: 10px">
             <a href="<?=printFile($module,$settings['des_pdf'],'url');?>" class="btn btn-default btn-md"><i class="fa fa-arrow-down"></i> DES</a>
         </div>
     </div>

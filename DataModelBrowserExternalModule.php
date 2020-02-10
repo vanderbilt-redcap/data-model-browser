@@ -94,6 +94,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             ."</div></div>"
             . "</body></html>";
 
+
         $filename = $settings['des_wkname']."_DES_".date("Y-m-d_hi",time());
         //SAVE PDF ON DB
         $reportHash = $filename;
