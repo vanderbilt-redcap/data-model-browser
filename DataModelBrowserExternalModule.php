@@ -18,7 +18,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
     function createProjectAndImportDataDictionary($value_constant)
     {
-        $project_id = $this->framework->createProject(ucfirst(strtolower($value_constant)), 0);
+        $project_id = $this->framework->createProject(ucfirst(strtolower($value_constant." - Data Model Browser")), 0);
         $path = $this->module->getModulePath()."csv\\".$value_constant."_data_dictionary.csv";
         $this->framework->importDataDictionary($project_id,$path);
 
