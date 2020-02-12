@@ -1,6 +1,5 @@
 <?php
 define('NOAUTH',true);
-require_once "../base.php";
 
 $filename = $_REQUEST['file'];
 $sname = $_REQUEST['sname'];

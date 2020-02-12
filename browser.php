@@ -30,7 +30,7 @@ use ExternalModules\ExternalModules;
     </script>
 
     <?php if(array_key_exists('message',$_REQUEST) && $_REQUEST['message']=='S'){?>
-        <div class="container" style="margin-top: 60px">
+        <div class="container" style="margin-top: 80px">
             <div class="alert alert-success col-md-12">
                Data Dictionary and projects successfully installed. To see the Project Ids go to the <a href="<?=APP_PATH_WEBROOT?>DataEntry/record_status_dashboard.php?pid=<?=$_REQUEST['pid']?>" target="_blank">Record Dashboard</a>.
             </div>
@@ -46,7 +46,8 @@ if($UserRights['user_rights'] == '1'){
 }
 
 $dd_array = \REDCap::getDataDictionary('array');
-if(count($dd_array) == 1 && $isAdmin && !array_key_exists('project_constant',$dd_array) && !array_key_exists('project_id',$dd_array)){
+$data_array = \REDCap::getData($_GET['pid'],'array');
+if(count($dd_array) == 1 && $isAdmin && !array_key_exists('project_constant',$dd_array) && !array_key_exists('project_id',$dd_array) || count($data_array) == 0){
     echo '  <div class="container" style="margin-top: 60px">  
                 <div class="alert alert-warning col-md-12">
                     <div class="col-md-10"><span class="pull-left">
@@ -107,6 +108,5 @@ if(count($dd_array) == 1 && $isAdmin && !array_key_exists('project_constant',$dd
     </body>
     </html>
 <?php
-
 }
 ?>
