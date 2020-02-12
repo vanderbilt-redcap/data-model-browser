@@ -25,6 +25,7 @@ use ExternalModules\ExternalModules;
 
     <script>
         var startDDProjects_url = <?=json_encode($module->getUrl('startDDProjects.php'))?>;
+        var downloadPDF_AJAX_url = <?=json_encode($module->getUrl('options/downloadPDF_AJAX.php'))?>;
         var pid = <?=json_encode($_GET['pid'])?>;
     </script>
 
