@@ -24,7 +24,7 @@
 		]
 	},
 
-	"no-auth-pages":["configure","downloadFile","startDDProjects","functions"],
+	"no-auth-pages":["configure","downloadFile","startDDProjects","functions","downloadPDF_AJAX"],
 
 	"description": "This tool will help you install and create a data model browser.",
 
