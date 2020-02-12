@@ -6,6 +6,7 @@ function startDDProjects(){
         success: function(returnData) {
             var data = JSON.parse(returnData);
             if (data.status == 'success') {
+                $('#create_spinner').removeClass('fa fa-spinner fa-spin');
                 var url = window.location.href;
                 if (url.substring(url.length-1) == "#")
                 {
