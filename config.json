@@ -18,7 +18,8 @@
 			{
 				"name": "Data Model Browser",
 				"icon": "database_table",
-				"url": "browser.php"
+				"url": "browser.php",
+				"target": "_blank"
 			}
 		]
 	},
