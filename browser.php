@@ -46,17 +46,17 @@ if($UserRights['user_rights'] == '1'){
 
 $dd_array = \REDCap::getDataDictionary('array');
 $data_array = \REDCap::getData($_GET['pid'],'array');
-//if(count($dd_array) == 1 && $isAdmin && !array_key_exists('project_constant',$dd_array) && !array_key_exists('project_id',$dd_array) || count($data_array) == 0){
+if(count($dd_array) == 1 && $isAdmin && !array_key_exists('project_constant',$dd_array) && !array_key_exists('project_id',$dd_array) || count($data_array) == 0){
     echo '  <div class="container" style="margin-top: 60px">  
                 <div class="alert alert-warning col-md-12">
                     <div class="col-md-10"><span class="pull-left">
                         The data dictionary for <strong>'.\REDCap::getProjectTitle().'</strong> is empty.
                         <br/>Click the button to create the data dictionary and all related projects.</span>
                     </div>
-                    <div class="col-md-2"><a href="#" onclick="startDDProjects();$(\'#create_spinner\').addClass(\'fa fa-spinner fa-spin\');" class="btn btn-primary pull-right"><span id="create_spinner"></span> Create Projects & Data Dictionary</a></div>
+                    <div class="col-md-2"><a href="#" onclick="startDDProjects();$(\'#save_continue_4_spinner\').addClass(\'fa fa-spinner fa-spin\');" class="btn btn-primary pull-right"><span id="save_continue_4_spinner"></span>Create Projects & Data Dictionary</a></div>
                 </div>
             </div>';
-//}else{
+}else{
     include_once("projects.php");
     $settings = \REDCap::getData(array('project_id'=>DES_SETTINGS),'array')[1][$module->framework->getEventId(DES_SETTINGS)];
     include_once("functions.php");
@@ -107,5 +107,5 @@ $data_array = \REDCap::getData($_GET['pid'],'array');
     </body>
     </html>
 <?php
-//}
+}
 ?>
