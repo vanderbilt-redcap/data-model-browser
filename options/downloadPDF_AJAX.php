@@ -1,8 +1,8 @@
 <?php
 define('NOAUTH',true);
-require_once "/../projects.php";
-require_once '/../vendor/autoload.php';
-include_once "/../functions.php";
+require_once __DIR__ ."/../projects.php";
+require_once __DIR__ .'/../vendor/autoload.php';
+include_once __DIR__ ."/../functions.php";
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
