@@ -45,6 +45,8 @@ if($UserRights['user_rights'] == '1'){
     $isAdmin = true;
 }
 
+print_array($module->framework->getModulePath()."csv\PID_data_dictionary.csv");
+
 $dd_array = \REDCap::getDataDictionary('array');
 $data_array = \REDCap::getData($_GET['pid'],'array');
 if(count($dd_array) == 1 && $isAdmin && !array_key_exists('project_constant',$dd_array) && !array_key_exists('project_id',$dd_array) || count($data_array) == 0){
