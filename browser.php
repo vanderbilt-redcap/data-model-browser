@@ -18,7 +18,6 @@ use ExternalModules\ExternalModules;
     <link type='text/css' href='<?=$module->getUrl('js/fonts-awesome/css/font-awesome.min.css')?>' rel='stylesheet' media='screen' />
     <link rel="stylesheet" type="text/css" href="<?=$module->getUrl('css/bootstrap.min.css')?>">
     <link rel="stylesheet" type="text/css" href="<?=$module->getUrl('css/style.css')?>">
-    <link type='text/css' href="<?=$module->getUrl('css/font-awesome.min.css')?>" rel='stylesheet' media='screen' />
     <link type='text/css' href='<?=$module->getUrl('css/tabs-steps-menu.css')?>' rel='stylesheet' media='screen' />
     <link type='text/css' href='<?=$module->getUrl('css/sortable-theme-bootstrap.css')?>' rel='stylesheet' media='screen' />
     <link type='text/css' href='<?=$module->getUrl('css/tabs-steps-menu.css')?>' rel='stylesheet' media='screen' />
