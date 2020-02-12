@@ -30,7 +30,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             [$project_id, $eventId, $record, $fieldName, $value]);
     }
 
-    function createPdf(){
+    function createpdf(){
         include_once("projects.php");
         include_once("functions.php");
 
