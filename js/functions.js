@@ -100,18 +100,3 @@ function loadStatusButton(status, option){
     }
     return option;
 }
-
-function downloadExcel(){
-    $('#load_message').show();
-    //After 5 seconds hide message
-    setTimeout(function(){ $('#load_message').hide(); }, 5000);
-
-    $.ajax({
-        url: downloadPDF_AJAX_url,
-        data: "&pid="+pid,
-        type: 'POST',
-        success: function(returnData) {
-            $('#load_message').hide();
-        }
-    });
-}
