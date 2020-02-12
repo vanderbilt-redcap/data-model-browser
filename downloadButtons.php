@@ -6,10 +6,10 @@
             </div>
         </div>
         <div style="display: inline-block;float: right;">
-<!--            <form method="POST" action="--><?//=$module->getUrl('options/downloadPDF_AJAX.php?option=2');?><!--" id='downloadPDF2' style="padding-right: 10px">-->
-<!--                <a onclick="$('#downloadPDF2').submit();" class="btn btn-default btn-md"><i class="fa fa-arrow-down"></i> Codes CSV</a>-->
-<!--            </form>-->
-            <a onclick="downloadExcel()" class="btn btn-default btn-md"><i class="fa fa-arrow-down"></i> Codes CSV</a>
+            <form method="POST" action="<?=$module->getUrl('options/downloadPDF_AJAX.php')."&pid=".$_GET['pid'];?>" id='downloadPDF2' style="padding-right: 10px">
+                <a onclick="$('#downloadPDF2').submit();" class="btn btn-default btn-md"><i class="fa fa-arrow-down"></i> Codes CSV</a>
+            </form>
+<!--            <a onclick="downloadExcel()" class="btn btn-default btn-md"><i class="fa fa-arrow-down"></i> Codes CSV</a>-->
         </div>
         <div style="display: inline-block;float: right;padding-right: 10px">
             <a href="<?=printFile($module,$settings['des_pdf'],'url');?>" class="btn btn-default btn-md"><i class="fa fa-arrow-down"></i> DES</a>
