@@ -1,4 +1,5 @@
 <?php
+define('NOAUTH',true);
 require_once "/../projects.php";
 require_once '/../vendor/autoload.php';
 include_once "/../functions.php";
