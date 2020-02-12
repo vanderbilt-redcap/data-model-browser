@@ -77,7 +77,7 @@ function getTablesInfo($module,$projectID, $tableID="", $tableOrderParam="table_
 }
 
 function getDataRepeatingInstrumentsGroupByField($module,$project_id,$vars=""){
-    $data_ditionary = $module->framework->excelToArray($module->framework->getModulePath()."csv\DATAMODEL_data_dictionary.csv");
+    $data_ditionary = $module->framework->excelToArray($module->framework->getModulePath()."csv/DATAMODEL_data_dictionary.csv");
 
     $array = array();
     $records = \REDCap::getData($project_id,'array',$vars);
