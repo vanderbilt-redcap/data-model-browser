@@ -82,7 +82,7 @@ $dataTable = getTablesInfo($module,DES_DATAMODEL,$tid);
                     </div>
 
                     <div class="col-md-12" style="padding-bottom: 10px">
-                        <?php include('/../options/options.php'); ?>
+                        <?php include(__DIR__ .'/../options/options.php'); ?>
                     </div>
                     <div class="col-md-12">
                         <div class="panel panel-default" >

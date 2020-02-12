@@ -53,7 +53,7 @@ $dataTable = getTablesInfo($module,DES_DATAMODEL,$tid,"table_name");
     <div class='row'>
         <div class="col-md-12" style="padding-bottom: 10px">
             <?php
-            include('/../options/options.php');
+            include(__DIR__ .'/../options/options.php');
             ?>
         </div>
     </div>
