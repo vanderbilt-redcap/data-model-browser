@@ -5,7 +5,7 @@ use ExternalModules\AbstractExternalModule;
 use ExternalModules\ExternalModules;
 
 $project_id = $_REQUEST['pid'];
-$path = $module->framework->getModulePath()."csv\PID_data_dictionary.csv";
+$path = $module->framework->getModulePath()."csv/PID_data_dictionary.csv";
 $module->framework->importDataDictionary($project_id,$path);
 $custom_record_label = "[project_constant]: [project_id]";
 $module->query("UPDATE redcap_projects SET custom_record_label = ? WHERE project_id = ?",[$custom_record_label,$project_id]);
