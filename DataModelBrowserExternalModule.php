@@ -42,13 +42,11 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             include_once("projects.php");
             include_once("functions.php");
 
-            error_log("createpdf - DES_SETTINGS:".DES_SETTINGS);
             $settings = \REDCap::getData(array('project_id' => DES_SETTINGS), 'array')[1][$this->framework->getEventId(DES_SETTINGS)];
             $hasJsoncopyBeenUpdated0a = $this->hasJsoncopyBeenUpdated('0a', $settings);
             $hasJsoncopyBeenUpdated0b = $this->hasJsoncopyBeenUpdated('0b', $settings);
-            error_log("createpdf - hasJsoncopyBeenUpdated0a:".$hasJsoncopyBeenUpdated0a);
-            error_log("createpdf - hasJsoncopyBeenUpdated0b:".$hasJsoncopyBeenUpdated0b);
             if ($hasJsoncopyBeenUpdated0a || $hasJsoncopyBeenUpdated0b) {
+                error_log("createpdf - Update Information:");
                 $this->createAndSavePDFCron($settings);
                 $this->createAndSaveJSONCron();
             }
