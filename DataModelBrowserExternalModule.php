@@ -32,16 +32,23 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
     function createpdf(){
         error_log("createpdf - start");
-        error_log("createpdf - pids:".json_encode($this->getProjectsWithModuleEnabled()));
-        include_once("projects.php");
-        include_once("functions.php");
 
-        $settings = \REDCap::getData(array('project_id'=>DES_SETTINGS),'array')[1][$this->framework->getEventId(DES_SETTINGS)];
-        $hasJsoncopyBeenUpdated0a = $this->hasJsoncopyBeenUpdated('0a',$settings);
-        $hasJsoncopyBeenUpdated0b = $this->hasJsoncopyBeenUpdated('0b',$settings);
-        if($hasJsoncopyBeenUpdated0a || $hasJsoncopyBeenUpdated0b){
-            $this->createAndSavePDFCron($settings);
-            $this->createAndSaveJSONCron();
+        $sql="SELECT s.project_id FROM redcap_external_modules m, redcap_external_module_settings s WHERE m.external_module_id = s.external_module_id AND s.value = 'true' AND (m.directory_prefix = 'data-model-browser') AND s.`key` = 'enabled'";
+        $q = $this->query($sql);
+
+        while($row = db_fetch_assoc($q)) {
+            $project_id = $row['project_id'];
+            error_log("createpdf - pid:" . $project_id);
+            include_once("projects.php");
+            include_once("functions.php");
+
+            $settings = \REDCap::getData(array('project_id' => DES_SETTINGS), 'array')[1][$this->framework->getEventId(DES_SETTINGS)];
+            $hasJsoncopyBeenUpdated0a = $this->hasJsoncopyBeenUpdated('0a', $settings);
+            $hasJsoncopyBeenUpdated0b = $this->hasJsoncopyBeenUpdated('0b', $settings);
+            if ($hasJsoncopyBeenUpdated0a || $hasJsoncopyBeenUpdated0b) {
+                $this->createAndSavePDFCron($settings);
+                $this->createAndSaveJSONCron();
+            }
         }
     }
 

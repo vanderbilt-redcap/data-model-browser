@@ -18,10 +18,9 @@ else {
 }
 
 #Mapper Project
-$project_id_main = ($_GET['pid'] == '')?$this->getProjectId():$_GET['pid'];
+$project_id_main = ($project_id == '')?$project_id:$_GET['pid'];
 define(ENVIRONMENT.'_DES_PROJECTS', $project_id_main);
 error_log("createpdf - project_id:".$project_id_main);
-
 
 if(defined(ENVIRONMENT."_DES_PROJECTS")) {
     define("DES_PROJECTS", constant(ENVIRONMENT."_DES_PROJECTS"));
