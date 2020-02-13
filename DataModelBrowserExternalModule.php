@@ -38,13 +38,16 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
         while($row = db_fetch_assoc($q)) {
             $project_id = $row['project_id'];
-            error_log("createpdf - pid:" . $project_id);
+            error_log("createpdf - project_id:" . $project_id);
             include_once("projects.php");
             include_once("functions.php");
 
+            error_log("createpdf - DES_SETTINGS:".DES_SETTINGS);
             $settings = \REDCap::getData(array('project_id' => DES_SETTINGS), 'array')[1][$this->framework->getEventId(DES_SETTINGS)];
             $hasJsoncopyBeenUpdated0a = $this->hasJsoncopyBeenUpdated('0a', $settings);
             $hasJsoncopyBeenUpdated0b = $this->hasJsoncopyBeenUpdated('0b', $settings);
+            error_log("createpdf - hasJsoncopyBeenUpdated0a:".$hasJsoncopyBeenUpdated0a);
+            error_log("createpdf - hasJsoncopyBeenUpdated0b:".$hasJsoncopyBeenUpdated0b);
             if ($hasJsoncopyBeenUpdated0a || $hasJsoncopyBeenUpdated0b) {
                 $this->createAndSavePDFCron($settings);
                 $this->createAndSaveJSONCron();
@@ -65,6 +68,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         if($jsoncocpy["jsoncopy_file"] != "" && strtotime(date("Y-m-d",strtotime($jsoncocpy['json_copy_update_d']))) == strtotime($today)){
             return true;
         }else if(empty($jsoncocpy) || strtotime(date("Y-m-d",strtotime($jsoncocpy['json_copy_update_d']))) == "" || !array_key_exists('json_copy_update_d',$jsoncocpy) || !array_key_exists('des_pdf',$settings) || $settings['des_pdf'] == ""){
+            error_log("createpdf - checkAndUpdatJSONCopyProject");
             $this->checkAndUpdatJSONCopyProject($type,$rowtype['record'],$jsoncocpy,$settings);
             return true;
         }

@@ -20,12 +20,10 @@ else {
 #Mapper Project
 $project_id_main = ($project_id != '')?$project_id:$_GET['pid'];
 define(ENVIRONMENT.'_DES_PROJECTS', $project_id_main);
-error_log("createpdf - project_id:".$project_id_main);
 
 if(defined(ENVIRONMENT."_DES_PROJECTS")) {
     define("DES_PROJECTS", constant(ENVIRONMENT."_DES_PROJECTS"));
 }
-error_log("createpdf - DES_PROJECTS:".DES_PROJECTS);
 
 if(APP_PATH_WEBROOT[0] == '/'){
     $APP_PATH_WEBROOT_ALL = substr(APP_PATH_WEBROOT, 1);
