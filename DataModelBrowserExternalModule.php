@@ -32,6 +32,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
     function createpdf(){
         error_log("createpdf - start");
+        error_log("createpdf - pids:".json_encode($this->getProjectsWithModuleEnabled()));
         include_once("projects.php");
         include_once("functions.php");
 
