@@ -588,7 +588,7 @@ function saveJSONCopy($type, $jsonArray,$module){
  * @return int|string, the version
  */
 function returnJSONCopyVersion($type){
-    $datatype = getProjectInfoArray(IEDEA_JSONCOPY, array("type" => $type));
+    $datatype = getProjectInfoArray(DES_JSONCOPY, array("type" => $type));
     $lastversion = 0;
     $record_id = 0;
     $data = array();
