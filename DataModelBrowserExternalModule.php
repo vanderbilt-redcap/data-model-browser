@@ -139,12 +139,12 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             $goto = APP_PATH_WEBROOT_ALL . "DataEntry/index.php?pid=".DES_SETTINGS."&page=pdf&id=1";
 
             $subject = "New PDF Generated in ".$settings['des_doc_title'];
-            $message = "<div>Changes have been detected and a new PDF has been generated.</div><br/>".
+            $message = "<div>Changes have been detected and a new PDF has been generated in ".\REDCap::getProjectTitle(DES_SETTINGS).".</div><br/>".
                 "<div>You can <a href='".$link."'>download the pdf</a> or <a href='".$goto."'>go to the settings project</a>.</div><br/>";
 
             $environment = "";
             if(ENVIRONMENT == 'DEV' || ENVIRONMENT == 'TEST'){
-                $environment = " ".ENVIRONMENT;
+                $environment = " - ".ENVIRONMENT;
             }
 
             $sender = $settings['accesslink_sender_email'];
