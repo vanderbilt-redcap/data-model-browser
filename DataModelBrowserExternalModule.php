@@ -105,7 +105,6 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             ."</div></div>"
             . "</body></html>";
 
-
         $filename = $settings['des_wkname']."_DES_".date("Y-m-d_hi",time());
         //SAVE PDF ON DB
         $reportHash = $filename;
@@ -133,7 +132,6 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         $results = \Records::saveData(DES_SETTINGS, 'json', $json,'normal', 'YMD', 'flat', '', true, true, true, false, true, array(), true, false);
         \Records::addRecordToRecordListCache(DES_SETTINGS, 1,$event_id);
 
-
         if($settings['des_pdf_notification_email'] != "") {
             $link = $this->getUrl("downloadFile.php?sname=".$storedName."&file=". $filename.".pdf");
             $goto = APP_PATH_WEBROOT_ALL . "DataEntry/index.php?pid=".DES_SETTINGS."&page=pdf&id=1";
@@ -151,7 +149,6 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             if($settings['accesslink_sender_email'] == ""){
                 $sender = "noreply@vumc.org";
             }
-
 
             $emails = explode(';', $settings['des_pdf_notification_email']);
             foreach ($emails as $email) {
