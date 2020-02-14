@@ -146,17 +146,17 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         \Records::addRecordToRecordListCache(DES_SETTINGS, 1,$event_id);
 
         error_log("createpdf - PDF saved ");
-        error_log("createpdf - send emails ".$settings['des_pdf_notification_email']);
         if($settings['des_pdf_notification_email'] != "") {
             error_log("createpdf - inside");
             $link = $this->getUrl("downloadFile.php?sname=".$storedName."&file=". $filename.".pdf");
-            error_log("createpdf - link");
             $goto = APP_PATH_WEBROOT_ALL . "DataEntry/index.php?pid=".DES_SETTINGS."&page=pdf&id=1";
-            error_log("createpdf - goto");
-            error_log("createpdf - project_title".\REDCap::getProjectTitle(DES_SETTINGS));
+
+            $q = $this->query("select app_title from redcap_projects where project_id = ? limit 1",[DES_SETTINGS]);
+            $row = $q->fetch_assoc();
+            $project_title = $row['app_title'];
 
             $subject = "New PDF Generated in ".$settings['des_doc_title'];
-            $message = "<div>Changes have been detected and a new PDF has been generated in ".\REDCap::getProjectTitle(DES_SETTINGS).".</div><br/>".
+            $message = "<div>Changes have been detected and a new PDF has been generated in ".$project_title.".</div><br/>".
                 "<div>You can <a href='".$link."'>download the pdf</a> or <a href='".$goto."'>go to the settings project</a>.</div><br/>";
 
             error_log("createpdf - environment ");
