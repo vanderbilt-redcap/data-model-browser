@@ -145,6 +145,8 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         $results = \Records::saveData(DES_SETTINGS, 'json', $json,'normal', 'YMD', 'flat', '', true, true, true, false, true, array(), true, false);
         \Records::addRecordToRecordListCache(DES_SETTINGS, 1,$event_id);
 
+        error_log("createpdf - PDF saved ");
+        error_log("createpdf - send emails ");
         if($settings['des_pdf_notification_email'] != "") {
             $link = $this->getUrl("downloadFile.php?sname=".$storedName."&file=". $filename.".pdf");
             $goto = APP_PATH_WEBROOT_ALL . "DataEntry/index.php?pid=".DES_SETTINGS."&page=pdf&id=1";
@@ -153,21 +155,24 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             $message = "<div>Changes have been detected and a new PDF has been generated in ".\REDCap::getProjectTitle(DES_SETTINGS).".</div><br/>".
                 "<div>You can <a href='".$link."'>download the pdf</a> or <a href='".$goto."'>go to the settings project</a>.</div><br/>";
 
+            error_log("createpdf - environment ");
             $environment = "";
             if(ENVIRONMENT == 'DEV' || ENVIRONMENT == 'TEST'){
                 $environment = " - ".ENVIRONMENT;
             }
-
+            error_log("createpdf - access link ");
             $sender = $settings['accesslink_sender_email'];
             if($settings['accesslink_sender_email'] == ""){
                 $sender = "noreply@vumc.org";
             }
 
             $emails = explode(';', $settings['des_pdf_notification_email']);
+            error_log("createpdf - emails: ".$settings['des_pdf_notification_email']);
             foreach ($emails as $email) {
                 \REDCap::email($email, $sender, $subject.$environment, $message,"","",$settings['accesslink_sender_name']);
             }
         }
+        error_log("createpdf - Finished creating PDF");
     }
 
     function createAndSaveJSONCron(){
