@@ -195,6 +195,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     }
 
     function saveJSONCopyVarSearch($jsonArray){
+        error_log("createpdf - saveJSONCopyVarSearch");
         #create and save file with json
         $filename = "jsoncopy_file_variable_search_".date("YmdsH").".txt";
         $storedName = date("YmdsH")."_pid".DES_SETTINGS."_".getRandomIdentifier(6).".txt";
