@@ -46,7 +46,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             $hasJsoncopyBeenUpdated0a = $this->hasJsoncopyBeenUpdated('0a', $settings);
             $hasJsoncopyBeenUpdated0b = $this->hasJsoncopyBeenUpdated('0b', $settings);
             if ($hasJsoncopyBeenUpdated0a || $hasJsoncopyBeenUpdated0b) {
-                error_log("createpdf - Update Information:");
+                error_log("createpdf - Update Information");
                 $this->createAndSavePDFCron($settings);
                 $this->createAndSaveJSONCron();
             }
@@ -74,6 +74,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     }
 
     function createAndSavePDFCron($settings){
+        error_log("createpdf - createAndSavePDFCron");
         $dataTable = getTablesInfo($this,DES_DATAMODEL);
 
         if(!empty($dataTable)) {
@@ -158,6 +159,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     }
 
     function createAndSaveJSONCron(){
+        error_log("createpdf - createAndSaveJSONCron");
         $dataTable = getTablesInfo($this,DES_DATAMODEL);
         $dataFormat = $this->getChoiceLabels('data_format', DES_DATAMODEL);
 
