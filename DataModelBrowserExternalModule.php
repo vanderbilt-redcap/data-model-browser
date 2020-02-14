@@ -49,6 +49,9 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 error_log("createpdf - Update Information");
                 $this->createAndSavePDFCron($settings);
                 $this->createAndSaveJSONCron();
+            }else{
+                error_log("createpdf - checkIfJsonOrPDFBlank");
+                $this->checkIfJsonOrPDFBlank($settings);
             }
         }
     }
@@ -71,6 +74,15 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             return true;
         }
         return false;
+    }
+
+    function checkIfJsonOrPDFBlank($settings){
+        if($settings['des_pdf'] == "" || !array_key_exists('des_pdf',$settings)){
+            $this->createAndSavePDFCron($settings);
+        }
+        if($settings['des_variable_search'] == "" || !array_key_exists('des_variable_search',$settings)){
+            $this->createAndSaveJSONCron();
+        }
     }
 
     function createAndSavePDFCron($settings){
