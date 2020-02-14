@@ -31,8 +31,6 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     }
 
     function createpdf(){
-        error_log("createpdf - start");
-
         $sql="SELECT s.project_id FROM redcap_external_modules m, redcap_external_module_settings s WHERE m.external_module_id = s.external_module_id AND s.value = 'true' AND (m.directory_prefix = 'data-model-browser') AND s.`key` = 'enabled'";
         $q = $this->query($sql);
 
@@ -46,11 +44,9 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             $hasJsoncopyBeenUpdated0a = $this->hasJsoncopyBeenUpdated('0a', $settings);
             $hasJsoncopyBeenUpdated0b = $this->hasJsoncopyBeenUpdated('0b', $settings);
             if ($hasJsoncopyBeenUpdated0a || $hasJsoncopyBeenUpdated0b) {
-                error_log("createpdf - Update Information");
                 $this->createAndSavePDFCron($settings);
                 $this->createAndSaveJSONCron();
             }else{
-                error_log("createpdf - checkIfJsonOrPDFBlank");
                 $this->checkIfJsonOrPDFBlank($settings);
             }
         }
@@ -145,9 +141,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         $results = \Records::saveData(DES_SETTINGS, 'json', $json,'normal', 'YMD', 'flat', '', true, true, true, false, true, array(), true, false);
         \Records::addRecordToRecordListCache(DES_SETTINGS, 1,$event_id);
 
-        error_log("createpdf - PDF saved ");
         if($settings['des_pdf_notification_email'] != "") {
-            error_log("createpdf - inside");
             $link = $this->getUrl("downloadFile.php?sname=".$storedName."&file=". $filename.".pdf");
             $goto = APP_PATH_WEBROOT_ALL . "DataEntry/index.php?pid=".DES_SETTINGS."&page=pdf&id=1";
 
@@ -159,24 +153,20 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             $message = "<div>Changes have been detected and a new PDF has been generated in ".$project_title.".</div><br/>".
                 "<div>You can <a href='".$link."'>download the pdf</a> or <a href='".$goto."'>go to the settings project</a>.</div><br/>";
 
-            error_log("createpdf - environment ");
             $environment = "";
             if(ENVIRONMENT == 'DEV' || ENVIRONMENT == 'TEST'){
                 $environment = " - ".ENVIRONMENT;
             }
-            error_log("createpdf - access link ");
             $sender = $settings['accesslink_sender_email'];
             if($settings['accesslink_sender_email'] == ""){
                 $sender = "noreply@vumc.org";
             }
 
             $emails = explode(';', $settings['des_pdf_notification_email']);
-            error_log("createpdf - emails: ".$settings['des_pdf_notification_email']);
             foreach ($emails as $email) {
                 \REDCap::email($email, $sender, $subject.$environment, $message,"","",$settings['accesslink_sender_name']);
             }
         }
-        error_log("createpdf - Finished creating PDF");
     }
 
     function createAndSaveJSONCron(){
