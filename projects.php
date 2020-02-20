@@ -1,16 +1,18 @@
 <?php
 
-if (is_file('/app001/victrcore/lib/Victr/Env.php'))
-    include_once('/app001/victrcore/lib/Victr/Env.php');
+use Vanderbilt\Victrlib\Env;
+# Define the environment: options include "DEV", "TEST" or "PROD"
+if (is_file('/app001/www/redcap/plugins/victrlib/src/Env.php'))
+    include_once('/app001/www/redcap/plugins/victrlib/src/Env.php');
 
-if(class_exists("Victr_Env")) {
-    $envConf = Victr_Env::getEnvConf();
+if (class_exists("\\Vanderbilt\\Victrlib\\Env")) {
 
-    if ($envConf[Victr_Env::ENV_CURRENT] === Victr_Env::ENV_PROD) {
+    if (Env::isProd()) {
         define("ENVIRONMENT", "PROD");
-    }
-    elseif ($envConf[Victr_Env::ENV_CURRENT] === Victr_Env::ENV_DEV) {
+    } else if (Env::isStaging()) {
         define("ENVIRONMENT", "TEST");
+    }else{
+        define("ENVIRONMENT", "DEV");
     }
 }
 else {
