@@ -577,7 +577,7 @@ function saveJSONCopy($type, $jsonArray,$module){
     $event_id = $Proj->firstEventId;
     $record_id = $module->framework->addAutoNumberedRecord(DES_JSONCOPY);
     $json = json_encode(array(array('record_id'=>$record_id,'jsoncopy' => json_encode($jsonArray,JSON_FORCE_OBJECT),'type'=>$type,'jsoncopy_file'=>$docId,'json_copy_update_d'=>date("Y-m-d H:i:s"),"version" => $lastversion)));
-    $results = \Records::saveData(DES_JSONCOPY, 'json', $json,'normal', 'YMD', 'flat', '', true, true, true, false, true, array(), true, false);
+    $results = \REDCap::saveData(DES_JSONCOPY, 'json', $json,'normal', 'YMD', 'flat', '', true, true, true, false, true, array(), true, false);
     \Records::addRecordToRecordListCache(DES_JSONCOPY, $record_id,$event_id);
 
     return $record_id;

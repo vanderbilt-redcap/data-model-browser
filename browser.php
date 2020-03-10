@@ -54,7 +54,7 @@ if(count($dd_array) == 1 && $isAdmin && !array_key_exists('project_constant',$dd
                         The data dictionary for <strong>'.\REDCap::getProjectTitle().'</strong> is empty.
                         <br/>Click the button to create the data dictionary and all related projects.</span>
                     </div>
-                    <div class="col-md-2"><a href="#" onclick="startDDProjects();$(\'#save_continue_4_spinner\').addClass(\'fa fa-spinner fa-spin\');" class="btn btn-primary pull-right"><span id="save_continue_4_spinner"></span>Create Projects & Data Dictionary</a></div>
+                    <div class="col-md-2"><a href="#" onclick="startDDProjects();$(\'#save_continue_4_spinner\').addClass(\'fa fa-spinner fa-spin\');" class="btn btn-primary pull-right"><span id="save_continue_4_spinner"></span> Create Projects & Data Dictionary</a></div>
                 </div>
             </div>';
 }else{
