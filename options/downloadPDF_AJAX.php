@@ -12,7 +12,8 @@ $option = $_REQUEST['option'];
 $deprecated = $_REQUEST['deprecated'];
 $draft = $_REQUEST['draft'];
 
-$dataTable = getTablesInfo($module,DES_DATAMODEL);
+$RecordSetDataModel = \REDCap::getData(DES_DATAMODEL, 'array');
+$dataTable = getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
 
 $requested_tables = getHtmlTableCodesTableArrayExcel($module,$dataTable);
 #EXEL SHEET

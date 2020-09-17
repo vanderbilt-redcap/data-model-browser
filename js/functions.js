@@ -31,7 +31,7 @@ function startDDProjects(){
  * @param statvalue, true or false
  * @param option, if its loading option or button click
  */
-function loadStatus(status,statvalue,option) {
+function loadStatus(url, status,statvalue,option) {
     if(option == ''){
         if (statvalue != "" && statvalue != null && $('.'+status).length > 0){
             statvalue = "false";
@@ -49,7 +49,7 @@ function loadStatus(status,statvalue,option) {
                     $("#"+status+"_info").addClass("btn-default-reverse");
                 }
             });
-        }else if($('#'+status+'_info').hasClass('btn-default-reverse') && (statvalue == "" || statvalue == null)){
+        }else if($('#'+status+'_info').hasClass('btn-default-reverse') && (statvalue == "" || statvalue == null || statvalue == "false")){
             statvalue = loadStatusButton(status,"true");
         } else{
             statvalue = loadStatusButton(status,"false");
@@ -57,13 +57,14 @@ function loadStatus(status,statvalue,option) {
 
         $.ajax({
             type: "POST",
-            url: changeStatus_url,
+            url: url,
             data: "&status=" + status + "&value=" + statvalue
             ,
             error: function (xhr, status, error) {
                 alert(xhr.responseText);
             },
             success: function (result) {
+                console.log(result)
             }
         });
     }else if(option == "0"){
