@@ -1,5 +1,4 @@
 <?php
-
 $filerepo = \REDCap::getData(array('project_id'=>DES_FILEREPO),'array');
 
 $deprecated = empty($_POST['deprecated']) ? $_SESSION['deprecated_'.$settings['des_wkname']] : $_POST['deprecated_'.$settings['des_wkname']];

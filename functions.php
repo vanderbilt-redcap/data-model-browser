@@ -346,10 +346,10 @@ function getHtmlTableCodesTableArrayExcel($module,$dataTable){
                     if (!empty($data['description_extra'][$id])) {
                         $description .= "\n" . $data['description_extra'][$id];
                     }
-
                     if ($data['has_codes'][$id] == '1') {
                         if (!empty($data['code_list_ref'][$id])) {
-                            $codeformat = getProjectInfoArray(DES_CODELIST, array('record_id' => $data['code_list_ref'][$id]))[0];
+                            $RecordSetCodeList = \REDCap::getData(DES_CODELIST, 'array', array('record_id' => $data['code_list_ref'][$id]));
+                            $codeformat = getProjectInfoArrayRepeatingInstruments($RecordSetCodeList)[0];
                             if ($codeformat['code_format'] == '1') {
                                 $codeOptions = empty($codeformat['code_list']) ? $data['code_text'][$id] : explode(" | ", $codeformat['code_list']);
                                 foreach ($codeOptions as $option) {
