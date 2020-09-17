@@ -42,8 +42,10 @@ $dataTable = getTablesInfo($module,DES_DATAMODEL,$tid,"table_name");
 <div class="col-md-12 wiki_text wiki_text_size" style="padding-top: 0;padding-bottom: 30px;">
     <?php if($filerepo != ""){
             foreach ($filerepo as $event){
-                foreach ($event as $file){
-                    echo '<span style="display: block">'.$file['upload_name'].' (<i class="fa fa-arrow-down" style="color:#5cb85c"></i> <a href="options/downloadFile.php?'.parseCSVtoLink($file['upload_file']).'" target="_blank">'.$file['upload_text'].'</a>, last updated '.$file['upload_date'].')</span>';
+                foreach ($event as $file) {
+                    if ($file['upload_text'] != '' || $file['upload_file'] != '') {
+                        echo '<span style="display: block">' . $file['upload_name'] . ' (<i class="fa fa-arrow-down" style="color:#5cb85c"></i> <a href="options/downloadFile.php?' . parseCSVtoLink($file['upload_file']) . '" target="_blank">' . $file['upload_text'] . '</a>, last updated ' . $file['upload_date'] . ')</span>';
+                    }
                 }
             }
        }
