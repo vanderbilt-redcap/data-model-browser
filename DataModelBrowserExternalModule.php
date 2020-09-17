@@ -12,10 +12,6 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         parent::__construct();
     }
 
-    function cronbigdata(){
-
-    }
-
     function createProjectAndImportDataDictionary($value_constant,$project_title)
     {
         $project_id = $this->framework->createProject($project_title." (".ucfirst(strtolower($value_constant)).")", 0);
@@ -83,11 +79,13 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
     function createAndSavePDFCron($settings){
         error_log("createpdf - createAndSavePDFCron");
-        $dataTable = getTablesInfo($this,DES_DATAMODEL);
+        $RecordSetDataModel = \REDCap::getData(DES_DATAMODEL, 'array');
+        $dataTable = getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
 
         if(!empty($dataTable)) {
             $tableHtml = generateTablesHTML_pdf($dataTable,false,false);
         }
+
         #FIRST PAGE
         $first_page = "<tr><td align='center'>";
         $first_page .= "<p><span style='font-size: 16pt;font-weight: bold;'>".$settings['des_pdf_title']."</span></p>";
@@ -102,7 +100,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
         $page_num = '<style>.footer .page-number:after { content: counter(page); } .footer { position: fixed; bottom: 0px;color:grey }a{text-decoration: none;}</style>';
 
-        $img = 'data:image/png;base64,'.base64_encode(file_get_contents($this->loadImg($settings['des_logo'],'../../img/IeDEA-logo-200px.png','pdf')));
+        $img = getFile($this, $settings['des_logo'],'pdf');
 
         $html_pdf = "<html><body style='font-family:\"Calibri\";font-size:10pt;'>".$page_num
             ."<div class='footer' style='left: 590px;'><span class='page-number'>Page </span></div>"
@@ -125,16 +123,16 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         $dompdf->setPaper('A4', 'portrait');
         ob_start();
         $dompdf->render();
-        //#Download option
+        #Download option
         $output = $dompdf->output();
         $filesize = file_put_contents(EDOC_PATH.$storedName, $output);
 
-        //Save document on DB
+        #Save document on DB
         $q = $this->query("INSERT INTO redcap_edocs_metadata (stored_name,mime_type,doc_name,doc_size,file_extension,gzipped,project_id,stored_date) VALUES(?,?,?,?,?,?,?,?)",
             [$storedName,'application/octet-stream',$reportHash.".pdf",$filesize,'.pdf','0',DES_SETTINGS,date('Y-m-d h:i:s')]);
         $docId = db_insert_id();
 
-        //Add document DB ID to project
+        #Add document DB ID to project
         $Proj = new \Project(DES_SETTINGS);
         $event_id = $Proj->firstEventId;
         $json = json_encode(array(array('record_id' => 1, 'des_update_d' => date("Y-m-d H:i:s"),'des_pdf'=>$docId)));
@@ -171,7 +169,8 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
     function createAndSaveJSONCron(){
         error_log("createpdf - createAndSaveJSONCron");
-        $dataTable = getTablesInfo($this,DES_DATAMODEL);
+        $RecordSetDataModel = \REDCap::getData(DES_DATAMODEL, 'array');
+        $dataTable = getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
         $dataFormat = $this->getChoiceLabels('data_format', DES_DATAMODEL);
 
         foreach ($dataTable as $data) {
