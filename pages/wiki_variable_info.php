@@ -4,7 +4,9 @@
 $tid = $_REQUEST['tid'];
 $vid = $_REQUEST['vid'];
 
-$dataTable = getTablesInfo($module,DES_DATAMODEL,$tid);
+$RecordSetDataModel = \REDCap::getData(DES_DATAMODEL, 'array', array('record_id' => $tid));
+$dataTable = getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
+$dataformatChoices = $module->getChoiceLabels('data_format', DES_DATAMODEL);
 ?>
 
 <br/>
@@ -29,7 +31,7 @@ $dataTable = getTablesInfo($module,DES_DATAMODEL,$tid);
                     <div class="wiki_text_inside wiki_text_size">
                     <?php
                         $codeTable = "";
-                        $dataFormat = $dataTable['data_format_label'][$data['data_format'][$vid]];
+                        $dataFormat = $dataformatChoices[$vid];
                         if ($data['has_codes'][$vid] == '0') {
                             echo $dataFormat;
                             if (!empty($data['code_text'][$vid])) {

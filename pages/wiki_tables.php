@@ -22,7 +22,9 @@ if(empty($deprecated)){
     $deprecated = 'false';
 }
 
-$dataTable = getTablesInfo($module,DES_DATAMODEL,$tid,"table_name");
+$RecordSetDataModel = \REDCap::getData(DES_DATAMODEL, 'array');
+$dataTable = getProjectInfoArray($RecordSetDataModel);
+
 ?>
 <script language="JavaScript">
     $(document).ready(function() {

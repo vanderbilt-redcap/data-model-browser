@@ -20,8 +20,9 @@ if(empty($deprecated)){
 }
 
 #We get the Tables and Variables information
-$dataTable = getTablesInfo($module,DES_DATAMODEL,$tid);
-
+$RecordSetDataModel = \REDCap::getData(DES_DATAMODEL, 'array', array('record_id' => $tid));
+$dataTable = getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
+$dataformatChoices = $module->getChoiceLabels('data_format', DES_DATAMODEL);
 ?>
 <br/>
 <br/>
@@ -154,12 +155,13 @@ $dataTable = getTablesInfo($module,DES_DATAMODEL,$tid);
                                             '</td>' .
                                             '<td style="width:350px">';
 
-                                        $dataFormat = $dataTable['data_format_label'][$data['data_format'][$id]];
+                                        $dataFormat = $dataformatChoices[$data['data_format'][$id]];
                                         if ($data['has_codes'][$id] != '1') {
                                             echo $dataFormat;
                                         } else if ($data['has_codes'][$id] == '1') {
                                             if(!empty($data['code_list_ref'][$id])){
-                                                $codeformat = getProjectInfoArray(DES_CODELIST,array('record_id' => $data['code_list_ref'][$id]))[0];
+                                                $RecordSetCodeList = \REDCap::getData(DES_CODELIST, 'array', array('record_id' => $data['code_list_ref'][$id]));
+                                                $codeformat = getProjectInfoArrayRepeatingInstruments($RecordSetCodeList)[0];
 
                                                 if ($codeformat['code_format'] == '1') {
                                                     $codeOptions = empty($codeformat['code_list']) ? $data['code_text'][$id] : explode(" | ", $codeformat['code_list']);
