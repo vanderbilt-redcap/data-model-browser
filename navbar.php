@@ -14,7 +14,7 @@ if(array_key_exists('page',$_REQUEST)){
             }
             ?>
             <?php if( array_key_exists('option', $_REQUEST)){
-               echo '<a href="'.$module->getUrl("browser.php?pid=".$_GET['pid']).'" '.$active.' style="padding-top: 40px;">DES Main</a>';
+               echo '<a href="'.$module->getUrl("browser.php?pid=".$_GET['pid']).'" '.$active.' style="padding-top: 40px;">Home</a>';
             }
             if( array_key_exists('option', $_REQUEST) && ($_REQUEST['option'] === 'variables' || $_REQUEST['option'] === 'variableInfo')){
                 $tid = $_REQUEST['tid'];
