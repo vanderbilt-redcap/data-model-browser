@@ -217,7 +217,7 @@ function generateTablesHTML_pdf($module,$dataTable,$draft,$deprecated){
                         $url = $module->getUrl("browser.php?&pid=".DES_PROJECTS.'&tid=' . $data['record_id'] . '&option=variables');
                         $htmlHeader = $breakLine . '<p style="' . $table_draft . '"><span style="font-size:16px"><strong><a href="' . $url . '" name="anchor_' . $data['record_id'] . '" target="_blank" style="text-decoration:none">' . $data["table_name"] . '</a></span> ' . $table_draft_text . '</strong> - ' . $data['table_definition'] . '</p>';
                         if (array_key_exists('text_top', $data) && !empty($data['text_top']) && $data['text_top'] != "") {
-                            $htmlHeader .= '<div  style="border-color: white;font-style: italic">' . $data["text_top"] . '</div>';
+                            $htmlHeader .= '<div  style="border-color: white;font-style: italic">' . htmlspecialchars(mb_convert_encoding($data["text_top"],'UTF-8','HTML-ENTITIES')) . '</div>';
                         }
                         $htmlHeader .= '<table border ="1px" style="border-collapse: collapse;width: 100%;">
                         <tr style="' . $table_draft_tdcolor . '">
@@ -280,7 +280,7 @@ function generateTablesHTML_pdf($module,$dataTable,$draft,$deprecated){
 
                         $description = empty($data["description"][$id]) ? $data["description"][''] : $data["description"][$id];
                         if (!empty($data['description_extra'][$id])) {
-                            $description .= "<br/><i>" . $data['description_extra'][$id] . "</i>";
+                            $description .= "<br/><i>" . mb_convert_encoding($data['description_extra'][$id],'UTF-8','HTML-ENTITIES') . "</i>";
                         }
 
                         $tableHtml .= $dataFormat . '</td><td style="padding: 5px">' . $variable_text . $description . '</td></tr>';
@@ -466,7 +466,9 @@ function generateRequestedTablesList_pdf($dataTable,$draft,$deprecated){
 function createProject0AJSON($module){
     $dataFormat = $module->getChoiceLabels('data_format', DES_DATAMODEL);
 
-    $dataTable = getProjectInfoArray(DES_DATAMODEL);
+    $RecordSetDataModel = \REDCap::getData(DES_DATAMODEL, 'array', null);
+    $dataTable = getProjectInfoArrayRepeatingInstruments($RecordSetDataModel)[0];
+
     foreach ($dataTable as $data) {
         if($data['table_name'] != "") {
             $jsonVarArray['variables'] = array();
@@ -505,7 +507,6 @@ function createProject0AJSON($module){
             $jsonArray[trim($data['table_name'])] = $jsonVarArray;
         }
     }
-
     #we save the new JSON
     if(!empty($jsonArray)){
         $record_id = saveJSONCopy('0a', $jsonArray,$module);
@@ -518,7 +519,8 @@ function createProject0AJSON($module){
  * @return string, the JSON
  */
 function createProject0BJSON($module){
-    $dataTable = getProjectInfoArray(DES_CODELIST);
+    $RecordSetCodeList = \REDCap::getData(DES_CODELIST, 'array', null);
+    $dataTable = getProjectInfoArrayRepeatingInstruments($RecordSetCodeList);
     foreach ($dataTable as $data) {
         $jsonArray[$data['record_id']] = array();
         if ($data['code_format'] == '1') {
@@ -587,7 +589,8 @@ function saveJSONCopy($type, $jsonArray,$module){
  * @return int|string, the version
  */
 function returnJSONCopyVersion($type){
-    $datatype = getProjectInfoArray(DES_JSONCOPY, array("type" => $type));
+    $RecordSetJsonCopy = \REDCap::getData(DES_JSONCOPY, 'array', null,null,null,null,false,false,false,"[type]='".$type."'");
+    $datatype = getProjectInfoArray($RecordSetJsonCopy)[0];
     $lastversion = 0;
     $record_id = 0;
     $data = array();
