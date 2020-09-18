@@ -83,7 +83,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         $dataTable = getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
 
         if(!empty($dataTable)) {
-            $tableHtml = generateTablesHTML_pdf($dataTable,false,false);
+            $tableHtml = generateTablesHTML_pdf($this, $dataTable,false,false);
         }
 
         #FIRST PAGE

@@ -157,10 +157,11 @@ function array_sort_by_column(&$arr, $col, $dir = SORT_ASC) {
  * @param $fieldsSelected, the selected fields
  * @return string, the html content
  */
-function generateTablesHTML_pdf($dataTable,$draft,$deprecated){
+function generateTablesHTML_pdf($module,$dataTable,$draft,$deprecated){
     $tableHtml = "";
     $requested_tables = "<ol>";
     $table_counter = 0;
+    $dataformatChoices = $module->getChoiceLabels('data_format', DES_DATAMODEL);
     foreach ($dataTable as $data) {
         if (!empty($data['record_id'])) {
             $found = false;
@@ -213,7 +214,8 @@ function generateTablesHTML_pdf($dataTable,$draft,$deprecated){
                         }
                         $table_counter++;
 
-                        $htmlHeader = $breakLine . '<p style="' . $table_draft . '"><span style="font-size:16px"><strong><a href="' . APP_PATH_WEBROOT_FULL . '/plugins/des/index.php?tid=' . $data['record_id'] . '&page=variables" name="anchor_' . $data['record_id'] . '" target="_blank" style="text-decoration:none">' . $data["table_name"] . '</a></span> ' . $table_draft_text . '</strong> - ' . $data['table_definition'] . '</p>';
+                        $url = $module->getUrl("browser.php?&pid=".DES_PROJECTS.'&tid=' . $data['record_id'] . '&option=variables');
+                        $htmlHeader = $breakLine . '<p style="' . $table_draft . '"><span style="font-size:16px"><strong><a href="' . $url . '" name="anchor_' . $data['record_id'] . '" target="_blank" style="text-decoration:none">' . $data["table_name"] . '</a></span> ' . $table_draft_text . '</strong> - ' . $data['table_definition'] . '</p>';
                         if (array_key_exists('text_top', $data) && !empty($data['text_top']) && $data['text_top'] != "") {
                             $htmlHeader .= '<div  style="border-color: white;font-style: italic">' . $data["text_top"] . '</div>';
                         }
@@ -241,19 +243,18 @@ function generateTablesHTML_pdf($dataTable,$draft,$deprecated){
                         }
 
                         #We add the Content rows
+                        $url = $module->getUrl("browser.php?&pid=".DES_PROJECTS.'&tid=' . $data['record_id'] . '&vid=' . $id . '&option=variableInfo');
                         $tableHtml .= '<tr record_id="' . $record_varname_id . '" ' . $variable_status . '>
-                                <td style="padding: 5px"><a href="' . APP_PATH_WEBROOT_FULL . '/plugins/des/index.php?tid=' . $data['record_id'] . '&vid=' . $id . '&page=variableInfo" target="_blank" style="text-decoration:none">' . $record_varname . '</a></td>
+                                <td style="padding: 5px"><a href="' .$url .'" target="_blank" style="text-decoration:none">' . $record_varname . '</a></td>
                                 <td style="width:160px;padding: 5px">';
 
-                        $dataFormat = $dataTable['data_format_label'][$data['data_format'][$id]];
-                        if ($data['has_codes'][$id] == '0') {
-                            if (!empty($data['code_text'][$id])) {
-                                $dataFormat .= "<br/>" . $data['code_text'][$id];
-                            }
+                        $dataFormat = $dataformatChoices[$data['data_format'][$id]];
+                        if ($data['has_codes'][$id] != '1') {
+                            echo $dataFormat;
                         } else if ($data['has_codes'][$id] == '1') {
                             if (!empty($data['code_list_ref'][$id])) {
-                                $codeformat = getProjectInfoArray(DES_CODELIST, array('record_id' => $data['code_list_ref'][$id]))[0];
-
+                                $RecordSetCodeList = \REDCap::getData(DES_CODELIST, 'array', array('record_id' => $data['code_list_ref'][$id]));
+                                $codeformat = getProjectInfoArrayRepeatingInstruments($RecordSetCodeList)[0];
                                 if ($codeformat['code_format'] == '1') {
                                     $codeOptions = empty($codeformat['code_list']) ? $data['code_text'][$id] : explode(" | ", $codeformat['code_list']);
                                     if (!empty($codeOptions[0])) {
