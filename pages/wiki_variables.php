@@ -124,7 +124,8 @@ $dataformatChoices = $module->getChoiceLabels('data_format', DES_DATAMODEL);
 
                                                 if($data['variable_replacedby'][$id] != ""){
                                                     $variable_replacedby = explode("|",$data['variable_replacedby'][$id]);
-                                                    $table = getProjectInfoArray(DES_DATAMODEL,array('record_id' => $variable_replacedby[0]))[0];
+                                                    $RecordSetTable= \REDCap::getData(DES_DATAMODEL, 'array', array('record_id' => $variable_replacedby[0]));
+                                                    $table = getProjectInfoArrayRepeatingInstruments($RecordSetTable)[0];
                                                     $table_name = $table['table_name'];
                                                     $var_name = $table['variable_name'][$variable_replacedby[1]];
 
