@@ -280,7 +280,7 @@ function generateTablesHTML_pdf($module,$dataTable,$draft,$deprecated){
 
                         $description = empty($data["description"][$id]) ? $data["description"][''] : $data["description"][$id];
                         if (!empty($data['description_extra'][$id])) {
-                            $description .= "<br/><i>" . htmlspecialchars(($data['description_extra'][$id]) . "</i>";
+                            $description .= "<br/><i>" . htmlspecialchars($data['description_extra'][$id]) . "</i>";
                         }
 
                         $tableHtml .= $dataFormat . '</td><td style="padding: 5px">' . $variable_text . $description . '</td></tr>';
