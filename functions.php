@@ -217,7 +217,7 @@ function generateTablesHTML_pdf($module,$dataTable,$draft,$deprecated){
                         $url = $module->getUrl("browser.php?&pid=".DES_PROJECTS.'&tid=' . $data['record_id'] . '&option=variables');
                         $htmlHeader = $breakLine . '<p style="' . $table_draft . '"><span style="font-size:16px"><strong><a href="' . $url . '" name="anchor_' . $data['record_id'] . '" target="_blank" style="text-decoration:none">' . $data["table_name"] . '</a></span> ' . $table_draft_text . '</strong> - ' . $data['table_definition'] . '</p>';
                         if (array_key_exists('text_top', $data) && !empty($data['text_top']) && $data['text_top'] != "") {
-                            $htmlHeader .= '<div  style="border-color: white;font-style: italic">' . htmlspecialchars(mb_convert_encoding($data["text_top"],'UTF-8','HTML-ENTITIES')) . '</div>';
+                            $htmlHeader .= '<div  style="border-color: white;font-style: italic">' . htmlspecialchars($data["text_top"]) . '</div>';
                         }
                         $htmlHeader .= '<table border ="1px" style="border-collapse: collapse;width: 100%;">
                         <tr style="' . $table_draft_tdcolor . '">
@@ -280,7 +280,7 @@ function generateTablesHTML_pdf($module,$dataTable,$draft,$deprecated){
 
                         $description = empty($data["description"][$id]) ? $data["description"][''] : $data["description"][$id];
                         if (!empty($data['description_extra'][$id])) {
-                            $description .= "<br/><i>" . mb_convert_encoding($data['description_extra'][$id],'UTF-8','HTML-ENTITIES') . "</i>";
+                            $description .= "<br/><i>" . htmlspecialchars(($data['description_extra'][$id]) . "</i>";
                         }
 
                         $tableHtml .= $dataFormat . '</td><td style="padding: 5px">' . $variable_text . $description . '</td></tr>';
