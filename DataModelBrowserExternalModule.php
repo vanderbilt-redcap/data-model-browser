@@ -29,7 +29,6 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     function createpdf(){
         $sql="SELECT s.project_id FROM redcap_external_modules m, redcap_external_module_settings s WHERE m.external_module_id = s.external_module_id AND s.value = 'true' AND (m.directory_prefix = 'data-model-browser') AND s.`key` = 'enabled'";
         $q = $this->query($sql);
-
         while($row = db_fetch_assoc($q)) {
             $project_id = $row['project_id'];
             error_log("createpdf - project_id:" . $project_id);
@@ -56,7 +55,8 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         }
         $rowtype = $qtype->fetch_assoc();
 
-        $jsoncocpy = getProjectInfoArray(DES_JSONCOPY,array('record_id' => $rowtype['record']))[0];
+        $RecordSetJsonCopy = \REDCap::getData(DES_JSONCOPY, 'array', array('record_id' => $rowtype['record']));
+        $jsoncocpy = getProjectInfoArray($RecordSetJsonCopy)[0];
         $today = date("Y-m-d");
         if($jsoncocpy["jsoncopy_file"] != "" && strtotime(date("Y-m-d",strtotime($jsoncocpy['json_copy_update_d']))) == strtotime($today)){
             return true;
@@ -100,9 +100,9 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
         $page_num = '<style>.footer .page-number:after { content: counter(page); } .footer { position: fixed; bottom: 0px;color:grey }a{text-decoration: none;}</style>';
 
-        $img = getFile($this, $settings['des_logo'],'pdf');
+        $img = getFile($this, $settings['des_pdf_logo'],'pdf');
 
-        $html_pdf = "<html><body style='font-family:\"Calibri\";font-size:10pt;'>".$page_num
+        $html_pdf = "<html><head><meta http-equiv='Content-Type' content='text/html' charset='UTF-8' /><style>* { font-family: DejaVu Sans, sans-serif; }</style></head><body style='font-family:\"Calibri\";font-size:10pt;'>".$page_num
             ."<div class='footer' style='left: 590px;'><span class='page-number'>Page </span></div>"
             ."<div class='mainPDF'><table style='width: 100%;'><tr><td align='center'><img src='".$img."' style='width:200px;padding-bottom: 30px;'></td></tr></table></div>"
             ."<div class='mainPDF' id='page_html_style'><table style='width: 100%;'>".$first_page."<div style='page-break-before: always;'></div>"
@@ -119,7 +119,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
         //DOMPDF
         $dompdf = new \Dompdf\Dompdf();
-        $dompdf->loadHtml($html_pdf);
+        $dompdf->loadHtml($html_pdf,'UTF-8');
         $dompdf->setPaper('A4', 'portrait');
         ob_start();
         $dompdf->render();
@@ -251,8 +251,8 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             $result_prev = "";
             $record = $array_data['record_id'];
         }
-        if(!empty($record)){
 
+        if(!empty($record)){
             $environment = "";
             if(ENVIRONMENT == 'DEV' || ENVIRONMENT == 'TEST'){
                 $environment = " ".ENVIRONMENT;
@@ -278,7 +278,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 }
             }
         }
-
+        return null;
     }
 
     function loadImg($imgEdoc,$default,$option=""){
