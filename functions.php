@@ -355,8 +355,8 @@ function getHtmlTableCodesTableArrayExcel($module,$dataTable){
                                 $codeOptions = empty($codeformat['code_list']) ? $data['code_text'][$id] : explode(" | ", $codeformat['code_list']);
                                 foreach ($codeOptions as $option) {
                                     $var_codes = preg_split("/((?<!['\"])=(?!['\"]))/", $option);
-                                    $data_code_array[2] = trim($var_codes[0]);
-                                    $data_code_array[3] = trim($var_codes[1]);
+                                    $data_code_array[2] = htmlentities(trim($var_codes[0]));
+                                    $data_code_array[3] = htmlentities(trim($var_codes[1]));
                                     array_push($data_array, $data_code_array);
                                 }
                             } else {
@@ -371,8 +371,8 @@ function getHtmlTableCodesTableArrayExcel($module,$dataTable){
                             }
                         }
                     } else if (!empty($data['code_text'][$id])) {
-                        $data_code_array[2] = $dataFormat[$data['data_format'][$id]];
-                        $data_code_array[3] = $description;
+                        $data_code_array[2] = htmlentities($dataFormat[$data['data_format'][$id]]);
+                        $data_code_array[3] = htmlentities($description);
                         array_push($data_array, $data_code_array);
                     }
                 }
