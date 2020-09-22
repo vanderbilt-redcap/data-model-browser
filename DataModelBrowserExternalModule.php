@@ -37,16 +37,15 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 include_once("functions.php");
                 $settings = \REDCap::getData(array('project_id' => DES_SETTINGS), 'array')[1][$this->framework->getEventId(DES_SETTINGS)];
 
-                if(date('Y-m-d',strtotime($settings['des_update_d'])) != date('Y-m-d') || $settings['des_update_d'] == "" || !array_key_exists('des_update_d',$settings)) {
-                    $hasJsoncopyBeenUpdated0a = $this->hasJsoncopyBeenUpdated('0a', $settings);
-                    $hasJsoncopyBeenUpdated0b = $this->hasJsoncopyBeenUpdated('0b', $settings);
-                    if ($hasJsoncopyBeenUpdated0a || $hasJsoncopyBeenUpdated0b) {
-                        $this->createAndSavePDFCron($settings);
-                        $this->createAndSaveJSONCron();
-                    } else {
-                        $this->checkIfJsonOrPDFBlank($settings);
-                    }
+                $hasJsoncopyBeenUpdated0a = $this->hasJsoncopyBeenUpdated('0a', $settings);
+                $hasJsoncopyBeenUpdated0b = $this->hasJsoncopyBeenUpdated('0b', $settings);
+                if ($hasJsoncopyBeenUpdated0a || $hasJsoncopyBeenUpdated0b) {
+                    $this->createAndSavePDFCron($settings);
+                    $this->createAndSaveJSONCron();
+                } else {
+                    $this->checkIfJsonOrPDFBlank($settings);
                 }
+
             }
         }
     }
