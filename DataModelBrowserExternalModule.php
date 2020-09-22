@@ -29,64 +29,111 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     function createpdf(){
         $sql="SELECT s.project_id FROM redcap_external_modules m, redcap_external_module_settings s WHERE m.external_module_id = s.external_module_id AND s.value = 'true' AND (m.directory_prefix = 'data-model-browser') AND s.`key` = 'enabled'";
         $q = $this->query($sql);
+        include_once("functions.php");
+        $originalPid = $_GET['pid'];
         while($row = db_fetch_assoc($q)) {
             $project_id = $row['project_id'];
             if($project_id != "") {
+                $_GET['pid'] = $project_id;
                 error_log("createpdf - project_id:" . $project_id);
-                include_once("projects.php");
-                include_once("functions.php");
-                $settings = \REDCap::getData(array('project_id' => DES_SETTINGS), 'array')[1][$this->framework->getEventId(DES_SETTINGS)];
 
-                $hasJsoncopyBeenUpdated0a = $this->hasJsoncopyBeenUpdated('0a', $settings);
-                $hasJsoncopyBeenUpdated0b = $this->hasJsoncopyBeenUpdated('0b', $settings);
+                $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
+                $settingsPID = getProjectInfoArray($RecordSetConstants)[0]['project_id'];
+                $settings = \REDCap::getData(array('project_id' => $settingsPID), 'array')[1][$this->framework->getEventId($settingsPID)];
+
+                $hasJsoncopyBeenUpdated0a = $this->hasJsoncopyBeenUpdated('0a', $settings, $project_id);
+                $hasJsoncopyBeenUpdated0b = $this->hasJsoncopyBeenUpdated('0b', $settings, $project_id);
                 if ($hasJsoncopyBeenUpdated0a || $hasJsoncopyBeenUpdated0b) {
-                    $this->createAndSavePDFCron($settings);
-                    $this->createAndSaveJSONCron();
+                    $this->createAndSavePDFCron($settings, $project_id);
+                    $this->createAndSaveJSONCron($project_id);
                 } else {
-                    $this->checkIfJsonOrPDFBlank($settings);
+                    error_log("createpdf - checkIfJsonOrPDFBlank");
+                    $this->checkIfJsonOrPDFBlank($settings, $project_id);
                 }
 
             }
         }
+        $_GET['pid'] = $originalPid;
     }
 
-    function hasJsoncopyBeenUpdated($type,$settings){
+    function regeneratepdf(){
+        $sql="SELECT s.project_id FROM redcap_external_modules m, redcap_external_module_settings s WHERE m.external_module_id = s.external_module_id AND s.value = 'true' AND (m.directory_prefix = 'data-model-browser') AND s.`key` = 'enabled'";
+        $q = $this->query($sql);
+
+        include_once("functions.php");
+        $originalPid = $_GET['pid'];
+        while($row = db_fetch_assoc($q)) {
+            $project_id = $row['project_id'];
+            if($project_id != "") {
+                $_GET['pid'] = $project_id;
+                error_log("Generate PDF - project_id:" . $project_id);
+
+                $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
+                $settingsPID = getProjectInfoArray($RecordSetConstants)[0]['project_id'];
+                $settings = \REDCap::getData(array('project_id' => $settingsPID), 'array')[1][$this->framework->getEventId($settingsPID)];
+
+                if($settings['des_pdf_regenerate'][1] == '1'){
+                    $this->createAndSavePDFCron($settings, $project_id);
+
+                    #Uncheck variable
+                    $Proj = new \Project($settingsPID);
+                    $event_id = $Proj->firstEventId;
+                    $arrayRM = array();
+                    $arrayRM[1][$event_id]['des_pdf_regenerate'] = array(1=>"");//checkbox
+                    $results = \Records::saveData($settingsPID, 'array', $arrayRM,'overwrite', 'YMD', 'flat', '', true, true, true, false, true, array(), true, false);
+                    \Records::addRecordToRecordListCache($settingsPID, 1, $event_id);
+                }
+            }
+        }
+        $_GET['pid'] = $originalPid;
+    }
+
+    function hasJsoncopyBeenUpdated($type,$settings, $project_id){
+        $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='JSONCOPY'");
+        $jsoncopyPID = getProjectInfoArray($RecordSetConstants)[0]['project_id'];
         if(ENVIRONMENT == "DEV"){
-            $qtype = $this->query("SELECT MAX(record) as record FROM redcap_data WHERE project_id=? AND field_name=? and value=? order by record",[DES_JSONCOPY,'type',$type]);
+            $qtype = $this->query("SELECT MAX(record) as record FROM redcap_data WHERE project_id=? AND field_name=? and value=? order by record",[$jsoncopyPID,'type',$type]);
         }else{
-            $qtype = $this->query("SELECT MAX(CAST(record AS Int)) as record FROM redcap_data WHERE project_id=? AND field_name=? and value=? order by record",[DES_JSONCOPY,'type',$type]);
+            $qtype = $this->query("SELECT MAX(CAST(record AS Int)) as record FROM redcap_data WHERE project_id=? AND field_name=? and value=? order by record",[$jsoncopyPID,'type',$type]);
         }
         $rowtype = $qtype->fetch_assoc();
 
-        $RecordSetJsonCopy = \REDCap::getData(DES_JSONCOPY, 'array', array('record_id' => $rowtype['record']));
+        $RecordSetJsonCopy = \REDCap::getData($jsoncopyPID, 'array', array('record_id' => $rowtype['record']));
         $jsoncocpy = getProjectInfoArray($RecordSetJsonCopy)[0];
         $today = date("Y-m-d");
         if($jsoncocpy["jsoncopy_file"] != "" && strtotime(date("Y-m-d",strtotime($jsoncocpy['json_copy_update_d']))) == strtotime($today)){
             return true;
         }else if(empty($jsoncocpy) || strtotime(date("Y-m-d",strtotime($jsoncocpy['json_copy_update_d']))) == "" || !array_key_exists('json_copy_update_d',$jsoncocpy) || !array_key_exists('des_pdf',$settings) || $settings['des_pdf'] == ""){
             error_log("createpdf - checkAndUpdatJSONCopyProject");
-            $this->checkAndUpdatJSONCopyProject($type,$rowtype['record'],$jsoncocpy,$settings);
+            $this->checkAndUpdatJSONCopyProject($type, $rowtype['record'], $jsoncocpy, $settings, $project_id);
             return true;
         }
         return false;
     }
 
-    function checkIfJsonOrPDFBlank($settings){
+    function checkIfJsonOrPDFBlank($settings, $project_id){
         if($settings['des_pdf'] == "" || !array_key_exists('des_pdf',$settings)){
-            $this->createAndSavePDFCron($settings);
+            $this->createAndSavePDFCron($settings ,$project_id);
         }
         if($settings['des_variable_search'] == "" || !array_key_exists('des_variable_search',$settings)){
-            $this->createAndSaveJSONCron();
+            $this->createAndSaveJSONCron($project_id);
         }
     }
 
-    function createAndSavePDFCron($settings){
-        error_log("createpdf - createAndSavePDFCron");
-        $RecordSetDataModel = \REDCap::getData(DES_DATAMODEL, 'array');
+    function createAndSavePDFCron($settings, $project_id){
+        error_log("cron - createAndSavePDFCron");
+
+        $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='DATAMODEL'");
+        $dataModelPID = getProjectInfoArray($RecordSetConstants)[0]['project_id'];
+
+        $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
+        $settingsPID = getProjectInfoArray($RecordSetConstants)[0]['project_id'];
+
+        $RecordSetDataModel = \REDCap::getData($dataModelPID, 'array');
         $dataTable = getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
 
         if(!empty($dataTable)) {
-            $tableHtml = generateTablesHTML_pdf($this, $dataTable,false,false);
+            $tableHtml = generateTablesHTML_pdf($this, $dataTable,false,false, $project_id, $dataModelPID);
         }
 
         #FIRST PAGE
@@ -132,21 +179,21 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
         #Save document on DB
         $q = $this->query("INSERT INTO redcap_edocs_metadata (stored_name,mime_type,doc_name,doc_size,file_extension,gzipped,project_id,stored_date) VALUES(?,?,?,?,?,?,?,?)",
-            [$storedName,'application/octet-stream',$reportHash.".pdf",$filesize,'.pdf','0',DES_SETTINGS,date('Y-m-d h:i:s')]);
+            [$storedName,'application/octet-stream',$reportHash.".pdf",$filesize,'.pdf','0',$settingsPID,date('Y-m-d h:i:s')]);
         $docId = db_insert_id();
 
         #Add document DB ID to project
-        $Proj = new \Project(DES_SETTINGS);
+        $Proj = new \Project($settingsPID);
         $event_id = $Proj->firstEventId;
         $json = json_encode(array(array('record_id' => 1, 'des_update_d' => date("Y-m-d H:i:s"),'des_pdf'=>$docId)));
-        $results = \Records::saveData(DES_SETTINGS, 'json', $json,'normal', 'YMD', 'flat', '', true, true, true, false, true, array(), true, false);
-        \Records::addRecordToRecordListCache(DES_SETTINGS, 1,$event_id);
+        $results = \Records::saveData($settingsPID, 'json', $json,'normal', 'YMD', 'flat', '', true, true, true, false, true, array(), true, false);
+        \Records::addRecordToRecordListCache($settingsPID, 1,$event_id);
 
         if($settings['des_pdf_notification_email'] != "") {
             $link = $this->getUrl("downloadFile.php?sname=".$storedName."&file=". $filename.".pdf");
-            $goto = APP_PATH_WEBROOT_ALL . "DataEntry/index.php?pid=".DES_SETTINGS."&page=pdf&id=1";
+            $goto = APP_PATH_WEBROOT_ALL . "DataEntry/index.php?pid=".$settingsPID."&page=pdf&id=1";
 
-            $q = $this->query("select app_title from redcap_projects where project_id = ? limit 1",[DES_SETTINGS]);
+            $q = $this->query("select app_title from redcap_projects where project_id = ? limit 1",[$settingsPID]);
             $row = $q->fetch_assoc();
             $project_title = $row['app_title'];
 
@@ -170,11 +217,14 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         }
     }
 
-    function createAndSaveJSONCron(){
+    function createAndSaveJSONCron($project_id){
         error_log("createpdf - createAndSaveJSONCron");
-        $RecordSetDataModel = \REDCap::getData(DES_DATAMODEL, 'array');
+        $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='DATAMODEL'");
+        $dataModelPID = getProjectInfoArray($RecordSetConstants)[0]['project_id'];
+
+        $RecordSetDataModel = \REDCap::getData($dataModelPID, 'array');
         $dataTable = getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
-        $dataFormat = $this->getChoiceLabels('data_format', DES_DATAMODEL);
+        $dataFormat = $this->getChoiceLabels('data_format', $dataModelPID);
 
         foreach ($dataTable as $data) {
             $jsonVarArrayAux = array();
@@ -203,15 +253,18 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         }
         #we save the new JSON
         if(!empty($jsonArray)){
-            $this->saveJSONCopyVarSearch($jsonArray);
+            $this->saveJSONCopyVarSearch($jsonArray, $project_id);
         }
     }
 
-    function saveJSONCopyVarSearch($jsonArray){
+    function saveJSONCopyVarSearch($jsonArray, $project_id){
         error_log("createpdf - saveJSONCopyVarSearch");
+        $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='DATAMODEL'");
+        $settingsPID = getProjectInfoArray($RecordSetConstants)[0]['project_id'];
+
         #create and save file with json
         $filename = "jsoncopy_file_variable_search_".date("YmdsH").".txt";
-        $storedName = date("YmdsH")."_pid".DES_SETTINGS."_".getRandomIdentifier(6).".txt";
+        $storedName = date("YmdsH")."_pid".$settingsPID."_".getRandomIdentifier(6).".txt";
 
         $file = fopen(EDOC_PATH.$storedName,"wb");
         fwrite($file,json_encode($jsonArray,JSON_FORCE_OBJECT));
@@ -222,34 +275,35 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
         //Save document on DB
         $q = $this->query("INSERT INTO redcap_edocs_metadata (stored_name,doc_name,doc_size,file_extension,mime_type,gzipped,project_id,stored_date) VALUES(?,?,?,?,?,?,?,?)",
-            [$storedName,$filename,$filesize,'txt','application/octet-stream','0',DES_SETTINGS,date('Y-m-d h:i:s')]);
+            [$storedName,$filename,$filesize,'txt','application/octet-stream','0',$settingsPID,date('Y-m-d h:i:s')]);
         $docId = db_insert_id();
 
         //Add document DB ID to project
-        $Proj = new \Project(DES_SETTINGS);
+        $Proj = new \Project($settingsPID);
         $event_id = $Proj->firstEventId;
         $json = json_encode(array(array('record_id' => 1, 'des_variable_search' => $docId)));
-        $results = \Records::saveData(DES_SETTINGS, 'json', $json,'normal', 'YMD', 'flat', '', true, true, true, false, true, array(), true, false);
-        \Records::addRecordToRecordListCache(DES_SETTINGS, 1,$event_id);
+        $results = \Records::saveData($settingsPID, 'json', $json,'normal', 'YMD', 'flat', '', true, true, true, false, true, array(), true, false);
+        \Records::addRecordToRecordListCache($settingsPID, 1,$event_id);
     }
 
-    function checkAndUpdatJSONCopyProject($type,$last_record,$jsoncocpy,$settings){
+    function checkAndUpdatJSONCopyProject($type, $last_record, $jsoncocpy, $settings, $project_id){
+        $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='JSONCOPY'");
+        $jsoncopyPID = getProjectInfoArray($RecordSetConstants)[0]['project_id'];
+
         if($jsoncocpy["jsoncopy_file"] != ""){
             $q = $this->query("SELECT stored_name,doc_name,doc_size,mime_type FROM redcap_edocs_metadata WHERE doc_id=?",[$jsoncocpy["jsoncopy_file"]]);
-
             while ($row = $q->fetch_assoc()) {
                 $path = EDOC_PATH.$row['stored_name'];
                 $strJsonFileContents = file_get_contents($path);
                 $last_array = json_decode($strJsonFileContents, true);
-                $array_data = call_user_func_array("createProject".strtoupper($type)."JSON",array($this));
+                $array_data = call_user_func_array("createProject".strtoupper($type)."JSON",array($this, $project_id));
                 $new_array = json_decode($array_data['jsonArray'],true);
-
                 $result_prev = array_filter_empty(multi_array_diff($last_array,$new_array));
                 $result = array_filter_empty(multi_array_diff($new_array,$last_array));
                 $record = $array_data['record_id'];
             }
         }else{
-            $array_data = call_user_func_array("createProject".strtoupper($type)."JSON",array($this));
+            $array_data = call_user_func_array("createProject".strtoupper($type)."JSON",array($this, $project_id));
             $result = json_decode($array_data['jsonArray'],true);
             $result_prev = "";
             $record = $array_data['record_id'];
@@ -266,7 +320,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 $sender = "noreply@vumc.org";
             }
 
-            $link = APP_PATH_WEBROOT_ALL . "DataEntry/record_home.php?pid=" . DES_JSONCOPY . "&arm=1&id=" . $record;
+            $link = APP_PATH_WEBROOT_ALL . "DataEntry/record_home.php?pid=" . $jsoncopyPID . "&arm=1&id=" . $record;
             $subject = "Changes in the DES ".strtoupper($type)." detected ";
             $message = "<div>The following changes have been detected in the DES ".strtoupper($type)." and a new record #".$record." has been created:</div><br/>".
                 "<div>Last record:". $last_record."</div><br/>".

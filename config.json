@@ -80,6 +80,13 @@
 			"method": "createpdf",
 			"cron_hour": "23",
 			"cron_minute": "50"
+		},
+		{
+			"cron_name": "regeneratepdf",
+			"cron_description": "Cron that regenerates the PDF if the checkbox has been selected",
+			"method": "regeneratepdf",
+			"cron_frequency": "60",
+			"cron_max_run_time": "60"
 		}
 	],
 	"compatibility": {

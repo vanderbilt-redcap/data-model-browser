@@ -14,6 +14,7 @@ function getCrypt($string, $action = 'e',$secret_key="",$secret_iv="" ) {
 
     return $output;
 }
+
 function printFile($module,$edoc, $type){
     $file = "#";
     if($edoc != ""){
@@ -157,11 +158,13 @@ function array_sort_by_column(&$arr, $col, $dir = SORT_ASC) {
  * @param $fieldsSelected, the selected fields
  * @return string, the html content
  */
-function generateTablesHTML_pdf($module,$dataTable,$draft,$deprecated){
+function generateTablesHTML_pdf($module,$dataTable,$draft,$deprecated, $project_id, $dataModelPID){
     $tableHtml = "";
     $requested_tables = "<ol>";
     $table_counter = 0;
-    $dataformatChoices = $module->getChoiceLabels('data_format', DES_DATAMODEL);
+    $dataformatChoices = $module->getChoiceLabels('data_format', $dataModelPID);
+    $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='CODELIST'");
+    $codeListPID = getProjectInfoArray($RecordSetConstants)[0]['project_id'];
     foreach ($dataTable as $data) {
         if (!empty($data['record_id'])) {
             $found = false;
@@ -214,7 +217,7 @@ function generateTablesHTML_pdf($module,$dataTable,$draft,$deprecated){
                         }
                         $table_counter++;
 
-                        $url = $module->getUrl("browser.php?&pid=".DES_PROJECTS.'&tid=' . $data['record_id'] . '&option=variables');
+                        $url = $module->getUrl("browser.php?&pid=".$project_id.'&tid=' . $data['record_id'] . '&option=variables');
                         $htmlHeader = $breakLine . '<p style="' . $table_draft . '"><span style="font-size:16px"><strong><a href="' . $url . '" name="anchor_' . $data['record_id'] . '" target="_blank" style="text-decoration:none">' . $data["table_name"] . '</a></span> ' . $table_draft_text . '</strong> - ' . $data['table_definition'] . '</p>';
                         if (array_key_exists('text_top', $data) && !empty($data['text_top']) && $data['text_top'] != "") {
                             $htmlHeader .= '<div  style="border-color: white;font-style: italic">' . htmlspecialchars($data["text_top"]) . '</div>';
@@ -243,7 +246,7 @@ function generateTablesHTML_pdf($module,$dataTable,$draft,$deprecated){
                         }
 
                         #We add the Content rows
-                        $url = $module->getUrl("browser.php?&pid=".DES_PROJECTS.'&tid=' . $data['record_id'] . '&vid=' . $id . '&option=variableInfo');
+                        $url = $module->getUrl("browser.php?&pid=".$project_id.'&tid=' . $data['record_id'] . '&vid=' . $id . '&option=variableInfo');
                         $tableHtml .= '<tr record_id="' . $record_varname_id . '" ' . $variable_status . '>
                                 <td style="padding: 5px"><a href="' .$url .'" target="_blank" style="text-decoration:none">' . $record_varname . '</a></td>
                                 <td style="width:160px;padding: 5px">';
@@ -253,7 +256,7 @@ function generateTablesHTML_pdf($module,$dataTable,$draft,$deprecated){
                             #do nothing
                         } else if ($data['has_codes'][$id] == '1') {
                             if (!empty($data['code_list_ref'][$id])) {
-                                $RecordSetCodeList = \REDCap::getData(DES_CODELIST, 'array', array('record_id' => $data['code_list_ref'][$id]));
+                                $RecordSetCodeList = \REDCap::getData($codeListPID, 'array', array('record_id' => $data['code_list_ref'][$id]));
                                 $codeformat = getProjectInfoArrayRepeatingInstruments($RecordSetCodeList)[0];
                                 if ($codeformat['code_format'] == '1') {
                                     $codeOptions = empty($codeformat['code_list']) ? $data['code_text'][$id] : explode(" | ", $codeformat['code_list']);
@@ -463,10 +466,13 @@ function generateRequestedTablesList_pdf($dataTable,$draft,$deprecated){
  * Function that creates a JSON copy of the Harmonist 0A: Data Model
  * @return string , the JSON
  */
-function createProject0AJSON($module){
-    $dataFormat = $module->getChoiceLabels('data_format', DES_DATAMODEL);
+function createProject0AJSON($module, $project_id){
+    $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='DATAMODEL'");
+    $dataModelPID = getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
-    $RecordSetDataModel = \REDCap::getData(DES_DATAMODEL, 'array', null);
+    $dataFormat = $module->getChoiceLabels('data_format', $dataModelPID);
+
+    $RecordSetDataModel = \REDCap::getData($dataModelPID, 'array', null);
     $dataTable = getProjectInfoArrayRepeatingInstruments($RecordSetDataModel)[0];
 
     foreach ($dataTable as $data) {
@@ -509,7 +515,7 @@ function createProject0AJSON($module){
     }
     #we save the new JSON
     if(!empty($jsonArray)){
-        $record_id = saveJSONCopy('0a', $jsonArray,$module);
+        $record_id = saveJSONCopy('0a', $jsonArray, $module, $project_id);
     }
 
     return array('jsonArray' => json_encode($jsonArray,JSON_FORCE_OBJECT),'record_id' =>$record_id);
@@ -518,8 +524,11 @@ function createProject0AJSON($module){
  * Function that creates a JSON copy of the Harmonist 0A: Data Model
  * @return string, the JSON
  */
-function createProject0BJSON($module){
-    $RecordSetCodeList = \REDCap::getData(DES_CODELIST, 'array', null);
+function createProject0BJSON($module, $project_id){
+    $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='CODELIST'");
+    $codeListPID = getProjectInfoArray($RecordSetConstants)[0]['project_id'];
+
+    $RecordSetCodeList = \REDCap::getData($codeListPID, 'array', null);
     $dataTable = getProjectInfoArrayRepeatingInstruments($RecordSetCodeList);
     foreach ($dataTable as $data) {
         $jsonArray[$data['record_id']] = array();
@@ -547,15 +556,17 @@ function createProject0BJSON($module){
 
     #we save the new JSON
     if(!empty($jsonArray)){
-        $record_id = saveJSONCopy('0b', $jsonArray,$module);
+        $record_id = saveJSONCopy('0b', $jsonArray, $module, $project_id);
     }
 
     return array('jsonArray' => json_encode($jsonArray,JSON_FORCE_OBJECT),'record_id' =>$record_id);
 }
-function saveJSONCopy($type, $jsonArray,$module){
+function saveJSONCopy($type, $jsonArray, $module, $project_id){
+    $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='JSONCOPY'");
+    $jsoncopyPID = getProjectInfoArray($RecordSetConstants)[0]['project_id'];
     #create and save file with json
     $filename = "jsoncopy_file_".$type."_".date("YmdsH").".txt";
-    $storedName = date("YmdsH")."_pid".DES_JSONCOPY."_".getRandomIdentifier(6).".txt";
+    $storedName = date("YmdsH")."_pid".$jsoncopyPID."_".getRandomIdentifier(6).".txt";
 
     $file = fopen(EDOC_PATH.$storedName,"wb");
     fwrite($file,json_encode($jsonArray,JSON_FORCE_OBJECT));
@@ -566,20 +577,19 @@ function saveJSONCopy($type, $jsonArray,$module){
 
     //Save document on DB
     $q = $module->query("INSERT INTO redcap_edocs_metadata (stored_name,doc_name,doc_size,file_extension,mime_type,gzipped,project_id,stored_date) VALUES(?,?,?,?,?,?,?,?)",
-        [$storedName,$filename,$filesize,'txt','application/octet-stream','0',DES_JSONCOPY,date('Y-m-d h:i:s')]);
+        [$storedName,$filename,$filesize,'txt','application/octet-stream','0',$jsoncopyPID,date('Y-m-d h:i:s')]);
     $docId = db_insert_id();
 
     #we check the version
-    $data = returnJSONCopyVersion($type);
+    $data = returnJSONCopyVersion($type, $jsoncopyPID);
     $lastversion = $data['lastversion'] + 1;
-
     #save the project
-    $Proj = new \Project(DES_JSONCOPY);
+    $Proj = new \Project($jsoncopyPID);
     $event_id = $Proj->firstEventId;
-    $record_id = $module->framework->addAutoNumberedRecord(DES_JSONCOPY);
+    $record_id = $module->framework->addAutoNumberedRecord($jsoncopyPID);
     $json = json_encode(array(array('record_id'=>$record_id,'jsoncopy' => json_encode($jsonArray,JSON_FORCE_OBJECT),'type'=>$type,'jsoncopy_file'=>$docId,'json_copy_update_d'=>date("Y-m-d H:i:s"),"version" => $lastversion)));
-    $results = \REDCap::saveData(DES_JSONCOPY, 'json', $json,'normal', 'YMD', 'flat', '', true, true, true, false, true, array(), true, false);
-    \Records::addRecordToRecordListCache(DES_JSONCOPY, $record_id,$event_id);
+    $results = \REDCap::saveData($jsoncopyPID, 'json', $json,'normal', 'YMD', 'flat', '', true, true, true, false, true, array(), true, false);
+    \Records::addRecordToRecordListCache($jsoncopyPID, $record_id,$event_id);
 
     return $record_id;
 }
@@ -588,8 +598,8 @@ function saveJSONCopy($type, $jsonArray,$module){
  * @param $type, the project type
  * @return int|string, the version
  */
-function returnJSONCopyVersion($type){
-    $RecordSetJsonCopy = \REDCap::getData(DES_JSONCOPY, 'array', null,null,null,null,false,false,false,"[type]='".$type."'");
+function returnJSONCopyVersion($type, $jsoncopyID){
+    $RecordSetJsonCopy = \REDCap::getData($jsoncopyID, 'array', null,null,null,null,false,false,false,"[type]='".$type."'");
     $datatype = getProjectInfoArray($RecordSetJsonCopy)[0];
     $lastversion = 0;
     $record_id = 0;
