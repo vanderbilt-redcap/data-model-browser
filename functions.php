@@ -281,7 +281,8 @@ function generateTablesHTML_pdf($module,$dataTable,$draft,$deprecated, $project_
                             }
                         }
 
-                        $description = empty($data["description"][$id]) ? $data["description"][''] : $data["description"][$id];
+                        $description = htmlspecialchars(empty($data["description"][$id]) ? $data["description"][''] : $data["description"][$id]);
+                        print_array($description);
                         if (!empty($data['description_extra'][$id])) {
                             $description .= "<br/><i>" . htmlspecialchars($data['description_extra'][$id]) . "</i>";
                         }

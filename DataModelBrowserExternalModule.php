@@ -190,16 +190,16 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         $filesize = file_put_contents(EDOC_PATH.$storedName, $output);
 
         #Save document on DB
-//        $q = $this->query("INSERT INTO redcap_edocs_metadata (stored_name,mime_type,doc_name,doc_size,file_extension,gzipped,project_id,stored_date) VALUES(?,?,?,?,?,?,?,?)",
-//            [$storedName,'application/octet-stream',$reportHash.".pdf",$filesize,'.pdf','0',$settingsPID,date('Y-m-d h:i:s')]);
-//        $docId = db_insert_id();
-//
-//        #Add document DB ID to project
-//        $Proj = new \Project($settingsPID);
-//        $event_id = $Proj->firstEventId;
-//        $json = json_encode(array(array('record_id' => 1, 'des_update_d' => date("Y-m-d H:i:s"),'des_pdf'=>$docId)));
-//        $results = \Records::saveData($settingsPID, 'json', $json,'normal', 'YMD', 'flat', '', true, true, true, false, true, array(), true, false);
-//        \Records::addRecordToRecordListCache($settingsPID, 1,$event_id);
+        $q = $this->query("INSERT INTO redcap_edocs_metadata (stored_name,mime_type,doc_name,doc_size,file_extension,gzipped,project_id,stored_date) VALUES(?,?,?,?,?,?,?,?)",
+            [$storedName,'application/octet-stream',$reportHash.".pdf",$filesize,'.pdf','0',$settingsPID,date('Y-m-d h:i:s')]);
+        $docId = db_insert_id();
+
+        #Add document DB ID to project
+        $Proj = new \Project($settingsPID);
+        $event_id = $Proj->firstEventId;
+        $json = json_encode(array(array('record_id' => 1, 'des_update_d' => date("Y-m-d H:i:s"),'des_pdf'=>$docId)));
+        $results = \Records::saveData($settingsPID, 'json', $json,'normal', 'YMD', 'flat', '', true, true, true, false, true, array(), true, false);
+        \Records::addRecordToRecordListCache($settingsPID, 1,$event_id);
 
         if($settings['des_pdf_notification_email'] != "") {
             $link = $this->getUrl("downloadFile.php?sname=".$storedName."&file=". $filename.".pdf");
