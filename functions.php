@@ -264,7 +264,7 @@ function generateTablesHTML_pdf($module,$dataTable,$draft,$deprecated, $project_
                                         $dataFormat .= "<div style='padding-left:15px'>";
                                     }
                                     foreach ($codeOptions as $option) {
-                                        $dataFormat .= $option . "<br/>";
+                                        $dataFormat .= htmlspecialchars($option) . "<br/>";
                                     }
                                     if (!empty($codeOptions[0])) {
                                         $dataFormat .= "</div>";
