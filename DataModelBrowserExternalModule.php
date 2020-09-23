@@ -30,6 +30,11 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         $sql="SELECT s.project_id FROM redcap_external_modules m, redcap_external_module_settings s WHERE m.external_module_id = s.external_module_id AND s.value = 'true' AND (m.directory_prefix = 'data-model-browser') AND s.`key` = 'enabled'";
         $q = $this->query($sql);
 
+        if(APP_PATH_WEBROOT[0] == '/'){
+            $APP_PATH_WEBROOT_ALL = substr(APP_PATH_WEBROOT, 1);
+        }
+        define('APP_PATH_WEBROOT_ALL',APP_PATH_WEBROOT_FULL.$APP_PATH_WEBROOT_ALL);
+
         include_once("functions.php");
         $originalPid = $_GET['pid'];
         while($row = db_fetch_assoc($q)) {
@@ -68,6 +73,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         define('APP_PATH_WEBROOT_ALL',APP_PATH_WEBROOT_FULL.$APP_PATH_WEBROOT_ALL);
 
         include_once("functions.php");
+        require_once(dirname(__FILE__)."/vendor/autoload.php");
         $originalPid = $_GET['pid'];
         while($row = db_fetch_assoc($q)) {
             $project_id = $row['project_id'];
