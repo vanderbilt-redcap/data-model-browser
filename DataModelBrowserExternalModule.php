@@ -61,6 +61,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     function regeneratepdf(){
         $sql="SELECT s.project_id FROM redcap_external_modules m, redcap_external_module_settings s WHERE m.external_module_id = s.external_module_id AND s.value = 'true' AND (m.directory_prefix = 'data-model-browser') AND s.`key` = 'enabled'";
         $q = $this->query($sql);
+
         include_once("functions.php");
         $originalPid = $_GET['pid'];
         while($row = db_fetch_assoc($q)) {
@@ -124,7 +125,6 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     }
 
     function createAndSavePDFCron($settings, $project_id){
-        require_once 'vendor/autoload.php';
         error_log("cron - createAndSavePDFCron");
 
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='DATAMODEL'");
@@ -214,9 +214,13 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 $sender = "noreply@vumc.org";
             }
 
+            $attachments = array(
+                $filename.".pdf" => EDOC_PATH.$storedName
+            );
+
             $emails = explode(';', $settings['des_pdf_notification_email']);
             foreach ($emails as $email) {
-                \REDCap::email($email, $sender, $subject.$environment, $message,"","",$settings['accesslink_sender_name']);
+                \REDCap::email($email, $sender, $subject.$environment, $message,"","",$settings['accesslink_sender_name'],$attachments);
             }
         }
     }
