@@ -39,18 +39,19 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
                 $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
                 $settingsPID = getProjectInfoArray($RecordSetConstants)[0]['project_id'];
-                $settings = \REDCap::getData(array('project_id' => $settingsPID), 'array')[1][$this->framework->getEventId($settingsPID)];
+                if($settingsPID != "") {
+                    $settings = \REDCap::getData(array('project_id' => $settingsPID), 'array')[1][$this->framework->getEventId($settingsPID)];
 
-                $hasJsoncopyBeenUpdated0a = $this->hasJsoncopyBeenUpdated('0a', $settings, $project_id);
-                $hasJsoncopyBeenUpdated0b = $this->hasJsoncopyBeenUpdated('0b', $settings, $project_id);
-                if ($hasJsoncopyBeenUpdated0a || $hasJsoncopyBeenUpdated0b) {
-                    $this->createAndSavePDFCron($settings, $project_id);
-                    $this->createAndSaveJSONCron($project_id);
-                } else {
-                    error_log("createpdf - checkIfJsonOrPDFBlank");
-                    $this->checkIfJsonOrPDFBlank($settings, $project_id);
+                    $hasJsoncopyBeenUpdated0a = $this->hasJsoncopyBeenUpdated('0a', $settings, $project_id);
+                    $hasJsoncopyBeenUpdated0b = $this->hasJsoncopyBeenUpdated('0b', $settings, $project_id);
+                    if ($hasJsoncopyBeenUpdated0a || $hasJsoncopyBeenUpdated0b) {
+                        $this->createAndSavePDFCron($settings, $project_id);
+                        $this->createAndSaveJSONCron($project_id);
+                    } else {
+                        error_log("createpdf - checkIfJsonOrPDFBlank");
+                        $this->checkIfJsonOrPDFBlank($settings, $project_id);
+                    }
                 }
-
             }
         }
         $_GET['pid'] = $originalPid;
@@ -70,18 +71,20 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
                 $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
                 $settingsPID = getProjectInfoArray($RecordSetConstants)[0]['project_id'];
-                $settings = \REDCap::getData(array('project_id' => $settingsPID), 'array')[1][$this->framework->getEventId($settingsPID)];
+                if($settingsPID != "") {
+                    $settings = \REDCap::getData(array('project_id' => $settingsPID), 'array')[1][$this->framework->getEventId($settingsPID)];
 
-                if($settings['des_pdf_regenerate'][1] == '1'){
-                    $this->createAndSavePDFCron($settings, $project_id);
+                    if ($settings['des_pdf_regenerate'][1] == '1') {
+                        $this->createAndSavePDFCron($settings, $project_id);
 
-                    #Uncheck variable
-                    $Proj = new \Project($settingsPID);
-                    $event_id = $Proj->firstEventId;
-                    $arrayRM = array();
-                    $arrayRM[1][$event_id]['des_pdf_regenerate'] = array(1=>"");//checkbox
-                    $results = \Records::saveData($settingsPID, 'array', $arrayRM,'overwrite', 'YMD', 'flat', '', true, true, true, false, true, array(), true, false);
-                    \Records::addRecordToRecordListCache($settingsPID, 1, $event_id);
+                        #Uncheck variable
+                        $Proj = new \Project($settingsPID);
+                        $event_id = $Proj->firstEventId;
+                        $arrayRM = array();
+                        $arrayRM[1][$event_id]['des_pdf_regenerate'] = array(1 => "");//checkbox
+                        $results = \Records::saveData($settingsPID, 'array', $arrayRM, 'overwrite', 'YMD', 'flat', '', true, true, true, false, true, array(), true, false);
+                        \Records::addRecordToRecordListCache($settingsPID, 1, $event_id);
+                    }
                 }
             }
         }
