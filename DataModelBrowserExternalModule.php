@@ -29,7 +29,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     function createpdf(){
         $sql="SELECT s.project_id FROM redcap_external_modules m, redcap_external_module_settings s WHERE m.external_module_id = s.external_module_id AND s.value = 'true' AND (m.directory_prefix = 'data-model-browser') AND s.`key` = 'enabled'";
         $q = $this->query($sql);
-
+        require_once 'vendor/autoload.php';
         include_once("functions.php");
         $originalPid = $_GET['pid'];
         while($row = db_fetch_assoc($q)) {
@@ -61,7 +61,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     function regeneratepdf(){
         $sql="SELECT s.project_id FROM redcap_external_modules m, redcap_external_module_settings s WHERE m.external_module_id = s.external_module_id AND s.value = 'true' AND (m.directory_prefix = 'data-model-browser') AND s.`key` = 'enabled'";
         $q = $this->query($sql);
-
+        require_once 'vendor/autoload.php';
         include_once("functions.php");
         $originalPid = $_GET['pid'];
         while($row = db_fetch_assoc($q)) {
