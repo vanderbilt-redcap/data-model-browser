@@ -31,7 +31,6 @@ if(APP_PATH_WEBROOT[0] == '/'){
     $APP_PATH_WEBROOT_ALL = substr(APP_PATH_WEBROOT, 1);
 }
 define('APP_PATH_WEBROOT_ALL',APP_PATH_WEBROOT_FULL.$APP_PATH_WEBROOT_ALL);
-define('APP_PATH_PLUGIN',APP_PATH_WEBROOT_FULL."plugins/".substr(__DIR__,strlen(dirname(__DIR__))+1));
 
 # Define the projects stored in DES_PROJECTS
 $projects = \REDCap::getData(array('project_id'=>DES_PROJECTS),'array');

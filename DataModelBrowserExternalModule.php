@@ -5,7 +5,6 @@ use Exception;
 use REDCap;
 
 require_once(dirname(__FILE__)."/vendor/autoload.php");
-require_once(dirname(__FILE__)."/projects.php");
 
 class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalModule{
 
@@ -62,6 +61,11 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     function regeneratepdf(){
         $sql="SELECT s.project_id FROM redcap_external_modules m, redcap_external_module_settings s WHERE m.external_module_id = s.external_module_id AND s.value = 'true' AND (m.directory_prefix = 'data-model-browser') AND s.`key` = 'enabled'";
         $q = $this->query($sql);
+
+        if(APP_PATH_WEBROOT[0] == '/'){
+            $APP_PATH_WEBROOT_ALL = substr(APP_PATH_WEBROOT, 1);
+        }
+        define('APP_PATH_WEBROOT_ALL',APP_PATH_WEBROOT_FULL.$APP_PATH_WEBROOT_ALL);
 
         include_once("functions.php");
         $originalPid = $_GET['pid'];
