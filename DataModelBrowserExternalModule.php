@@ -5,6 +5,7 @@ use Exception;
 use REDCap;
 
 require_once(dirname(__FILE__)."/vendor/autoload.php");
+include_once(dirname(__FILE__)."/functions.php");
 
 class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalModule{
 
@@ -35,7 +36,6 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         }
         define('APP_PATH_WEBROOT_ALL',APP_PATH_WEBROOT_FULL.$APP_PATH_WEBROOT_ALL);
 
-        include_once("functions.php");
         $originalPid = $_GET['pid'];
         while($row = db_fetch_assoc($q)) {
             $project_id = $row['project_id'];
@@ -54,7 +54,6 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                         $this->createAndSavePDFCron($settings, $project_id);
                         $this->createAndSaveJSONCron($project_id);
                     } else {
-                        error_log("createpdf - checkIfJsonOrPDFBlank");
                         $this->checkIfJsonOrPDFBlank($settings, $project_id);
                     }
                 }
@@ -72,7 +71,6 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         }
         define('APP_PATH_WEBROOT_ALL',APP_PATH_WEBROOT_FULL.$APP_PATH_WEBROOT_ALL);
 
-        include_once("functions.php");
         require_once(dirname(__FILE__)."/vendor/autoload.php");
         $originalPid = $_GET['pid'];
         while($row = db_fetch_assoc($q)) {
@@ -119,7 +117,6 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         if($jsoncocpy["jsoncopy_file"] != "" && strtotime(date("Y-m-d",strtotime($jsoncocpy['json_copy_update_d']))) == strtotime($today)){
             return true;
         }else if(empty($jsoncocpy) || strtotime(date("Y-m-d",strtotime($jsoncocpy['json_copy_update_d']))) == "" || !array_key_exists('json_copy_update_d',$jsoncocpy) || !array_key_exists('des_pdf',$settings) || $settings['des_pdf'] == ""){
-            error_log("createpdf - checkAndUpdatJSONCopyProject");
             $this->checkAndUpdatJSONCopyProject($type, $rowtype['record'], $jsoncocpy, $settings, $project_id);
             return true;
         }
