@@ -172,7 +172,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
         //DOMPDF
         $dompdf = new \Dompdf\Dompdf();
-        $dompdf->loadHtml($html_pdf,'UTF-8');
+        $dompdf->loadHtml($html_pdf);
         $dompdf->setPaper('A4', 'portrait');
         ob_start();
         $dompdf->render();
