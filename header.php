@@ -9,7 +9,7 @@
             </button>
             <div class="imgNavbar">
                 <a href="<?=$module->getUrl("browser.php")?>" style="text-decoration: none;float:left">
-                    <img src='<?=printFile($module,$settings['des_logo'],'url')?>?>' class='wiki_logo_img'  style="height:40px" alt="<?=$settings['des_wkname']." Logo"?>">
+                   <?=printFile($module,$settings['des_logo'],'logo')?>
                 </a>
 
                 <a href="<?=$module->getUrl("browser.php")?>" style="text-decoration: none;float:left" class="hub_header_title">

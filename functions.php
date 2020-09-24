@@ -25,7 +25,7 @@ function printFile($module,$edoc, $type){
             if($type == "img"){
                 $file = '<br/><div class="inside-panel-content"><img src="data:'.$row['mime_type'].';base64,' . $base64. '" style="display: block; margin: 0 auto;"></div>';
             }else if($type == "logo"){
-                $file = '<img src="data:'.$row['mime_type'].';base64,' . $base64. '" style="padding-bottom: 30px;width: 450px;">';
+                $file = '<img src="data:'.$row['mime_type'].';base64,' . $base64. '" style="height:40px;">';
             }else if($type == "imgpdf"){
                 $file = '<div style="max-width: 450px;height: 500px;"><img src="data:'.$row['mime_type'].';base64,' . $base64. '" style="display: block; margin: 0 auto;width:450px;height: 450px;"></div>';
             }else if($type == "url"){
