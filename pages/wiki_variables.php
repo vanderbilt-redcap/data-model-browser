@@ -149,7 +149,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', DES_DATAMODEL);
                                         $record_var_aux = empty($id) ? '1' : $id;
                                         $record_var = $id;
                                         $name = $data['variable_name'][$id];
-                                        $url = $module->getUrl($page.".php?pid=".$_GET['pid'].'&tid='. $tid . '&vid=' . $record_var . '&option=variableInfo');
+                                        $url = $module->getUrl($page."&pid=".$_GET['pid'].'&tid='. $tid . '&vid=' . $record_var . '&option=variableInfo');
                                         echo '<tr class="'.$required_class." ".$variable_class.'" style="' . $variable_display . '"" id="'.$record_var_aux.'_row">' .
                                             '<td style="width:130px">' .
                                             '<a href="'.$url.'">' . $name . '</a>' .

@@ -63,7 +63,7 @@ if(count($dd_array) == 1 && $isAdmin && !array_key_exists('project_constant',$dd
 
     $des_privacy = $module->getProjectSetting('des-privacy');
     $has_permission = false;
-    $page = "browser";
+    $page = "browser.php?NOAUTH";
     ?>
     <!DOCTYPE html>
     <html lang="en">

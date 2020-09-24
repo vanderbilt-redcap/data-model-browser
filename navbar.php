@@ -14,7 +14,7 @@ if(array_key_exists('page',$_REQUEST)){
             }
             ?>
             <?php if( array_key_exists('option', $_REQUEST)){
-               echo '<a href="'.$module->getUrl($page.".php?pid=".$_GET['pid']).'" '.$active.' style="padding-top: 40px;">Home</a>';
+               echo '<a href="'.$module->getUrl($page."&pid=".$_GET['pid']).'" '.$active.' style="padding-top: 40px;">Home</a>';
             }
             if( array_key_exists('option', $_REQUEST) && ($_REQUEST['option'] === 'variables' || $_REQUEST['option'] === 'variableInfo')){
                 $tid = $_REQUEST['tid'];
@@ -28,7 +28,7 @@ if(array_key_exists('page',$_REQUEST)){
                             if($_REQUEST['option'] === 'variables') {
                                 $active = "class='wiki_active'";
                             }
-                            $url = $module->getUrl($page.".php?pid=".$_GET['pid']."&tid=".$data['record_id']."&option=variables");
+                            $url = $module->getUrl($page."&pid=".$_GET['pid']."&tid=".$data['record_id']."&option=variables");
                             ?>
                             <span> > </span>
                             <a href="<?=$url?>" <?=$active?>><?= $data['table_name'] ?></a>
@@ -36,7 +36,7 @@ if(array_key_exists('page',$_REQUEST)){
 
                         if ($_REQUEST['option'] === 'variableInfo') {
                             $active = "class='wiki_active'";
-                            $url = $module->getUrl($page.".php?pid=".$_GET['pid']."&tid=".$tid ."&vid=". $vid ."&option=variableInfo");
+                            $url = $module->getUrl($page."&pid=".$_GET['pid']."&tid=".$tid ."&vid=". $vid ."&option=variableInfo");
                             ?>
                             <span> > </span>
                            <a href="<?=$url?>" <?=$active?>><?= $data['variable_name'][$vid] ?></a>
@@ -44,7 +44,7 @@ if(array_key_exists('page',$_REQUEST)){
                     }
                 }
             }else if($_REQUEST['option'] == 'search'){
-                echo "<span> > </span><a href=".$page."'.php?pid=".DES_DATAMODEL."&option=search' class='wiki_active'>Variable search</a>";
+                echo "<span> > </span><a href=".$page."'&pid=".DES_DATAMODEL."&option=search' class='wiki_active'>Variable search</a>";
             }?>
 
         </div>

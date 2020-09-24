@@ -28,7 +28,7 @@ include_once("functions.php");
 
 $des_privacy = $module->getProjectSetting('des-privacy');
 $has_permission = false;
-$page = "main_private";
+$page = "main_private.php?";
 ?>
 <!DOCTYPE html>
 <html lang="en">
