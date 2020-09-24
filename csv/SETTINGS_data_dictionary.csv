@@ -9,7 +9,7 @@ des_doc_fronttext,settings,,notes,"Front Text",,,,,,,,,,,,,
 des_pdf_logo,pdf,,file,"Logo for the PDF (it is recommended to use JPEG files)",,,,,,,,,,,,,
 des_update_d,pdf,,text,"Last Update",,,datetime_seconds_ymd,,,,,,,,,,
 des_pdf_regenerate,pdf,,checkbox,"Do you want to regeneate the PDF? 
-<em>(This option will take a few minutes</em>","1, YES",,,,,,,,,,,,
+<em>(This option will take a few minutes)</em>","1, YES",,,,,,,,,,,,
 des_pdf,pdf,,file,"DES PDF",,,,,,,,,,,,,
 des_variable_search,pdf,,file,"JSON File Variable Search ",,,,,,,,,,,,,
 des_pdf_title,pdf,,text,"PDF Title",,,,,,,,,,,,,

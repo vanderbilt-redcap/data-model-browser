@@ -63,7 +63,7 @@ if(count($dd_array) == 1 && $isAdmin && !array_key_exists('project_constant',$dd
 
     $des_privacy = $module->getProjectSetting('des-privacy');
     $has_permission = false;
-
+    $page = "browser";
     ?>
     <!DOCTYPE html>
     <html lang="en">
@@ -90,13 +90,13 @@ if(count($dd_array) == 1 && $isAdmin && !array_key_exists('project_constant',$dd
         <?php include('navbar.php'); ?>
     </head>
     <?php
+    $has_permission = false;
     if($des_privacy == 'public' || $des_privacy == ""){
         $has_permission = true;
         include_once("main.php");
     }else{
-        include_once("main_private.php");
+        header('Location: '.$module->getUrl('main_private.php'));
     }
-
 
     if(!$has_permission){
         echo '<div class="container" style="margin-top: 60px"><div class="alert alert-warning" role="alert">You don\'t have permissions to access this Browser. Please contact an administrator.</div></div>';

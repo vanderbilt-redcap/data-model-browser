@@ -14,7 +14,6 @@ $dataformatChoices = $module->getChoiceLabels('data_format', DES_DATAMODEL);
     <div class='row' style=''>
         <?PHP foreach( $dataTable as $data ){
             if(!empty($data['record_id'])) {
-                $url = "index.php?pid=".DES_DATAMODEL."&tid=".$tid."&vid=".$record_var."&option=variables";
                 ?>
                 <div class="col-md-12">
                     <span class="wiki_title"><?PHP echo $data['variable_name'][$vid];?></span>

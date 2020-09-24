@@ -18,13 +18,13 @@
 			{
 				"name": "Data Model Browser",
 				"icon": "database_table",
-				"url": "browser.php",
+				"url": "browser.php?NOAUTH",
 				"target": "_blank"
 			}
 		]
 	},
 
-	"no-auth-pages":["configure","downloadFile","startDDProjects","functions", "main"],
+	"no-auth-pages":["browser","downloadFile","startDDProjects","functions", "main"],
 
 	"description": "This module’s main use is to create an auto-generated, web-browsable version of a Data Exchange Standard, a common data model for sharing.",
 

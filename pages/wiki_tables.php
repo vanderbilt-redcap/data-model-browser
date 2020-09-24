@@ -111,7 +111,7 @@ $dataTable = getProjectInfoArray($RecordSetDataModel);
 
                                 $record_var_aux = empty($data['record_id']) ? '1' : $data['record_id'];
                                 $definition = mb_convert_encoding(array_key_exists('table_definition',$data)?$data['table_definition']:"",'UTF-8','HTML-ENTITIES');
-                                $url = $module->getUrl("browser.php?pid=".$_GET['pid']."&tid=".$data['record_id']."&option=variables");
+                                $url = $module->getUrl($page.".php?pid=".$_GET['pid']."&tid=".$data['record_id']."&option=variables");
                                 echo '<tr class="'.$required_class.$variable_class.'" style="' . $variable_display . '" id="'.$record_var_aux.'_row">'.
                                     '<td class="'.$required_class.'">'.
                                     '<a href="'.$url.'" id="tables_link">'.$data['table_name'].'</a>'.

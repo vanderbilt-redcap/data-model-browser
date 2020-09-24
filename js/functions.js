@@ -71,6 +71,7 @@ function loadStatus(url, status,statvalue,option) {
         if(statvalue == "" || statvalue == null){
             if($('#'+status+'_info').hasClass('btn-default-reverse')){
                 statvalue = "false";
+                $("."+status).hide();
             }
         }else{
             if($('#'+status+'_info').hasClass('btn-default-reverse') && (statvalue == "" || statvalue == null)){
