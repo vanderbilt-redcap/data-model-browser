@@ -1,4 +1,5 @@
 function startDDProjects(){
+    $('#installationbtn').prop("disabled",true);
     $.ajax({
         url: startDDProjects_url,
         data: "&pid="+pid,
