@@ -31,7 +31,7 @@
 	"project-settings": [
 		{
 			"key": "des-privacy-description",
-			"name": "<div>Select a privacy type for the Data Model Browser:</div><br><div class='alert alert-info' style='border-color:#bce8f1 !important'><ul><li><strong>Public</strong> (no login required; anyone with the link can view/access the FAQ page)</li><li><strong>This Project's users only</strong> (REDCap login required; only users on this project can access the Browser page)</li><li><strong>A different Project's users</strong> (REDCap login required; only users from another project can access the Browser page)</li></ul></div>",
+			"name": "<div>Select a privacy type for the Data Model Browser:</div><br><div class='alert alert-info' style='border-color:#bce8f1 !important'><ul><li><strong>Public</strong> (no login required; anyone with the link can view/access the Browser page)</li><li><strong>This Project's users only</strong> (REDCap login required; only users on this project can access the Browser page)</li><li><strong>A different Project's users</strong> (REDCap login required; only users from another project can access the Browser page)</li></ul></div>",
 			"type": "descriptive"
 		},
 		{
