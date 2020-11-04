@@ -112,12 +112,12 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         $rowtype = $qtype->fetch_assoc();
 
         $RecordSetJsonCopy = \REDCap::getData($jsoncopyPID, 'array', array('record_id' => $rowtype['record']));
-        $jsoncocpy = getProjectInfoArray($RecordSetJsonCopy)[0];
+        $jsoncopy = getProjectInfoArray($RecordSetJsonCopy)[0];
         $today = date("Y-m-d");
-        if($jsoncocpy["jsoncopy_file"] != "" && strtotime(date("Y-m-d",strtotime($jsoncocpy['json_copy_update_d']))) == strtotime($today)){
+        if($jsoncopy["jsoncopy_file"] != "" && strtotime(date("Y-m-d",strtotime($jsoncopy['json_copy_update_d']))) == strtotime($today)){
             return true;
-        }else if(empty($jsoncocpy) || strtotime(date("Y-m-d",strtotime($jsoncocpy['json_copy_update_d']))) == "" || !array_key_exists('json_copy_update_d',$jsoncocpy) || !array_key_exists('des_pdf',$settings) || $settings['des_pdf'] == ""){
-            $this->checkAndUpdatJSONCopyProject($type, $rowtype['record'], $jsoncocpy, $settings, $project_id);
+        }else if(empty($jsoncopy) || strtotime(date("Y-m-d",strtotime($jsoncopy['json_copy_update_d']))) == "" || !array_key_exists('json_copy_update_d',$jsoncopy) || !array_key_exists('des_pdf',$settings) || $settings['des_pdf'] == ""){
+            $this->checkAndUpdateJSONCopyProject($type, $rowtype['record'], $jsoncopy, $settings, $project_id);
             return true;
         }
         return false;
@@ -302,7 +302,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         \Records::addRecordToRecordListCache($settingsPID, 1,$event_id);
     }
 
-    function checkAndUpdatJSONCopyProject($type, $last_record, $jsoncocpy, $settings, $project_id){
+    function checkAndUpdateJSONCopyProject($type, $last_record, $jsoncocpy, $settings, $project_id){
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='JSONCOPY'");
         $jsoncopyPID = getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 

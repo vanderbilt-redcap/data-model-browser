@@ -1,4 +1,35 @@
 <?php
+function array_filter_empty($array)
+{
+    foreach ($array as $key => &$value) {
+        if (is_array($value)) {
+            $value = array_filter_empty($value);
+        }
+        if (is_array($value) && empty($value)) {
+            unset($array[$key]);
+        }
+    }
+    return $array;
+}
+
+function multi_array_diff($arr1, $arr2){
+    $arrDiff = array();
+    foreach($arr1 as $key => $val) {
+        if(isset($arr2[$key])){
+            if(is_array($val)){
+                $arrDiff[$key] = multi_array_diff($val, $arr2[$key]);
+            }else{
+                if(in_array($val, $arr2)!= 1){
+                    $arrDiff[$key] = $val;
+                }
+            }
+        }else if(isset($val)){
+            $arrDiff[$key] = $val;
+        }
+    }
+    return $arrDiff;
+}
+
 function getCrypt($string, $action = 'e',$secret_key="",$secret_iv="" ) {
     $output = false;
     $encrypt_method = "AES-256-CBC";
