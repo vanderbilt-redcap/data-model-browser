@@ -30,7 +30,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', DES_DATAMODEL);
                     <div class="wiki_text_inside wiki_text_size">
                     <?php
                         $codeTable = "";
-                        $dataFormat = $dataformatChoices[$vid];
+                        $dataFormat = $dataformatChoices[$data['data_format'][$vid]];
                         if ($data['has_codes'][$vid] == '0') {
                             echo $dataFormat;
                             if (!empty($data['code_text'][$vid])) {
