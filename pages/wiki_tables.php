@@ -116,7 +116,7 @@ $dataTable = getProjectInfoArray($RecordSetDataModel);
                                     '<td class="'.$required_class.'">'.
                                     '<a href="'.$url.'" id="tables_link">'.$data['table_name'].'</a>'.
                                     '</td>'.
-                                    '<td id="'.$record_var_aux.'_description">'.$required_text.$variable_text.$definition.'</td>'.
+                                    '<td id="'.$record_var_aux.'_description">'.$required_text.$variable_text.htmlentities($definition).'</td>'.
                                     '</tr>';
                             }
                         }

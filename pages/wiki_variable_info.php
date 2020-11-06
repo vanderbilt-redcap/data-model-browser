@@ -19,9 +19,9 @@ $dataformatChoices = $module->getChoiceLabels('data_format', DES_DATAMODEL);
                     <span class="wiki_title"><?PHP echo $data['variable_name'][$vid];?></span>
                 </div>
                 <div class="col-md-12 wiki_text wiki_text_size">
-                    <span style="display:block;"><?PHP echo $data['description'][$vid]; ?></span>
+                    <span style="display:block;"><?PHP echo htmlentities($data['description'][$vid]); ?></span>
                     <?php if (!empty($data['description_extra'][$vid])) {
-                        ?><span style="display:block;"><i><?PHP echo $data['description_extra'][$vid]; ?></i></span><?php
+                        ?><span style="display:block;"><i><?PHP echo htmlentities($data['description_extra'][$vid]); ?></i></span><?php
                     }?>
                 </div>
 
