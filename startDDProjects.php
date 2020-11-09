@@ -44,6 +44,22 @@ foreach ($projects_array as $index=>$name){
     $record++;
 }
 
+#Upload SQL fields to projects
+include_once("projects.php");
+
+$projects_array_sql = array(
+    DES_DATAMODEL=>array(
+        'variable_replacedby' => "SELECT CONCAT(a.record, ':', b.instance), CONCAT(a.value, ':', b.value) FROM (SELECT record,value FROM redcap_data WHERE project_id=".DES_DATAMODEL." AND field_name = 'table_name') a JOIN (SELECT record, value, IFNULL(instance,1) as instance FROM redcap_data WHERE project_id=".DES_DATAMODEL." AND field_name = 'variable_name') b  ON b.record=a.record ORDER BY a.value, b.instance",
+        'code_list_ref' => "select record, value from redcap_data where project_id = ".DES_CODELIST." and field_name = 'list_name' order by value asc"
+    )
+);
+
+foreach ($projects_array_sql as $projectid=>$project){
+    foreach ($project as $var=>$sql){
+        $module->query("UPDATE redcap_metadata SET element_enum = ? WHERE project_id = ? AND field_name=?",[$sql,$projectid,$var]);
+    }
+}
+
 echo json_encode(array(
         'status' =>'success'
     )
