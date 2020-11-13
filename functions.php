@@ -313,7 +313,6 @@ function generateTablesHTML_pdf($module,$dataTable,$draft,$deprecated, $project_
                         }
 
                         $description = htmlspecialchars(empty($data["description"][$id]) ? $data["description"][''] : $data["description"][$id]);
-                        print_array($description);
                         if (!empty($data['description_extra'][$id])) {
                             $description .= "<br/><i>" . htmlspecialchars($data['description_extra'][$id]) . "</i>";
                         }
@@ -505,8 +504,7 @@ function createProject0AJSON($module, $project_id){
     $dataFormat = $module->getChoiceLabels('data_format', $dataModelPID);
 
     $RecordSetDataModel = \REDCap::getData($dataModelPID, 'array', null);
-    $dataTable = getProjectInfoArrayRepeatingInstruments($RecordSetDataModel)[0];
-
+    $dataTable = getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
     foreach ($dataTable as $data) {
         if($data['table_name'] != "") {
             $jsonVarArray['variables'] = array();
@@ -526,20 +524,20 @@ function createProject0AJSON($module, $project_id){
                         "data_format" => trim($dataFormat[$data['data_format'][$id]]),
                         "variable_status" => $data['variable_status'][$id],
                         "description" => $data['description'][$id],
-                        "variable_required" => $data['variable_required'][$id][0],
-                        "variable_key" => $data['variable_key'][$id][0],
+                        "variable_required" => $data['variable_required'][$id][1],
+                        "variable_key" => $data['variable_key'][$id][1],
                         "variable_deprecated_d" => $data['variable_deprecated_d'][$id],
                         "variable_replacedby" => $data['variable_replacedby'][$id],
                         "variable_deprecatedinfo" => $data['variable_deprecatedinfo'][$id],
                         "has_codes" => $has_codes,
                         "code_list_ref" => $code_list_ref,
                         "variable_order" => $data['variable_order'][$id],
-                        "variable_missingaction" => $data['variable_missingaction'][$id]
+                        "variable_missingaction" => $data['variable_missingaction'][$id][1]
                     );
                     $jsonVarArray['variables'][$data['variable_name'][$id]] = $variables_array;
                 }
             }
-            $jsonVarArray['table_required'] = $data['table_required'][0];
+            $jsonVarArray['table_required'] = $data['table_required'][1];
             $jsonVarArray['table_category'] = $data['table_category'];
             $jsonVarArray['table_order'] = $data['table_order'];
             $jsonArray[trim($data['table_name'])] = $jsonVarArray;
@@ -786,7 +784,7 @@ function getProjectInfoArrayRepeatingInstruments($records,$filterLogic=null){
                                 if(!array_key_exists($field_name,$array[$index])){
                                     $array[$index][$field_name] = array();
                                 }
-                                if($value != ""){
+                                if($value != "" && (!is_array($value) || (is_array($value) && !empty($value)))){
                                     $datarepeat[$field_name][$instance] = $value;
 
                                     $count = 0;

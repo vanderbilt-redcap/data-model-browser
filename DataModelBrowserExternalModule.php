@@ -325,6 +325,10 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             $record = $array_data['record_id'];
         }
 
+        if($last_record == ""){
+            $last_record = "<i>None</i>";
+        }
+
         if(!empty($record)){
             $environment = "";
             if(ENVIRONMENT == 'DEV' || ENVIRONMENT == 'TEST'){
