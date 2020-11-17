@@ -324,7 +324,9 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             $result_prev = "";
             $record = $array_data['record_id'];
         }
-        error_log("DMB - ".$project_id);
+        error_log("DMB - "."createProject".strtoupper($type)."JSON");
+        error_log("DMB - PID: ".$project_id);
+        error_log("DMB - ".json_decode($array_data['jsonArray'],true));
 
         if($last_record == ""){
             $last_record = "<i>None</i>";
