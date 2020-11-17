@@ -617,7 +617,7 @@ function saveJSONCopy($type, $jsonArray, $module, $project_id){
     $Proj = new \Project($jsoncopyPID);
     $event_id = $Proj->firstEventId;
     $record_id = $module->framework->addAutoNumberedRecord($jsoncopyPID);
-    $json = json_encode(array(array('record_id'=>$record_id,'jsoncopy' => json_encode($jsonArray,JSON_FORCE_OBJECT),'type'=>$type,'jsoncopy_file'=>$docId,'json_copy_update_d'=>date("Y-m-d H:i:s"),"version" => $lastversion)));
+    $json = json_encode(array(array('record_id'=>$record_id, 'type'=>$type,'jsoncopy_file'=>$docId,'json_copy_update_d'=>date("Y-m-d H:i:s"),"version" => $lastversion)));
     $results = \REDCap::saveData($jsoncopyPID, 'json', $json,'normal', 'YMD', 'flat', '', true, true, true, false, true, array(), true, false);
     \Records::addRecordToRecordListCache($jsoncopyPID, $record_id,$event_id);
 

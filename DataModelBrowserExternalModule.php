@@ -343,7 +343,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             $link = APP_PATH_WEBROOT_ALL . "DataEntry/record_home.php?pid=" . $jsoncopyPID . "&arm=1&id=" . $record;
             $subject = "Changes in the DES ".strtoupper($type)." detected ";
             $message = "<div>The following changes have been detected in the DES ".strtoupper($type)." and a new record #".$record." has been created:</div><br/>".
-                "<div>Last record:". $last_record."</div><br/>".
+                "<div>Last record: ". $last_record."</div><br/>".
                 "<div>To see the record <a href='".$link."'>click here</a></div><br/>".
                 "<ul><pre>".print_r($result,true)."</pre>".
                 "<span style='color:#777'><pre><em>".print_r($result_prev,true)."</em></pre></ul></span>";
