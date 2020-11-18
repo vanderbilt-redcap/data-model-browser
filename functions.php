@@ -498,8 +498,10 @@ function generateRequestedTablesList_pdf($dataTable,$draft,$deprecated){
  * @return string , the JSON
  */
 function createProject0AJSON($module, $project_id){
+    error_log("DMB - createProject0AJSON");
     $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='DATAMODEL'");
     $dataModelPID = getProjectInfoArray($RecordSetConstants)[0]['project_id'];
+    error_log("DMB - dataModelPID: ".$dataModelPID);
 
     $dataFormat = $module->getChoiceLabels('data_format', $dataModelPID);
 
@@ -543,6 +545,7 @@ function createProject0AJSON($module, $project_id){
             $jsonArray[trim($data['table_name'])] = $jsonVarArray;
         }
     }
+    error_log("DMB - ".json_encode($jsonArray,JSON_FORCE_OBJECT));
     #we save the new JSON
     if(!empty($jsonArray)){
         $record_id = saveJSONCopy('0a', $jsonArray, $module, $project_id);
@@ -555,8 +558,10 @@ function createProject0AJSON($module, $project_id){
  * @return string, the JSON
  */
 function createProject0BJSON($module, $project_id){
+    error_log("DMB - createProject0BJSON");
     $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='CODELIST'");
     $codeListPID = getProjectInfoArray($RecordSetConstants)[0]['project_id'];
+    error_log("DMB - codeListPID: ".$codeListPID);
 
     $RecordSetCodeList = \REDCap::getData($codeListPID, 'array', null);
     $dataTable = getProjectInfoArrayRepeatingInstruments($RecordSetCodeList);
@@ -583,7 +588,7 @@ function createProject0BJSON($module, $project_id){
         }
         $jsonArray[$data['record_id']]=$jsonVarContentArray;
     }
-
+    error_log("DMB - ".json_encode($jsonArray,JSON_FORCE_OBJECT));
     #we save the new JSON
     if(!empty($jsonArray)){
         $record_id = saveJSONCopy('0b', $jsonArray, $module, $project_id);
