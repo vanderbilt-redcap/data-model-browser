@@ -507,6 +507,7 @@ function createProject0AJSON($module, $project_id){
 
     $RecordSetDataModel = \REDCap::getData($dataModelPID, 'array', null);
     $dataTable = getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
+    error_log("DMB - dataTable: ".json_encode($dataTable,JSON_FORCE_OBJECT));
     foreach ($dataTable as $data) {
         if($data['table_name'] != "") {
             $jsonVarArray['variables'] = array();
@@ -525,12 +526,12 @@ function createProject0AJSON($module, $project_id){
                     $variables_array = array(
                         "data_format" => trim($dataFormat[$data['data_format'][$id]]),
                         "variable_status" => $data['variable_status'][$id],
-                        "description" => $data['description'][$id],
+                        "description" => htmlentities($data['description'][$id]),
                         "variable_required" => $data['variable_required'][$id][1],
                         "variable_key" => $data['variable_key'][$id][1],
                         "variable_deprecated_d" => $data['variable_deprecated_d'][$id],
                         "variable_replacedby" => $data['variable_replacedby'][$id],
-                        "variable_deprecatedinfo" => $data['variable_deprecatedinfo'][$id],
+                        "variable_deprecatedinfo" => htmlentities($data['variable_deprecatedinfo'][$id]),
                         "has_codes" => $has_codes,
                         "code_list_ref" => $code_list_ref,
                         "variable_order" => $data['variable_order'][$id],
@@ -572,7 +573,7 @@ function createProject0BJSON($module, $project_id){
             $codeOptions = explode(" | ", $data['code_list']);
             foreach ($codeOptions as $option) {
                 list($key, $val) = explode("=", $option);
-                $jsonVarContentArray[trim($key)] = trim($val);
+                $jsonVarContentArray[trim($key)] = htmlentities(trim($val));
             }
 
         }else if($data['code_format'] == '3'){
@@ -582,7 +583,7 @@ function createProject0BJSON($module, $project_id){
                 if($header != 0){
                     //Convert to UTF-8 to avoid weird characters
                     $value = mb_convert_encoding($content['Definition'], 'UTF-8','HTML-ENTITIES');
-                    $jsonVarContentArray[trim($content['Code'])] = trim($value);
+                    $jsonVarContentArray[trim($content['Code'])] = htmlentities(trim($value));
                 }
             }
         }
