@@ -498,10 +498,8 @@ function generateRequestedTablesList_pdf($dataTable,$draft,$deprecated){
  * @return string , the JSON
  */
 function createProject0AJSON($module, $project_id){
-    error_log("DMB - createProject0AJSON");
     $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='DATAMODEL'");
     $dataModelPID = getProjectInfoArray($RecordSetConstants)[0]['project_id'];
-    error_log("DMB - dataModelPID: ".$dataModelPID);
 
     $dataFormat = $module->getChoiceLabels('data_format', $dataModelPID);
 
@@ -546,7 +544,6 @@ function createProject0AJSON($module, $project_id){
             $jsonArray[trim($data['table_name'])] = $jsonVarArray;
         }
     }
-    error_log("DMB - ".json_encode($jsonArray,JSON_FORCE_OBJECT));
     #we save the new JSON
     if(!empty($jsonArray)){
         $record_id = saveJSONCopy('0a', $jsonArray, $module, $project_id);
@@ -572,22 +569,21 @@ function createProject0BJSON($module, $project_id){
             $jsonVarContentArray  = array();
             $codeOptions = explode(" | ", $data['code_list']);
             foreach ($codeOptions as $option) {
-                list($key, $val) = explode("=", $option);
-                $jsonVarContentArray[trim($key)] = htmlentities(trim($val));
+                list($key, $val) = explode("=", htmlentities($option));
+                $jsonVarContentArray[htmlentities(trim($key))] = htmlentities(trim($val));
             }
-
         }else if($data['code_format'] == '3'){
             $jsonVarContentArray  = array();
             $csv = parseCSVtoArray($data['code_file']);
             foreach ($csv as $header=>$content){
                 if($header != 0){
                     //Convert to UTF-8 to avoid weird characters
-                    $value = mb_convert_encoding($content['Definition'], 'UTF-8','HTML-ENTITIES');
+                    $value = mb_convert_encoding(htmlentities($content['Definition']), 'UTF-8','HTML-ENTITIES');
                     $jsonVarContentArray[trim($content['Code'])] = htmlentities(trim($value));
                 }
             }
         }
-        $jsonArray[$data['record_id']]=$jsonVarContentArray;
+        $jsonArray[$data['record_id']] = $jsonVarContentArray;
     }
     error_log("DMB - ".json_encode($jsonArray,JSON_FORCE_OBJECT));
     #we save the new JSON
