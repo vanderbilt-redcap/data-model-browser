@@ -505,7 +505,6 @@ function createProject0AJSON($module, $project_id){
 
     $RecordSetDataModel = \REDCap::getData($dataModelPID, 'array', null);
     $dataTable = getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
-    error_log("DMB - dataTable: ".json_encode($dataTable,JSON_FORCE_OBJECT));
     foreach ($dataTable as $data) {
         if($data['table_name'] != "") {
             $jsonVarArray['variables'] = array();
@@ -556,10 +555,8 @@ function createProject0AJSON($module, $project_id){
  * @return string, the JSON
  */
 function createProject0BJSON($module, $project_id){
-    error_log("DMB - createProject0BJSON");
     $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='CODELIST'");
     $codeListPID = getProjectInfoArray($RecordSetConstants)[0]['project_id'];
-    error_log("DMB - codeListPID: ".$codeListPID);
 
     $RecordSetCodeList = \REDCap::getData($codeListPID, 'array', null);
     $dataTable = getProjectInfoArrayRepeatingInstruments($RecordSetCodeList);
@@ -585,7 +582,6 @@ function createProject0BJSON($module, $project_id){
         }
         $jsonArray[$data['record_id']] = $jsonVarContentArray;
     }
-    error_log("DMB - ".json_encode($jsonArray,JSON_FORCE_OBJECT));
     #we save the new JSON
     if(!empty($jsonArray)){
         $record_id = saveJSONCopy('0b', $jsonArray, $module, $project_id);

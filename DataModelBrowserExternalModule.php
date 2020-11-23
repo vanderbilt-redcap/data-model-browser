@@ -324,7 +324,6 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             $result_prev = "";
             $record = $array_data['record_id'];
         }
-        error_log("DMB - checkAndUpdateJSONCopyProject");
 
         if($last_record == ""){
             $last_record = "<i>None</i>";
