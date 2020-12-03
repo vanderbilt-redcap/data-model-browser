@@ -86,6 +86,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
                     if ($settings['des_pdf_regenerate'][1] == '1') {
                         $this->createAndSavePDFCron($settings, $project_id);
+                        $this->createAndSaveJSONCron($project_id);
 
                         #Uncheck variable
                         $Proj = new \Project($settingsPID);
