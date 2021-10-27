@@ -3,6 +3,7 @@ namespace Vanderbilt\DataModelBrowserExternalModule;
 
 use ExternalModules\AbstractExternalModule;
 use ExternalModules\ExternalModules;
+use Vanderbilt\DataModelBrowserExternalModule\ProjectData;
 ?>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 

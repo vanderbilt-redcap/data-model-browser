@@ -12,6 +12,7 @@ $module->query("UPDATE redcap_projects SET custom_record_label = ? WHERE project
 
 $projects_array = array(0=>'DATAMODEL',1=>'CODELIST',2=>'SETTINGS',3=>'FILEREPO',4=>'JSONCOPY');
 $custom_record_label_array = array(0=>"[table_name]",1=>"[list_name]",2=>'',3=>'',4=>"version [version]: [type]");
+$userPermission = $module->getProjectSetting('user-permission',$project_id);
 
 $project_title = \REDCap::getProjectTitle();
 $record = 1;
@@ -40,6 +41,15 @@ foreach ($projects_array as $index=>$name){
             $module->query("INSERT INTO redcap_events_repeat (event_id, form_name, custom_repeat_form_label) VALUES (?, ?, ?)",[$event_id,"variable_metadata","[variable_name]"]);
         }
     }
+
+    #ADD USER PERMISSIONS
+    $fields_rights = "username=?, design=?, user_rights=?, data_export_tool=?, reports=?, graphical=?, data_logging=?, data_entry=?";
+    $instrument_names = \REDCap::getInstrumentNames(null,$project_id_new);
+    $data_entry = "[".implode(',1][',array_keys($instrument_names)).",1]";
+    foreach ($userPermission as $user){
+        $module->query("UPDATE redcap_user_rights SET ".$fields_rights." WHERE project_id = ?",[$user, 1, 1, 1, 1, 1, 1, $data_entry,$project_id_new]);
+    }
+
     \Records::addRecordToRecordListCache($project_id, $record,1);
     $record++;
 }

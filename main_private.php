@@ -25,7 +25,6 @@
 include_once("projects.php");
 $settings = \REDCap::getData(array('project_id'=>DES_SETTINGS),'array')[1][$module->framework->getEventId(DES_SETTINGS)];
 include_once("functions.php");
-
 $des_privacy = $module->getProjectSetting('des-privacy');
 $has_permission = false;
 $page = "main_private.php?";
@@ -38,7 +37,7 @@ $page = "main_private.php?";
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="<?=printFile($module,$settings['des_favicon'],'url')?>">
+    <link rel="icon" href="<?=\Vanderbilt\DataModelBrowserExternalModule\printFile($module,$settings['des_favicon'],'url')?>">
 
     <title><?=$settings['des_doc_title']?></title>
 
@@ -64,7 +63,7 @@ if($des_privacy == 'public'){
     if(!defined('USERID')){
         echo '<div class="container" style="margin-top: 60px"><div class="alert alert-warning" role="alert">Please log in REDCap to access this Browser.</div></div>';
         exit;
-    }else if(isUserExpiredOrSuspended($module,USERID, 'user_suspended_time') || isUserExpiredOrSuspended($module,USERID, 'user_expiration')) {
+    }else if(\Vanderbilt\DataModelBrowserExternalModule\isUserExpiredOrSuspended($module,USERID, 'user_suspended_time') || \Vanderbilt\DataModelBrowserExternalModule\isUserExpiredOrSuspended($module,USERID, 'user_expiration')) {
         echo '<div class="container" style="margin-top: 60px"><div class="alert alert-warning" role="alert">This user is expired or suspended. Please contact an administrator.</div></div>';
         exit;
     }else{
@@ -81,7 +80,7 @@ if($des_privacy == 'public'){
     }else if(count($des_project) == 0) {
         echo '<div class="container" style="margin-top: 60px"><div class="alert alert-warning" role="alert">Please select a project(s) to give permissions to.</div></div>';
         exit;
-    }else if(isUserExpiredOrSuspended($module,USERID, 'user_suspended_time') || isUserExpiredOrSuspended($module,USERID, 'user_expiration')) {
+    }else if(\Vanderbilt\DataModelBrowserExternalModule\isUserExpiredOrSuspended($module,USERID, 'user_suspended_time') || \Vanderbilt\DataModelBrowserExternalModule\isUserExpiredOrSuspended($module,USERID, 'user_expiration')) {
         echo '<div class="container" style="margin-top: 60px"><div class="alert alert-warning" role="alert">This user is expired or suspended. Please contact an administrator.</div></div>';
         exit;
     }else{

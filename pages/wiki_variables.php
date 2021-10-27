@@ -1,4 +1,6 @@
 <?php
+use Vanderbilt\DataModelBrowserExternalModule\ProjectData;
+
 $deprecated = empty($_REQUEST['deprecated_'.$settings['des_wkname']]) ? $_SESSION['draft_'.$settings['des_wkname']] : $_REQUEST['deprecated_'.$settings['des_wkname']];
 $draft = empty($_REQUEST['draft']) ? $_SESSION['draft_'.$settings['des_wkname']] : $_REQUEST['draft_'.$settings['des_wkname']];
 $tid = empty($_REQUEST['tid']) ? "" : $_REQUEST['tid'];
@@ -21,7 +23,7 @@ if(empty($deprecated)){
 
 #We get the Tables and Variables information
 $RecordSetDataModel = \REDCap::getData(DES_DATAMODEL, 'array', array('record_id' => $tid));
-$dataTable = getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
+$dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
 $dataformatChoices = $module->getChoiceLabels('data_format', DES_DATAMODEL);
 ?>
 <br/>
@@ -125,7 +127,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', DES_DATAMODEL);
                                                 if($data['variable_replacedby'][$id] != ""){
                                                     $variable_replacedby = explode("|",$data['variable_replacedby'][$id]);
                                                     $RecordSetTable= \REDCap::getData(DES_DATAMODEL, 'array', array('record_id' => $variable_replacedby[0]));
-                                                    $table = getProjectInfoArrayRepeatingInstruments($RecordSetTable)[0];
+                                                    $table = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetTable)[0];
                                                     $table_name = $table['table_name'];
                                                     $var_name = $table['variable_name'][$variable_replacedby[1]];
 
@@ -162,7 +164,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', DES_DATAMODEL);
                                         } else if ($data['has_codes'][$id] == '1') {
                                             if(!empty($data['code_list_ref'][$id])){
                                                 $RecordSetCodeList = \REDCap::getData(DES_CODELIST, 'array', array('record_id' => $data['code_list_ref'][$id]));
-                                                $codeformat = getProjectInfoArrayRepeatingInstruments($RecordSetCodeList)[0];
+                                                $codeformat = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList)[0];
 
                                                 if ($codeformat['code_format'] == '1') {
                                                     $codeOptions = empty($codeformat['code_list']) ? $data['code_text'][$id] : explode(" | ", $codeformat['code_list']);

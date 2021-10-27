@@ -1,11 +1,12 @@
 <?php
+namespace Vanderbilt\DataModelBrowserExternalModule;
 
 #We get the Tables and Variables information
 $tid = $_REQUEST['tid'];
 $vid = $_REQUEST['vid'];
 
 $RecordSetDataModel = \REDCap::getData(DES_DATAMODEL, 'array', array('record_id' => $tid));
-$dataTable = getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
+$dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
 $dataformatChoices = $module->getChoiceLabels('data_format', DES_DATAMODEL);
 ?>
 
@@ -39,7 +40,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', DES_DATAMODEL);
                         } else if ($data['has_codes'][$vid] == '1') {
                             if(!empty($data['code_list_ref'][$vid])){
                                 $RecordSetCodeList = \REDCap::getData(DES_CODELIST, 'array', array('record_id' => $data['code_list_ref'][$vid]));
-                                $codeformat = getProjectInfoArrayRepeatingInstruments($RecordSetCodeList)[0];
+                                $codeformat = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList)[0];
                                 if ($codeformat['code_format'] == '1') {
                                     $dataFormat .= " <span><i>(coded)</i></span><br/><br/>";
 

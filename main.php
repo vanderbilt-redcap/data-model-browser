@@ -1,4 +1,4 @@
-
+<?php namespace Vanderbilt\DataModelBrowserExternalModule; ?>
 <body>
 <?php
 if($_REQUEST['option'] !== 'search' && $_REQUEST['option'] !== 'variableInfo'  ) {

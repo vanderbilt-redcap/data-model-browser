@@ -1,4 +1,7 @@
 <?php
+namespace Vanderbilt\DataModelBrowserExternalModule;
+use Vanderbilt\DataModelBrowserExternalModule\ProjectData;
+
 function array_filter_empty($array)
 {
     foreach ($array as $key => &$value) {
@@ -17,7 +20,7 @@ function multi_array_diff($arr1, $arr2){
     foreach($arr1 as $key => $val) {
         if(isset($arr2[$key])){
             if(is_array($val)){
-                $arrDiff[$key] = multi_array_diff($val, $arr2[$key]);
+                $arrDiff[$key] = \Vanderbilt\DataModelBrowserExternalModule\multi_array_diff($val, $arr2[$key]);
             }else{
                 if(in_array($val, $arr2)!= 1){
                     $arrDiff[$key] = $val;
@@ -70,24 +73,6 @@ function printFile($module,$edoc, $type){
 }
 
 /**
- * Function that returns the info array from a specific project
- * @param $project, the project id
- * @param $info_array, array that contains the conditionals
- * @param string $type, if its single or a multidimensional array
- * @return array, the info array
- */
-function getProjectInfoArray($records){
-    $array = array();
-    foreach ($records as $event) {
-        foreach ($event as $data) {
-            array_push($array,$data);
-        }
-    }
-
-    return $array;
-}
-
-/**
  * Function that searches the armID from a project and returns the data
  * @param $projectID
  * @return array|mixed
@@ -101,7 +86,7 @@ function getTablesInfo($module,$projectID, $tableID="", $tableOrderParam="table_
         $sqlTable = "SELECT * FROM `redcap_events_metadata` WHERE arm_id ='".db_escape($row['arm_id'])."'";
         $qTable = db_query($sqlTable);
         while ($rowTable = db_fetch_assoc($qTable)){
-            $dataTable = generateTableArray($module,$rowTable['event_id'], $projectID,$dataTable,$tableID,$tableOrderParam);
+            $dataTable = \Vanderbilt\DataModelBrowserExternalModule\generateTableArray($module,$rowTable['event_id'], $projectID,$dataTable,$tableID,$tableOrderParam);
         }
     }
     return $dataTable;
@@ -153,9 +138,9 @@ function getDataRepeatingInstrumentsGroupByField($module,$project_id,$vars=""){
  */
 function generateTableArray($module,$event_id, $project_id, $dataTable,$tableID,$tableOrderParam){
     if(empty($tableID)){
-        $recordsTable = getDataRepeatingInstrumentsGroupByField($module,$project_id);
+        $recordsTable = \Vanderbilt\DataModelBrowserExternalModule\getDataRepeatingInstrumentsGroupByField($module,$project_id);
     }else{
-        $recordsTable = getDataRepeatingInstrumentsGroupByField($module,$project_id, array('record_id' => $tableID));
+        $recordsTable = \Vanderbilt\DataModelBrowserExternalModule\getDataRepeatingInstrumentsGroupByField($module,$project_id, array('record_id' => $tableID));
     }
     $dataFormat = $module->getChoiceLabels('data_format', $project_id);
 
@@ -170,7 +155,7 @@ function generateTableArray($module,$event_id, $project_id, $dataTable,$tableID,
         }
     }
     #We order the tables
-    array_sort_by_column($dataTable, $tableOrderParam);
+    \Vanderbilt\DataModelBrowserExternalModule\array_sort_by_column($dataTable, $tableOrderParam);
     return $dataTable;
 }
 
@@ -195,7 +180,7 @@ function generateTablesHTML_pdf($module,$dataTable,$draft,$deprecated, $project_
     $table_counter = 0;
     $dataformatChoices = $module->getChoiceLabels('data_format', $dataModelPID);
     $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='CODELIST'");
-    $codeListPID = getProjectInfoArray($RecordSetConstants)[0]['project_id'];
+    $codeListPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
     foreach ($dataTable as $data) {
         if (!empty($data['record_id'])) {
             $found = false;
@@ -288,7 +273,7 @@ function generateTablesHTML_pdf($module,$dataTable,$draft,$deprecated, $project_
                         } else if ($data['has_codes'][$id] == '1') {
                             if (!empty($data['code_list_ref'][$id])) {
                                 $RecordSetCodeList = \REDCap::getData($codeListPID, 'array', array('record_id' => $data['code_list_ref'][$id]));
-                                $codeformat = getProjectInfoArrayRepeatingInstruments($RecordSetCodeList)[0];
+                                $codeformat = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList)[0];
                                 if ($codeformat['code_format'] == '1') {
                                     $codeOptions = empty($codeformat['code_list']) ? $data['code_text'][$id] : explode(" | ", $codeformat['code_list']);
                                     if (!empty($codeOptions[0])) {
@@ -384,7 +369,7 @@ function getHtmlTableCodesTableArrayExcel($module,$dataTable){
                     if ($data['has_codes'][$id] == '1') {
                         if (!empty($data['code_list_ref'][$id])) {
                             $RecordSetCodeList = \REDCap::getData(DES_CODELIST, 'array', array('record_id' => $data['code_list_ref'][$id]));
-                            $codeformat = getProjectInfoArrayRepeatingInstruments($RecordSetCodeList)[0];
+                            $codeformat = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList)[0];
                             if ($codeformat['code_format'] == '1') {
                                 $codeOptions = empty($codeformat['code_list']) ? $data['code_text'][$id] : explode(" | ", $codeformat['code_list']);
                                 foreach ($codeOptions as $option) {
@@ -396,7 +381,7 @@ function getHtmlTableCodesTableArrayExcel($module,$dataTable){
                             } else {
                                 if ($codeformat['code_format'] == '3') {
                                     if (array_key_exists('code_file', $codeformat) && $data['codes_print'][$id] == '1') {
-                                        $data_array = getHtmlCodesTableArrayExcel($data_array, $data_code_array, $codeformat['code_file']);
+                                        $data_array = \Vanderbilt\DataModelBrowserExternalModule\getHtmlCodesTableArrayExcel($data_array, $data_code_array, $codeformat['code_file']);
                                     }
                                 } else if ($codeformat['code_format'] == '4') {
                                     $data_code_array[2] = 'https://bioportal.bioontology.org/ontologies/' . $codeformat['code_ontology'];
@@ -499,12 +484,12 @@ function generateRequestedTablesList_pdf($dataTable,$draft,$deprecated){
  */
 function createProject0AJSON($module, $project_id){
     $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='DATAMODEL'");
-    $dataModelPID = getProjectInfoArray($RecordSetConstants)[0]['project_id'];
+    $dataModelPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
     $dataFormat = $module->getChoiceLabels('data_format', $dataModelPID);
 
     $RecordSetDataModel = \REDCap::getData($dataModelPID, 'array', null);
-    $dataTable = getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
+    $dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
     foreach ($dataTable as $data) {
         if($data['table_name'] != "") {
             $jsonVarArray['variables'] = array();
@@ -545,7 +530,7 @@ function createProject0AJSON($module, $project_id){
     }
     #we save the new JSON
     if(!empty($jsonArray)){
-        $record_id = saveJSONCopy('0a', $jsonArray, $module, $project_id);
+        $record_id = \Vanderbilt\DataModelBrowserExternalModule\saveJSONCopy('0a', $jsonArray, $module, $project_id);
     }
 
     return array('jsonArray' => json_encode($jsonArray,JSON_FORCE_OBJECT),'record_id' =>$record_id);
@@ -556,10 +541,10 @@ function createProject0AJSON($module, $project_id){
  */
 function createProject0BJSON($module, $project_id){
     $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='CODELIST'");
-    $codeListPID = getProjectInfoArray($RecordSetConstants)[0]['project_id'];
+    $codeListPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
     $RecordSetCodeList = \REDCap::getData($codeListPID, 'array', null);
-    $dataTable = getProjectInfoArrayRepeatingInstruments($RecordSetCodeList);
+    $dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList);
     foreach ($dataTable as $data) {
         $jsonArray[$data['record_id']] = array();
         if ($data['code_format'] == '1') {
@@ -584,17 +569,75 @@ function createProject0BJSON($module, $project_id){
     }
     #we save the new JSON
     if(!empty($jsonArray)){
-        $record_id = saveJSONCopy('0b', $jsonArray, $module, $project_id);
+        $record_id = \Vanderbilt\DataModelBrowserExternalModule\saveJSONCopy('0b', $jsonArray, $module, $project_id);
     }
 
     return array('jsonArray' => json_encode($jsonArray,JSON_FORCE_OBJECT),'record_id' =>$record_id);
 }
+
+/**
+ * Function that creates a JSON copy of the Harmonist 0C: Data Model Metadata
+ * @return string, the JSON
+ */
+function createProject0CJSON($module, $pidsArray){
+    $dataTablerecords = \REDCap::getData($pidsArray['DATAMODELMETADATA'], 'array');
+    $dataTable = ProjectData::getProjectInfoArray($dataTablerecords)[0];
+    $jsonArray = array();
+    $jsonArray['project_name'] = $dataTable['project_name'];
+    $jsonArray['sample_dataset'] = $dataTable['sample_dataset'];
+    $jsonArray['datamodel_name'] = $dataTable['datamodel_name'];
+    $jsonArray['datamodel_abbrev'] = $dataTable['datamodel_abbrev'];
+    $jsonArray['datamodel_url_y'] = $dataTable['datamodel_url_y'];
+    $jsonArray['datamodel_url'] = $dataTable['datamodel_url'];
+    $jsonArray['hub_y'] = $dataTable['hub_y'];
+    $jsonArray['index_tablename'] = $dataTable['index_tablename'];
+    $jsonArray['patient_id_var'] = $dataTable['patient_id_var'];
+    $jsonArray['default_group_var'] = $dataTable['default_group_var'];
+    $jsonArray['group_tablename'] = $dataTable['group_tablename'];
+    $jsonArray['birthdate_var'] = $dataTable['birthdate_var'];
+    $jsonArray['death_date_var'] = $dataTable['death_date_var'];
+    $jsonArray['age_date_var'] = $dataTable['age_date_var'];
+    $jsonArray['enrol_date_var'] = $dataTable['enrol_date_var'];
+    $jsonArray['height_table'] = $dataTable['height_table'];
+    $jsonArray['height_var'] = $dataTable['height_var'];
+    $jsonArray['height_date'] = $dataTable['height_date'];
+    $jsonArray['height_units'] = $dataTable['height_units'];
+    $jsonArray['sd_ext'] = $dataTable['sd_ext'];
+    $jsonArray['ed_ext'] = $dataTable['ed_ext'];
+    $jsonArray['date_approx_y'] = $dataTable['date_approx_y'];
+    $jsonArray['date_approx'] = $dataTable['date_approx'];
+    $jsonArray['n_age_groups'] = $dataTable['n_age_groups'];
+    $jsonArray['age_1_lower'] = $dataTable['age_1_lower'];
+    $jsonArray['age_1_upper'] = $dataTable['age_1_upper'];
+    $jsonArray['age_2_lower'] = $dataTable['age_2_lower'];
+    $jsonArray['age_2_upper'] = $dataTable['age_2_upper'];
+    $jsonArray['age_3_lower'] = $dataTable['age_3_lower'];
+    $jsonArray['age_3_upper'] = $dataTable['age_3_upper'];
+    $jsonArray['age_4_lower'] = $dataTable['age_4_lower'];
+    $jsonArray['age_4_upper'] = $dataTable['age_4_upper'];
+    $jsonArray['age_5_lower'] = $dataTable['age_5_lower'];
+    $jsonArray['age_5_upper'] = $dataTable['age_5_upper'];
+    $jsonArray['age_6_lower'] = $dataTable['age_6_lower'];
+    $jsonArray['age_6_upper'] = $dataTable['age_6_upper'];
+
+    #save files data
+    $jsonArray['project_logo_100_40'] = base64_encode(file_get_contents(\Vanderbilt\HarmonistHubExternalModule\getFile($this, $dataTable['project_logo_100_40'],'pdf')));
+    $jsonArray['project_logo_50_20'] = base64_encode(file_get_contents(\Vanderbilt\HarmonistHubExternalModule\getFile($this, $dataTable['project_logo_50_20'],'pdf')));
+
+    #we save the new JSON
+    if(!empty($jsonArray)){
+        $record_id = \Vanderbilt\DataModelBrowserExternalModule\saveJSONCopy('0c', $jsonArray, $module, $pidsArray['JSONCOPY']);
+    }
+
+    return array('jsonArray' => json_encode($jsonArray,JSON_FORCE_OBJECT),'record_id' =>$record_id);
+}
+
 function saveJSONCopy($type, $jsonArray, $module, $project_id){
     $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='JSONCOPY'");
-    $jsoncopyPID = getProjectInfoArray($RecordSetConstants)[0]['project_id'];
+    $jsoncopyPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
     #create and save file with json
     $filename = "jsoncopy_file_".$type."_".date("YmdsH").".txt";
-    $storedName = date("YmdsH")."_pid".$jsoncopyPID."_".getRandomIdentifier(6).".txt";
+    $storedName = date("YmdsH")."_pid".$jsoncopyPID."_".\Vanderbilt\DataModelBrowserExternalModule\getRandomIdentifier(6).".txt";
 
     $file = fopen(EDOC_PATH.$storedName,"wb");
     fwrite($file,json_encode($jsonArray,JSON_FORCE_OBJECT));
@@ -609,7 +652,7 @@ function saveJSONCopy($type, $jsonArray, $module, $project_id){
     $docId = db_insert_id();
 
     #we check the version
-    $data = returnJSONCopyVersion($type, $jsoncopyPID);
+    $data = \Vanderbilt\DataModelBrowserExternalModule\returnJSONCopyVersion($type, $jsoncopyPID);
     $lastversion = $data['lastversion'] + 1;
     #save the project
     $Proj = new \Project($jsoncopyPID);
@@ -628,7 +671,7 @@ function saveJSONCopy($type, $jsonArray, $module, $project_id){
  */
 function returnJSONCopyVersion($type, $jsoncopyID){
     $RecordSetJsonCopy = \REDCap::getData($jsoncopyID, 'array', null,null,null,null,false,false,false,"[type]='".$type."'");
-    $datatype = getProjectInfoArray($RecordSetJsonCopy)[0];
+    $datatype = ProjectData::getProjectInfoArray($RecordSetJsonCopy)[0];
     $lastversion = 0;
     $record_id = 0;
     $data = array();
@@ -667,7 +710,7 @@ function parseCSVtoArray($DocID){
     $qTableCSV = db_query($sqlTableCSV);
     $csv = array();
     while ($rowTableCSV = db_fetch_assoc($qTableCSV)) {
-        $csv = createArrayFromCSV(EDOC_PATH,$rowTableCSV['stored_name']);
+        $csv = \Vanderbilt\DataModelBrowserExternalModule\createArrayFromCSV(EDOC_PATH,$rowTableCSV['stored_name']);
     }
     return $csv;
 }
@@ -756,82 +799,6 @@ function convertDigit($number, $base) {
             return "";
         }
     }
-}
-
-function getProjectInfoArrayRepeatingInstruments($records,$filterLogic=null){
-    $array = array();
-    $found = array();
-    $index=0;
-    foreach ($filterLogic as $filterkey => $filtervalue){
-        array_push($found, false);
-    }
-    foreach ($records as $record=>$record_array) {
-        $count = 0;
-        foreach ($filterLogic as $filterkey => $filtervalue){
-            $found[$count] = false;
-            $count++;
-        }
-        foreach ($record_array as $event=>$data) {
-            if($event == 'repeat_instances'){
-                foreach ($data as $eventarray){
-                    $datarepeat = array();
-                    foreach ($eventarray as $instrument=>$instrumentdata){
-                        $count = 0;
-                        foreach ($instrumentdata as $instance=>$instancedata){
-                            foreach ($instancedata as $field_name=>$value){
-                                if(!array_key_exists($field_name,$array[$index])){
-                                    $array[$index][$field_name] = array();
-                                }
-                                if($value != "" && (!is_array($value) || (is_array($value) && !empty($value)))){
-                                    $datarepeat[$field_name][$instance] = $value;
-
-                                    $count = 0;
-                                    foreach ($filterLogic as $filterkey => $filtervalue){
-                                        if($value == $filtervalue && $field_name == $filterkey){
-                                            $found[$count] = true;
-                                        }
-                                        $count++;
-                                    }
-                                }
-                            }
-                            $count++;
-                        }
-                    }
-                    foreach ($datarepeat as $field=>$datai){
-                        #check if non repeatable value is empty and add repeatable value
-                        #empty value or checkboxes
-                        if($array[$index][$field] == "" || (is_array($array[$index][$field]) && empty($array[$index][$field][1]))){
-                            $array[$index][$field] = $datarepeat[$field];
-                        }
-                    }
-                }
-            }else{
-                $array[$index] = $data;
-                foreach ($data as $fname=>$fvalue) {
-                    $count = 0;
-                    foreach ($filterLogic as $filterkey => $filtervalue){
-                        if($fvalue == $filtervalue && $fname == $filterkey){
-                            $found[$count] = true;
-                        }
-                        $count++;
-                    }
-                }
-            }
-        }
-        $found_total = true;
-        foreach ($found as $fname=>$fvalue) {
-            if($fvalue == false){
-                $found_total = false;
-                break;
-            }
-        }
-        if(!$found_total && $filterLogic != null){
-            unset($array[$index]);
-        }
-
-        $index++;
-    }
-    return $array;
 }
 
 function getFile($module, $edoc, $type){

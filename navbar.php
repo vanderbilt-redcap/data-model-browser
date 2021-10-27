@@ -20,7 +20,7 @@ if(array_key_exists('page',$_REQUEST)){
                 $tid = $_REQUEST['tid'];
                 $vid = isset($_REQUEST['vid']) ? $_REQUEST['vid']:"";
                 $path = "&tid=".$tid."&vid=".$vid;
-                $dataTable = getTablesInfo($module,DES_DATAMODEL,$tid);
+                $dataTable = \Vanderbilt\DataModelBrowserExternalModule\getTablesInfo($module,DES_DATAMODEL,$tid);
                 $active = "";
                 foreach( $dataTable as $data ) {
                     if (!empty($data['record_id'])) {
