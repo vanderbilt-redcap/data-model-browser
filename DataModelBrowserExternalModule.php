@@ -54,7 +54,8 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
                     $hasJsoncopyBeenUpdated0a = $this->hasJsoncopyBeenUpdated('0a', $settings, $project_id);
                     $hasJsoncopyBeenUpdated0b = $this->hasJsoncopyBeenUpdated('0b', $settings, $project_id);
-                    if ($hasJsoncopyBeenUpdated0a || $hasJsoncopyBeenUpdated0b) {
+                    $hasJsoncopyBeenUpdated0c = $this->hasJsoncopyBeenUpdated('0c', $settings, $project_id);
+                    if ($hasJsoncopyBeenUpdated0a || $hasJsoncopyBeenUpdated0b || $hasJsoncopyBeenUpdated0c) {
                         $this->createAndSavePDFCron($settings, $project_id);
                         $this->createAndSaveJSONCron($project_id);
                     } else {
