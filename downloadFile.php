@@ -1,4 +1,7 @@
 <?php
+namespace Vanderbilt\DataModelBrowserExternalModule;
+require_once "projects.php";
+
 $filename = $_REQUEST['file'];
 $sname = $_REQUEST['sname'];
 

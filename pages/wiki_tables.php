@@ -44,7 +44,9 @@ $dataTable = ProjectData::getProjectInfoArray($RecordSetDataModel);
     <?php if($settings['upload_file'] != ""){
             foreach ($settings['upload_file'] as $index=>$event){
                 if ($settings['upload_text'][$index] != '' || $settings['upload_file'][$index] != '') {
-                    echo '<span style="display: block">' . $settings['upload_name'][$index] . ' (<i class="fa fa-arrow-down" style="color:#5cb85c"></i> <a href="options/downloadFile.php?' . parseCSVtoLink($settings['upload_file'][$index]) . '" target="_blank">' . $settings['upload_text'][$index] . '</a>, last updated ' . $settings['upload_date'][$index] . ')</span>';
+                    $url = $module->getUrl('downloadFile.php?' . parseCSVtoLink($settings['upload_file'][$index]));
+                    echo '<span style="display: block">' . $settings['upload_name'][$index] . ' (<i class="fa fa-arrow-down" style="color:#5cb85c"></i> 
+                            <a href="'.$url. '" target="_blank">' . $settings['upload_text'][$index] . '</a>, last updated ' . $settings['upload_date'][$index] . ')</span>';
                 }
             }
        }

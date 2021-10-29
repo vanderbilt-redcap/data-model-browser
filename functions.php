@@ -330,7 +330,7 @@ function generateTablesHTML_pdf($module,$dataTable,$draft,$deprecated, $project_
  * @return string, the html table with the content
  */
 function getHtmlCodesTable($code_file,$htmlCodes,$id){
-    $csv = parseCSVtoArray($code_file);
+    $csv = \Vanderbilt\DataModelBrowserExternalModule\parseCSVtoArray($code_file);
     if(!empty($csv)) {
         $htmlCodes = '<table border="1px" style="border-collapse: collapse;" record_id="'. $id .'">';
         foreach ($csv as $header => $content) {
@@ -403,7 +403,7 @@ function getHtmlTableCodesTableArrayExcel($module,$dataTable){
 
 function getHtmlCodesTableArrayExcel($data_array,$data_code_array,$code_file)
 {
-    $csv = parseCSVtoArray($code_file);
+    $csv = \Vanderbilt\DataModelBrowserExternalModule\parseCSVtoArray($code_file);
     if (!empty($csv)) {
         foreach ($csv as $header => $content) {
             if ($header != 0) {
@@ -556,7 +556,7 @@ function createProject0BJSON($module, $project_id){
             }
         }else if($data['code_format'] == '3'){
             $jsonVarContentArray  = array();
-            $csv = parseCSVtoArray($data['code_file']);
+            $csv = \Vanderbilt\DataModelBrowserExternalModule\parseCSVtoArray($data['code_file']);
             foreach ($csv as $header=>$content){
                 if($header != 0){
                     //Convert to UTF-8 to avoid weird characters

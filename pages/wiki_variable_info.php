@@ -118,7 +118,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', DES_DATAMODEL);
                     <div class="col-md-12">
                         <span class="wiki_title_small">Code list</span>
                         <div class="wiki_text_inside wiki_text_size">
-                            <span style="display:block;"><?PHP echo $data['variable_name'][$vid];?> codes ( <i class="fa fa-arrow-down"></i> <a href="options/downloadFile.php?<?= parseCSVtoLink($codeformat['code_file']);?>" target="_blank">Download CSV</a> )</span>
+                            <span style="display:block;"><?PHP echo $data['variable_name'][$vid];?> codes ( <i class="fa fa-arrow-down"></i> <a href="<?= $module->getUrl('downloadFile.php?' . parseCSVtoLink($codeformat['code_file']));?>" target="_blank">Download CSV</a> )</span>
                             <?php if(!empty($codeformat) && array_key_exists('codelist_update_d', $codeformat) && !empty($codeformat['codelist_update_d'])) {
                                 ?><span style="display:block;"><i>Last code list update: <?=$codeformat['codelist_update_d']?></i></span><?php
                             }else{
@@ -135,7 +135,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', DES_DATAMODEL);
                                     <table class="table table-bordered table-hover code_modal_table">
                                         <?PHP if(!empty($codeTable)){ ?>
                                             <?PHP
-                                            $csv = parseCSVtoArray($codeformat['code_file']);
+                                            $csv = \Vanderbilt\DataModelBrowserExternalModule\parseCSVtoArray($codeformat['code_file']);
                                             if(empty($csv)){
                                                 ?><div style="text-align: center;color:red;">No Codes found for file: <?=$codeformat['code_file']?></div><?PHP
                                             }
