@@ -59,7 +59,9 @@ if(count($dd_array) == 1 && $isAdmin && !array_key_exists('project_constant',$dd
             </div>';
 }else{
     include_once("projects.php");
-    $settings = \REDCap::getData(array('project_id'=>DES_SETTINGS),'array')[1][$module->framework->getEventId(DES_SETTINGS)];
+    $RecordSetSettings = \REDCap::getData(DES_SETTINGS, 'array');
+    $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
+
     include_once("functions.php");
 
     $des_privacy = $module->getProjectSetting('des-privacy');

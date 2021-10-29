@@ -1,7 +1,8 @@
 <?php
 require_once __DIR__ ."/../projects.php";
 session_start();
-$settings = \REDCap::getData(array('project_id'=>DES_SETTINGS),'array')[1][$module->framework->getEventId(DES_SETTINGS)];
+$RecordSetSettings = \REDCap::getData(DES_SETTINGS, 'array');
+$settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
 
 $value = $_POST['value'];
 $status = $_POST['status'];

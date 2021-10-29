@@ -1,8 +1,6 @@
 <?php
 namespace Vanderbilt\DataModelBrowserExternalModule;
 
-$filerepo = \REDCap::getData(array('project_id'=>DES_FILEREPO),'array');
-
 $deprecated = empty($_POST['deprecated']) ? $_SESSION['deprecated_'.$settings['des_wkname']] : $_POST['deprecated_'.$settings['des_wkname']];
 $draft = empty($_POST['draft']) ? $_SESSION['draft_'.$settings['des_wkname']] : $_POST['draft_'.$settings['des_wkname']];
 $tid = empty($_REQUEST['tid']) ? "" : $_REQUEST['tid'];
@@ -43,12 +41,10 @@ $dataTable = ProjectData::getProjectInfoArray($RecordSetDataModel);
     <?php echo $settings['des_doc_fronttext']?>
 </div>
 <div class="col-md-12 wiki_text wiki_text_size" style="padding-top: 0;padding-bottom: 30px;">
-    <?php if($filerepo != ""){
-            foreach ($filerepo as $event){
-                foreach ($event as $file) {
-                    if ($file['upload_text'] != '' || $file['upload_file'] != '') {
-                        echo '<span style="display: block">' . $file['upload_name'] . ' (<i class="fa fa-arrow-down" style="color:#5cb85c"></i> <a href="options/downloadFile.php?' . parseCSVtoLink($file['upload_file']) . '" target="_blank">' . $file['upload_text'] . '</a>, last updated ' . $file['upload_date'] . ')</span>';
-                    }
+    <?php if($settings['upload_file'] != ""){
+            foreach ($settings['upload_file'] as $index=>$event){
+                if ($settings['upload_text'][$index] != '' || $settings['upload_file'][$index] != '') {
+                    echo '<span style="display: block">' . $settings['upload_name'][$index] . ' (<i class="fa fa-arrow-down" style="color:#5cb85c"></i> <a href="options/downloadFile.php?' . parseCSVtoLink($settings['upload_file'][$index]) . '" target="_blank">' . $settings['upload_text'][$index] . '</a>, last updated ' . $settings['upload_date'][$index] . ')</span>';
                 }
             }
        }

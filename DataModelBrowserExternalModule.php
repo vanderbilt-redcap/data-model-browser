@@ -50,7 +50,8 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
                 $settingsPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
                 if($settingsPID != "") {
-                    $settings = \REDCap::getData(array('project_id' => $settingsPID), 'array')[1][$this->framework->getEventId($settingsPID)];
+                    $RecordSetSettings = \REDCap::getData($settingsPID, 'array');
+                    $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
 
                     $hasJsoncopyBeenUpdated0a = $this->hasJsoncopyBeenUpdated('0a', $settings, $project_id);
                     $hasJsoncopyBeenUpdated0b = $this->hasJsoncopyBeenUpdated('0b', $settings, $project_id);
@@ -87,7 +88,8 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
                 $settingsPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
                 if($settingsPID != "") {
-                    $settings = \REDCap::getData(array('project_id' => $settingsPID), 'array')[1][$this->framework->getEventId($settingsPID)];
+                    $RecordSetSettings = \REDCap::getData($settingsPID, 'array');
+                    $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
 
                     if ($settings['des_pdf_regenerate'][1] == '1') {
                         $this->createAndSavePDFCron($settings, $project_id);

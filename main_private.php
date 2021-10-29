@@ -1,3 +1,4 @@
+<?php use Vanderbilt\DataModelBrowserExternalModule\ProjectData; ?>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <script type="text/javascript" src="<?=$module->getUrl('js/jquery-3.3.1.min.js')?>"></script>
@@ -23,7 +24,8 @@
 </script>
 <?php
 include_once("projects.php");
-$settings = \REDCap::getData(array('project_id'=>DES_SETTINGS),'array')[1][$module->framework->getEventId(DES_SETTINGS)];
+$RecordSetSettings = \REDCap::getData(DES_SETTINGS, 'array');
+$settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
 include_once("functions.php");
 $des_privacy = $module->getProjectSetting('des-privacy');
 $has_permission = false;

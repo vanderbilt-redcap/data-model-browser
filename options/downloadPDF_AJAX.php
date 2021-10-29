@@ -7,7 +7,8 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Vanderbilt\DataModelBrowserExternalModule\ProjectData;
 
-$settings = \REDCap::getData(array('project_id'=>DES_SETTINGS),'array')[1][$module->framework->getEventId(DES_SETTINGS)];
+$RecordSetSettings = \REDCap::getData(DES_SETTINGS, 'array');
+$settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
 
 $option = $_REQUEST['option'];
 $deprecated = $_REQUEST['deprecated'];
