@@ -5,30 +5,38 @@ use ExternalModules\AbstractExternalModule;
 use ExternalModules\ExternalModules;
 
 $project_id = $_REQUEST['pid'];
+$des_projectname = $module->getProjectSetting('des-projectname');
+
+#MAPPER PARENT PROJECT
+$newProjectTitle = strip_tags($des_projectname.": Parent Project");
 $path = $module->framework->getModulePath()."csv/PID_data_dictionary.csv";
 $module->framework->importDataDictionary($project_id,$path);
 $custom_record_label = "[project_constant]: [project_id]";
 $module->query("UPDATE redcap_projects SET custom_record_label = ? WHERE project_id = ?",[$custom_record_label,$project_id]);
+$module->query("UPDATE redcap_projects SET app_title = ? WHERE project_id = ?",[$newProjectTitle,$project_id]);
 
-$projects_array = array(0=>'DATAMODEL',1=>'CODELIST',2=>'SETTINGS',3=>'JSONCOPY', 4=>'DATAMODELMETADATA');
-$custom_record_label_array = array(0=>"[table_name]",1=>"[list_name]",2=>'',3=>"version [version]: [type]", 4=>'');
+$projects_array = array(0=>'SETTINGS',1=>'DATAMODEL',2=>'CODELIST',3=>'DATAMODELMETADATA', 4=>'JSONCOPY');
+$projects_titles_array= array(0=>'Settings',1=>'Data Model (0A)',2=>'Code Lists (0B)',3=>'Toolkit Metadata (0C)', 4=>'JSON Files');
+$custom_record_label_array = array(0=>'', 1=>"[table_name]",2=>"[list_name]",3=>'',4=>"version [version]: [type]");
 $projects_array_repeatable = array(
-    0=>array(0=>array('status'=>0,'instrument'=>'variable_metadata','params'=>'[variable_name]')),
-    1=>array(0=>array('status'=>0,'instrument'=>'','params'=>'')),
+    0=>array(0=>array('status'=>0,'instrument'=>'','params'=>'')),
+    1=>array(0=>array('status'=>0,'instrument'=>'variable_metadata','params'=>'[variable_name]')),
     2=>array(0=>array('status'=>0,'instrument'=>'','params'=>'')),
-    3=>array(0=>array('status'=>1,'instrument'=>'display_file','params'=>'[upload_date], [upload_name]')),
-    4=>array(0=>array('status'=>0,'instrument'=>'','params'=>''))
+    3=>array(0=>array('status'=>0,'instrument'=>'','params'=>'')),
+    4=>array(0=>array('status'=>1,'instrument'=>'display_file','params'=>'[upload_date], [upload_name]'))
 );
 $userPermission = $module->getProjectSetting('user-permission',$project_id);
 
-$project_title = \REDCap::getProjectTitle();
 $record = 1;
 foreach ($projects_array as $index=>$name){
+    $project_title = $des_projectname.": ".$projects_titles_array[$index];
     $project_id_new = $module->createProjectAndImportDataDictionary($name,$project_title);
     $module->addProjectToList($project_id, $module->framework->getEventId($project_id), $record, 'record_id', $record);
     $module->addProjectToList($project_id, $module->framework->getEventId($project_id), $record, 'project_id', $project_id_new);
     $module->addProjectToList($project_id, $module->framework->getEventId($project_id), $record, 'project_constant', $name);
     $module->addProjectToList($project_id, $module->framework->getEventId($project_id), $record, 'project_info_complete', 2);
+    error_log($project_title.": ".$project_id_new);
+    error_log("Save to: ".$project_id);
     if($custom_record_label_array[$index] != ''){
         $module->query("UPDATE redcap_projects SET custom_record_label = ? WHERE project_id = ?",[$custom_record_label_array[$index],$project_id_new]);
     }
@@ -48,7 +56,10 @@ foreach ($projects_array as $index=>$name){
     $instrument_names = \REDCap::getInstrumentNames(null,$project_id_new);
     $data_entry = "[".implode(',1][',array_keys($instrument_names)).",1]";
     foreach ($userPermission as $user){
-        $module->query("UPDATE redcap_user_rights SET ".$fields_rights." WHERE project_id = ?",[$user, 1, 1, 1, 1, 1, 1, $data_entry,$project_id_new]);
+        error_log($user);
+        if($user != null) {
+            $module->query("UPDATE redcap_user_rights SET " . $fields_rights . " WHERE project_id = ?", [$user, 1, 1, 1, 1, 1, 1, $data_entry, $project_id_new]);
+        }
     }
 
     #Add Repeatable projects
@@ -138,9 +149,19 @@ $projects_array_sql = array(
     )
 );
 
-foreach ($projects_array_sql as $projectid=>$project){
-    foreach ($project as $var=>$sql){
-        $module->query("UPDATE redcap_metadata SET element_enum = ? WHERE project_id = ? AND field_name=?",[$sql,$projectid,$var]);
+foreach ($projects_array_sql as $projectid=>$projects){
+    foreach ($projects as $varid=>$options){
+        foreach ($options as $optionid=>$value){
+            if($optionid == 'query') {
+                $module->query("UPDATE redcap_metadata SET element_enum = ? WHERE project_id = ? AND field_name=?",[$value,$projectid,$varid]);
+            }
+            if($optionid == 'autocomplete' && $value == '1'){
+                $module->query("UPDATE redcap_metadata SET element_validation_type= ? WHERE project_id = ? AND field_name=?",["autocomplete",$projectid,$varid]);
+            }
+            if($optionid == 'label' && $value != "") {
+                $module->query("UPDATE redcap_metadata SET element_label= ? WHERE project_id = ? AND field_name=?", [$value, $projectid, $varid]);
+            }
+        }
     }
 }
 
