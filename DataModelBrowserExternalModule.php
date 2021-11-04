@@ -7,6 +7,7 @@ use ExternalModules\AbstractExternalModule;
 use ExternalModules\ExternalModules;
 
 include_once(__DIR__ . "/classes/ProjectData.php");
+include_once(__DIR__ . "/classes/JsonPDF.php");
 include_once(__DIR__ . "functions.php");
 
 require_once(dirname(__FILE__)."/vendor/autoload.php");
@@ -33,19 +34,13 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     }
 
     function createpdf(){
-        $sql="SELECT s.project_id FROM redcap_external_modules m, redcap_external_module_settings s WHERE m.external_module_id = s.external_module_id AND s.value = 'true' AND (m.directory_prefix = 'data-model-browser') AND s.`key` = 'enabled'";
-        $q = $this->query($sql);
-
         if(APP_PATH_WEBROOT[0] == '/'){
             $APP_PATH_WEBROOT_ALL = substr(APP_PATH_WEBROOT, 1);
         }
         define('APP_PATH_WEBROOT_ALL',APP_PATH_WEBROOT_FULL.$APP_PATH_WEBROOT_ALL);
 
-        $originalPid = $_GET['pid'];
-        while($row = db_fetch_assoc($q)) {
-            $project_id = $row['project_id'];
+        foreach ($this->getProjectsWithModuleEnabled() as $project_id){
             if($project_id != "") {
-                $_GET['pid'] = $project_id;
                 error_log("createpdf - project_id:" . $project_id);
 
                 $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
@@ -66,7 +61,6 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 }
             }
         }
-        $_GET['pid'] = $originalPid;
     }
 
     function regeneratepdf(){
@@ -133,7 +127,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     }
 
     function createAndSavePDFCron($settings, $project_id){
-        error_log("cron - createAndSavePDFCron");
+        error_log("cron - createAndSavePDFCron ".$project_id);
 
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='DATAMODEL'");
         $dataModelPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
@@ -143,9 +137,8 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
         $RecordSetDataModel = \REDCap::getData($dataModelPID, 'array');
         $dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
-
         if(!empty($dataTable)) {
-            $tableHtml = generateTablesHTML_pdf($this, $dataTable,false,false, $project_id, $dataModelPID);
+            $tableHtml = JsonPDF::generateTablesHTML_pdf($this, $dataTable,false,false, $project_id, $dataModelPID);
         }
 
         #FIRST PAGE
@@ -162,7 +155,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
         $page_num = '<style>.footer .page-number:after { content: counter(page); } .footer { position: fixed; bottom: 0px;color:grey }a{text-decoration: none;}</style>';
 
-        $img = getFile($this, $settings['des_pdf_logo'],'pdf');
+        $img = JsonPDF::getFile($this, $settings['des_pdf_logo'],'pdf');
 
         $html_pdf = "<html><head><meta http-equiv='Content-Type' content='text/html' charset='UTF-8' /><style>* { font-family: DejaVu Sans, sans-serif; }</style></head><body style='font-family:\"Calibri\";font-size:10pt;'>".$page_num
             ."<div class='footer' style='left: 590px;'><span class='page-number'>Page </span></div>"
@@ -175,7 +168,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             . "</body></html>";
 
         $filename = $settings['des_wkname']."_DES_".date("Y-m-d_hi",time());
-        //SAVE PDF ON DB
+        //SAVE JsonPDF ON DB
         $reportHash = $filename;
         $storedName = md5($reportHash);
 
@@ -209,8 +202,8 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             $row = $q->fetch_assoc();
             $project_title = $row['app_title'];
 
-            $subject = "New PDF Generated in ".$settings['des_doc_title'];
-            $message = "<div>Changes have been detected and a new PDF has been generated in ".$project_title.".</div><br/>".
+            $subject = "New JsonPDF Generated in ".$settings['des_doc_title'];
+            $message = "<div>Changes have been detected and a new JsonPDF has been generated in ".$project_title.".</div><br/>".
                 "<div>You can <a href='".$link."'>download the pdf</a> or <a href='".$goto."'>go to the settings project</a>.</div><br/>";
 
             $environment = "";
@@ -275,12 +268,12 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
     function saveJSONCopyVarSearch($jsonArray, $project_id){
         error_log("createpdf - saveJSONCopyVarSearch");
-        $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='DATAMODEL'");
+        $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
         $settingsPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
         #create and save file with json
         $filename = "jsoncopy_file_variable_search_".date("YmdsH").".txt";
-        $storedName = date("YmdsH")."_pid".$settingsPID."_".getRandomIdentifier(6).".txt";
+        $storedName = date("YmdsH")."_pid".$settingsPID."_".JsonPDF::getRandomIdentifier(6).".txt";
 
         $file = fopen(EDOC_PATH.$storedName,"wb");
         fwrite($file,json_encode($jsonArray,JSON_FORCE_OBJECT));
@@ -306,20 +299,21 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='JSONCOPY'");
         $jsoncopyPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
+        $jsonPdf = new JsonPDF;
         if($jsoncocpy["jsoncopy_file"] != ""){
             $q = $this->query("SELECT stored_name,doc_name,doc_size,mime_type FROM redcap_edocs_metadata WHERE doc_id=?",[$jsoncocpy["jsoncopy_file"]]);
             while ($row = $q->fetch_assoc()) {
                 $path = EDOC_PATH.$row['stored_name'];
                 $strJsonFileContents = file_get_contents($path);
                 $last_array = json_decode($strJsonFileContents, true);
-                $array_data = call_user_func_array("createProject".strtoupper($type)."JSON",array($this, $project_id));
+                $array_data = call_user_func_array(array($jsonPdf, "createProject".strtoupper($type)."JSON"),array($this, $project_id));
                 $new_array = json_decode($array_data['jsonArray'],true);
                 $result_prev = array_filter_empty(multi_array_diff($last_array,$new_array));
                 $result = array_filter_empty(multi_array_diff($new_array,$last_array));
                 $record = $array_data['record_id'];
             }
         }else{
-            $array_data = call_user_func_array("createProject".strtoupper($type)."JSON",array($this, $project_id));
+            $array_data = call_user_func_array(array($jsonPdf, "createProject".strtoupper($type)."JSON"),array($this, $project_id));
             $result = json_decode($array_data['jsonArray'],true);
             $result_prev = "";
             $record = $array_data['record_id'];
