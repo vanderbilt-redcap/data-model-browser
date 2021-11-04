@@ -9,7 +9,9 @@
             </button>
             <div class="imgNavbar">
                 <a href="<?=$module->getUrl("browser.php?NOAUTH")?>" style="text-decoration: none;float:left">
+                    <?php if($settings['des_logo'] != ""){?>
                    <?=\Vanderbilt\DataModelBrowserExternalModule\printFile($module,$settings['des_logo'],'logo')?>
+                    <? } ?>
                 </a>
 
                 <a href="<?=$module->getUrl("browser.php?NOAUTH")?>" style="text-decoration: none;float:left" class="hub_header_title">
