@@ -50,12 +50,12 @@ foreach ($projects_array as $index=>$name){
     }
 
     #ADD USER PERMISSIONS
-    $fields_rights = "username=?, design=?, user_rights=?, data_export_tool=?, reports=?, graphical=?, data_logging=?, data_entry=?";
+    $fields_rights = "project_id, username, design, user_rights, data_export_tool, reports, graphical, data_logging, data_entry";
     $instrument_names = \REDCap::getInstrumentNames(null,$project_id_new);
     $data_entry = "[".implode(',1][',array_keys($instrument_names)).",1]";
     foreach ($userPermission as $user){
         if($user != null) {
-            $module->query("UPDATE redcap_user_rights SET " . $fields_rights . " WHERE project_id = ?", [$user, 1, 1, 1, 1, 1, 1, $data_entry, $project_id_new]);
+            $module->query("INSERT INTO redcap_user_rights (".$fields_rights.") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [$project_id_new,$user, 1, 1, 1, 1, 1, 1, $data_entry]);
         }
     }
 
