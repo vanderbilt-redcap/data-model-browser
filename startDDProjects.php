@@ -15,12 +15,12 @@ $custom_record_label = "[project_constant]: [project_id]";
 $module->query("UPDATE redcap_projects SET custom_record_label = ? WHERE project_id = ?",[$custom_record_label,$project_id]);
 $module->query("UPDATE redcap_projects SET app_title = ? WHERE project_id = ?",[$newProjectTitle,$project_id]);
 
-$projects_array = array(0=>'SETTINGS',1=>'DATAMODEL',2=>'CODELIST',3=>'DATAMODELMETADATA', 4=>'JSONCOPY');
-$projects_titles_array= array(0=>'Settings',1=>'Data Model (0A)',2=>'Code Lists (0B)',3=>'Toolkit Metadata (0C)', 4=>'JSON Files');
+$projects_array = ProjectData::getProjectsContantsArray();
+$projects_titles_array = ProjectData::getProjectsContantsArray();
 $custom_record_label_array = array(0=>'', 1=>"[table_name]",2=>"[list_name]",3=>'',4=>"version [version]: [type]");
 $projects_array_repeatable = array(
     0=>array(0=>array('status'=>0,'instrument'=>'','params'=>'')),
-    1=>array(0=>array('status'=>0,'instrument'=>'variable_metadata','params'=>'[variable_name]')),
+    1=>array(0=>array('status'=>1,'instrument'=>'variable_metadata','params'=>'[variable_name]')),
     2=>array(0=>array('status'=>0,'instrument'=>'','params'=>'')),
     3=>array(0=>array('status'=>0,'instrument'=>'','params'=>'')),
     4=>array(0=>array('status'=>1,'instrument'=>'display_file','params'=>'[upload_date], [upload_name]'))
@@ -49,16 +49,6 @@ foreach ($projects_array as $index=>$name){
 
     }
 
-    #ADD USER PERMISSIONS
-    $fields_rights = "project_id, username, design, user_rights, data_export_tool, reports, graphical, data_logging, data_entry";
-    $instrument_names = \REDCap::getInstrumentNames(null,$project_id_new);
-    $data_entry = "[".implode(',1][',array_keys($instrument_names)).",1]";
-    foreach ($userPermission as $user){
-        if($user != null) {
-            $module->query("INSERT INTO redcap_user_rights (".$fields_rights.") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [$project_id_new,$user, 1, 1, 1, 1, 1, 1, $data_entry]);
-        }
-    }
-
     #Add Repeatable projects
     foreach($projects_array_repeatable[$index] as $repeat_event){
         if($repeat_event['status'] == 1){
@@ -70,76 +60,97 @@ foreach ($projects_array as $index=>$name){
         }
     }
 
+    #ADD USER PERMISSIONS
+    $fields_rights = "project_id, username, design, user_rights, data_export_tool, reports, graphical, data_logging, data_entry";
+    $instrument_names = \REDCap::getInstrumentNames(null,$project_id_new);
+    $data_entry = "[".implode(',1][',array_keys($instrument_names)).",1]";
+    foreach ($userPermission as $user){
+        if($user != null) {
+            $module->query("INSERT INTO redcap_user_rights (".$fields_rights.") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [$project_id_new,$user, 1, 1, 1, 1, 1, 1, $data_entry]);
+        }
+    }
+
     \Records::addRecordToRecordListCache($project_id, $record,1);
     $record++;
 }
 
+#We must clear the project cache so our updates are pulled from the DB.
+$module->clearProjectCache();
 #Upload SQL fields to projects
-include_once("projects.php");
+#Get Projects ID's
+$pidsArray = ProjectData::getPIDsArray($project_id);
 
 $projects_array_sql = array(
-    DES_DATAMODEL=>array(
-        'variable_replacedby' => "SELECT CONCAT(a.record, ':', b.instance), CONCAT(a.value, ':', b.value) FROM (SELECT record,value FROM redcap_data WHERE project_id=".DES_DATAMODEL." AND field_name = 'table_name') a JOIN (SELECT record, value, IFNULL(instance,1) as instance FROM redcap_data WHERE project_id=".DES_DATAMODEL." AND field_name = 'variable_name') b  ON b.record=a.record ORDER BY a.value, b.instance",
-        'code_list_ref' => "select record, value from redcap_data where project_id = ".DES_CODELIST." and field_name = 'list_name' order by value asc"
+    $pidsArray['DATAMODEL']=>array(
+        'variable_replacedby' => array(
+            'query' => "SELECT CONCAT(a.record, ':', b.instance), CONCAT(a.value, ':', b.value) FROM (SELECT record,value FROM redcap_data WHERE project_id=".$pidsArray['DATAMODEL']." AND field_name = 'table_name') a JOIN (SELECT record, value, IFNULL(instance,1) as instance FROM redcap_data WHERE project_id=".$pidsArray['DATAMODEL']." AND field_name = 'variable_name') b  ON b.record=a.record ORDER BY a.value, b.instance",
+            'autocomplete' => '1',
+            'label' => ""
+        ),
+        'code_list_ref' => array(
+            'query' => "select record, value from redcap_data where project_id = ".$pidsArray['CODELIST']." and field_name = 'list_name' order by value asc",
+            'autocomplete' => '0',
+            'label' => ""
+        )
     ),
-    DES_DATAMODELMETADATA=>array(
+    $pidsArray['DATAMODELMETADATA']=>array(
         'index_tablename' =>  array (
-            'query' => "SELECT a.record,   CONCAT(   max(if(a.field_name = 'table_name', a.value, NULL)),    '  ' ) as value  FROM redcap_data a  WHERE a.project_id=".DES_DATAMODEL."  GROUP BY a.record  ORDER BY value",
+            'query' => "SELECT a.record,   CONCAT(   max(if(a.field_name = 'table_name', a.value, NULL)),    '  ' ) as value  FROM redcap_data a  WHERE a.project_id=".$pidsArray['DATAMODEL']."  GROUP BY a.record  ORDER BY value",
             'autocomplete' => '0',
             'label' => ""
         ),
         'patient_id_var' =>  array (
-            'query' => "SELECT CONCAT(a.record, ':', b.instance), CONCAT(a.value, ':', b.value) FROM (SELECT record,value FROM redcap_data WHERE project_id=".DES_DATAMODEL." AND field_name = 'table_name') a JOIN (SELECT record, value, IFNULL(instance,1) as instance FROM redcap_data WHERE project_id=".DES_DATAMODEL." AND field_name = 'variable_name') b  ON b.record=a.record ORDER BY a.value, b.instance",
+            'query' => "SELECT CONCAT(a.record, ':', b.instance), CONCAT(a.value, ':', b.value) FROM (SELECT record,value FROM redcap_data WHERE project_id=".$pidsArray['DATAMODEL']." AND field_name = 'table_name') a JOIN (SELECT record, value, IFNULL(instance,1) as instance FROM redcap_data WHERE project_id=".$pidsArray['DATAMODEL']." AND field_name = 'variable_name') b  ON b.record=a.record ORDER BY a.value, b.instance",
             'autocomplete' => '0',
             'label' => ""
         ),
         'default_group_var' =>  array (
-            'query' => "SELECT CONCAT(a.record, ':', b.instance), CONCAT(a.value, ':', b.value) FROM (SELECT record,value FROM redcap_data WHERE project_id=".DES_DATAMODEL." AND field_name = 'table_name') a JOIN (SELECT record, value, IFNULL(instance,1) as instance FROM redcap_data WHERE project_id=".DES_DATAMODEL." AND field_name = 'variable_name') b  ON b.record=a.record ORDER BY a.value, b.instance",
+            'query' => "SELECT CONCAT(a.record, ':', b.instance), CONCAT(a.value, ':', b.value) FROM (SELECT record,value FROM redcap_data WHERE project_id=".$pidsArray['DATAMODEL']." AND field_name = 'table_name') a JOIN (SELECT record, value, IFNULL(instance,1) as instance FROM redcap_data WHERE project_id=".$pidsArray['DATAMODEL']." AND field_name = 'variable_name') b  ON b.record=a.record ORDER BY a.value, b.instance",
             'autocomplete' => '0',
             'label' => ""
         ),
         'group_tablename' =>  array (
-            'query' => "SELECT a.record,   CONCAT(   max(if(a.field_name = 'table_name', a.value, NULL)),    '  ' ) as value  FROM redcap_data a  WHERE a.project_id=".DES_DATAMODEL."  GROUP BY a.record  ORDER BY value",
+            'query' => "SELECT a.record,   CONCAT(   max(if(a.field_name = 'table_name', a.value, NULL)),    '  ' ) as value  FROM redcap_data a  WHERE a.project_id=".$pidsArray['DATAMODEL']."  GROUP BY a.record  ORDER BY value",
             'autocomplete' => '0',
             'label' => ""
         ),
         'birthdate_var' =>  array (
-            'query' => "SELECT CONCAT(a.record, ':', b.instance), CONCAT(a.value, ':', b.value) FROM (SELECT record,value FROM redcap_data WHERE project_id=".DES_DATAMODEL." AND field_name = 'table_name') a JOIN (SELECT record, value, IFNULL(instance,1) as instance FROM redcap_data WHERE project_id=".DES_DATAMODEL." AND field_name = 'variable_name') b  ON b.record=a.record ORDER BY a.value, b.instance",
+            'query' => "SELECT CONCAT(a.record, ':', b.instance), CONCAT(a.value, ':', b.value) FROM (SELECT record,value FROM redcap_data WHERE project_id=".$pidsArray['DATAMODEL']." AND field_name = 'table_name') a JOIN (SELECT record, value, IFNULL(instance,1) as instance FROM redcap_data WHERE project_id=".$pidsArray['DATAMODEL']." AND field_name = 'variable_name') b  ON b.record=a.record ORDER BY a.value, b.instance",
             'autocomplete' => '0',
             'label' => ""
         ),
         'death_date_var' =>  array (
-            'query' => "SELECT CONCAT(a.record, ':', b.instance), CONCAT(a.value, ':', b.value) FROM (SELECT record,value FROM redcap_data WHERE project_id=".DES_DATAMODEL." AND field_name = 'table_name') a JOIN (SELECT record, value, IFNULL(instance,1) as instance FROM redcap_data WHERE project_id=".DES_DATAMODEL." AND field_name = 'variable_name') b  ON b.record=a.record ORDER BY a.value, b.instance",
+            'query' => "SELECT CONCAT(a.record, ':', b.instance), CONCAT(a.value, ':', b.value) FROM (SELECT record,value FROM redcap_data WHERE project_id=".$pidsArray['DATAMODEL']." AND field_name = 'table_name') a JOIN (SELECT record, value, IFNULL(instance,1) as instance FROM redcap_data WHERE project_id=".$pidsArray['DATAMODEL']." AND field_name = 'variable_name') b  ON b.record=a.record ORDER BY a.value, b.instance",
             'autocomplete' => '0',
             'label' => ""
         ),
         'age_date_var' =>  array (
-            'query' => "SELECT CONCAT(a.record, ':', b.instance), CONCAT(a.value, ':', b.value) FROM (SELECT record,value FROM redcap_data WHERE project_id=".DES_DATAMODEL." AND field_name = 'table_name') a JOIN (SELECT record, value, IFNULL(instance,1) as instance FROM redcap_data WHERE project_id=".DES_DATAMODEL." AND field_name = 'variable_name') b  ON b.record=a.record ORDER BY a.value, b.instance",
+            'query' => "SELECT CONCAT(a.record, ':', b.instance), CONCAT(a.value, ':', b.value) FROM (SELECT record,value FROM redcap_data WHERE project_id=".$pidsArray['DATAMODEL']." AND field_name = 'table_name') a JOIN (SELECT record, value, IFNULL(instance,1) as instance FROM redcap_data WHERE project_id=".$pidsArray['DATAMODEL']." AND field_name = 'variable_name') b  ON b.record=a.record ORDER BY a.value, b.instance",
             'autocomplete' => '0',
             'label' => ""
         ),
         'enrol_date_var' =>  array (
-            'query' => "SELECT CONCAT(a.record, ':', b.instance), CONCAT(a.value, ':', b.value) FROM (SELECT record,value FROM redcap_data WHERE project_id=".DES_DATAMODEL." AND field_name = 'table_name') a JOIN (SELECT record, value, IFNULL(instance,1) as instance FROM redcap_data WHERE project_id=".DES_DATAMODEL." AND field_name = 'variable_name') b  ON b.record=a.record ORDER BY a.value, b.instance",
+            'query' => "SELECT CONCAT(a.record, ':', b.instance), CONCAT(a.value, ':', b.value) FROM (SELECT record,value FROM redcap_data WHERE project_id=".$pidsArray['DATAMODEL']." AND field_name = 'table_name') a JOIN (SELECT record, value, IFNULL(instance,1) as instance FROM redcap_data WHERE project_id=".$pidsArray['DATAMODEL']." AND field_name = 'variable_name') b  ON b.record=a.record ORDER BY a.value, b.instance",
             'autocomplete' => '0',
             'label' => ""
         ),
         'height_table' =>  array (
-            'query' => "SELECT a.record,   CONCAT(   max(if(a.field_name = 'table_name', a.value, NULL)),    '  ' ) as value  FROM redcap_data a  WHERE a.project_id=".DES_DATAMODEL."  GROUP BY a.record  ORDER BY value",
+            'query' => "SELECT a.record,   CONCAT(   max(if(a.field_name = 'table_name', a.value, NULL)),    '  ' ) as value  FROM redcap_data a  WHERE a.project_id=".$pidsArray['DATAMODEL']."  GROUP BY a.record  ORDER BY value",
             'autocomplete' => '0',
             'label' => ""
         ),
         'height_var' =>  array (
-            'query' => "SELECT CONCAT(a.record, ':', b.instance), CONCAT(a.value, ':', b.value) FROM (SELECT record,value FROM redcap_data WHERE project_id=".DES_DATAMODEL." AND field_name = 'table_name') a JOIN (SELECT record, value, IFNULL(instance,1) as instance FROM redcap_data WHERE project_id=".DES_DATAMODEL." AND field_name = 'variable_name') b  ON b.record=a.record ORDER BY a.value, b.instance",
+            'query' => "SELECT CONCAT(a.record, ':', b.instance), CONCAT(a.value, ':', b.value) FROM (SELECT record,value FROM redcap_data WHERE project_id=".$pidsArray['DATAMODEL']." AND field_name = 'table_name') a JOIN (SELECT record, value, IFNULL(instance,1) as instance FROM redcap_data WHERE project_id=".$pidsArray['DATAMODEL']." AND field_name = 'variable_name') b  ON b.record=a.record ORDER BY a.value, b.instance",
             'autocomplete' => '0',
             'label' => ""
         ),
         'height_date' =>  array (
-            'query' => "SELECT CONCAT(a.record, ':', b.instance), CONCAT(a.value, ':', b.value) FROM (SELECT record,value FROM redcap_data WHERE project_id=".DES_DATAMODEL." AND field_name = 'table_name') a JOIN (SELECT record, value, IFNULL(instance,1) as instance FROM redcap_data WHERE project_id=".DES_DATAMODEL." AND field_name = 'variable_name') b  ON b.record=a.record ORDER BY a.value, b.instance",
+            'query' => "SELECT CONCAT(a.record, ':', b.instance), CONCAT(a.value, ':', b.value) FROM (SELECT record,value FROM redcap_data WHERE project_id=".$pidsArray['DATAMODEL']." AND field_name = 'table_name') a JOIN (SELECT record, value, IFNULL(instance,1) as instance FROM redcap_data WHERE project_id=".$pidsArray['DATAMODEL']." AND field_name = 'variable_name') b  ON b.record=a.record ORDER BY a.value, b.instance",
             'autocomplete' => '0',
             'label' => ""
         ),
         'height_units' =>  array (
-            'query' => "SELECT CONCAT(a.record, ':', b.instance), CONCAT(a.value, ':', b.value) FROM (SELECT record,value FROM redcap_data WHERE project_id=".DES_DATAMODEL." AND field_name = 'table_name') a JOIN (SELECT record, value, IFNULL(instance,1) as instance FROM redcap_data WHERE project_id=".DES_DATAMODEL." AND field_name = 'variable_name') b  ON b.record=a.record ORDER BY a.value, b.instance",
+            'query' => "SELECT CONCAT(a.record, ':', b.instance), CONCAT(a.value, ':', b.value) FROM (SELECT record,value FROM redcap_data WHERE project_id=".$pidsArray['DATAMODEL']." AND field_name = 'table_name') a JOIN (SELECT record, value, IFNULL(instance,1) as instance FROM redcap_data WHERE project_id=".$pidsArray['DATAMODEL']." AND field_name = 'variable_name') b  ON b.record=a.record ORDER BY a.value, b.instance",
             'autocomplete' => '0',
             'label' => ""
         )

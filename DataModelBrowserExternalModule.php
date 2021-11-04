@@ -745,4 +745,17 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         // Return any SQL errors
         return $sql_errors;
     }
+
+    public function clearProjectCache(){
+        $this->setPrivateVariable('project_cache', [], 'Project');
+    }
+
+    protected function setPrivateVariable($name, $value, $target = null)
+    {
+        $class = new \ReflectionClass($target);
+        $property = $class->getProperty($name);
+        $property->setAccessible(true);
+
+        return $property->setValue($this, $value);
+    }
 }

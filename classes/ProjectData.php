@@ -6,6 +6,20 @@ class ProjectData
 {
     public $default_value;
 
+
+    public static function getProjectsContantsArray(){
+        $projects_array = array(0=>'SETTINGS',1=>'DATAMODEL',2=>'CODELIST',3=>'DATAMODELMETADATA', 4=>'JSONCOPY');
+
+        return $projects_array;
+    }
+
+    public static function getProjectsTitlesArray(){
+        $projects_titles_array = array(0=>'Settings',1=>'Data Model (0A)',2=>'Code Lists (0B)',3=>'Toolkit Metadata (0C)', 4=>'JSON Files');
+
+        return $projects_titles_array;
+    }
+
+
     /**
      * Function that returns the info array from a specific project
      * @param $project, the project id
@@ -116,6 +130,20 @@ class ProjectData
 
     public function getDefaultValues($project_id){
         return $this->default_value[$project_id];
+    }
+
+    public static function getPIDsArray($project_id){
+        $projects_array = self::getProjectsContantsArray();
+        $pidsArray = array();
+        foreach ($projects_array as $constant){
+            $RecordSetHarmonist = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='".$constant."'");
+            $pid = self::getProjectInfoArray($RecordSetHarmonist)[0]['project_id'];
+            if($pid != ""){
+                $pidsArray[$constant] = $pid;
+            }
+        }
+        $pidsArray['PROJECTS'] = $project_id;
+        return $pidsArray;
     }
 }
 ?>
