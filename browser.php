@@ -52,7 +52,7 @@ $des_privacy = $module->getProjectSetting('des-privacy');
 if($des_projectname == "" || $des_privacy == ""){
     echo '  <div class="container" style="margin-top: 60px">  
                 <div class="alert alert-warning col-md-12">
-                 There are some missing module settings. To edit them go to the <a href="'.APP_PATH_WEBROOT.'external_modules/manager/project.php?pid='.$_REQUEST['pid'].'" target="_blank">External Modules - Project Module Manager</a>.    
+                 There are some missing module settings. To edit them go to the <a href="'.APP_PATH_WEBROOT_FULL.'external_modules/manager/project.php?pid='.$_REQUEST['pid'].'" target="_blank">External Modules - Project Module Manager</a>.    
                 </div>
             </div>';
 }else if(count($dd_array) == 1 && $isAdmin && !array_key_exists('project_constant',$dd_array) && !array_key_exists('project_id',$dd_array) || count($data_array) == 0){
