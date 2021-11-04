@@ -8,7 +8,7 @@ $project_id = $_REQUEST['pid'];
 $des_projectname = $module->getProjectSetting('des-projectname');
 
 #MAPPER PARENT PROJECT
-$newProjectTitle = strip_tags($des_projectname.": Parent Project");
+$newProjectTitle = $des_projectname.": Parent Project";
 $path = $module->framework->getModulePath()."csv/PID_data_dictionary.csv";
 $module->framework->importDataDictionary($project_id,$path);
 $custom_record_label = "[project_constant]: [project_id]";
