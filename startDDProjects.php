@@ -35,8 +35,6 @@ foreach ($projects_array as $index=>$name){
     $module->addProjectToList($project_id, $module->framework->getEventId($project_id), $record, 'project_id', $project_id_new);
     $module->addProjectToList($project_id, $module->framework->getEventId($project_id), $record, 'project_constant', $name);
     $module->addProjectToList($project_id, $module->framework->getEventId($project_id), $record, 'project_info_complete', 2);
-    error_log($project_title.": ".$project_id_new);
-    error_log("Save to: ".$project_id);
     if($custom_record_label_array[$index] != ''){
         $module->query("UPDATE redcap_projects SET custom_record_label = ? WHERE project_id = ?",[$custom_record_label_array[$index],$project_id_new]);
     }
@@ -56,7 +54,6 @@ foreach ($projects_array as $index=>$name){
     $instrument_names = \REDCap::getInstrumentNames(null,$project_id_new);
     $data_entry = "[".implode(',1][',array_keys($instrument_names)).",1]";
     foreach ($userPermission as $user){
-        error_log($user);
         if($user != null) {
             $module->query("UPDATE redcap_user_rights SET " . $fields_rights . " WHERE project_id = ?", [$user, 1, 1, 1, 1, 1, 1, $data_entry, $project_id_new]);
         }

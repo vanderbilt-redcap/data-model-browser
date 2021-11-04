@@ -70,24 +70,16 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     }
 
     function regeneratepdf(){
-        $sql="SELECT s.project_id FROM redcap_external_modules m, redcap_external_module_settings s WHERE m.external_module_id = s.external_module_id AND s.value = 'true' AND (m.directory_prefix = 'data-model-browser') AND s.`key` = 'enabled'";
-        $q = $this->query($sql);
-
         if(APP_PATH_WEBROOT[0] == '/'){
             $APP_PATH_WEBROOT_ALL = substr(APP_PATH_WEBROOT, 1);
         }
         define('APP_PATH_WEBROOT_ALL',APP_PATH_WEBROOT_FULL.$APP_PATH_WEBROOT_ALL);
 
-        require_once(dirname(__FILE__)."/vendor/autoload.php");
-        $originalPid = $_GET['pid'];
-        while($row = db_fetch_assoc($q)) {
-            $project_id = $row['project_id'];
+        foreach ($this->getProjectsWithModuleEnabled() as $project_id){
             if($project_id != "") {
-                $_GET['pid'] = $project_id;
-                error_log("Generate PDF - project_id:" . $project_id);
-
                 $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
                 $settingsPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
+
                 if($settingsPID != "") {
                     $RecordSetSettings = \REDCap::getData($settingsPID, 'array');
                     $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
@@ -107,7 +99,6 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 }
             }
         }
-        $_GET['pid'] = $originalPid;
     }
 
     function hasJsoncopyBeenUpdated($type,$settings, $project_id){
