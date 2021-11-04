@@ -47,7 +47,15 @@ if($UserRights['user_rights'] == '1'){
 
 $dd_array = \REDCap::getDataDictionary('array');
 $data_array = \REDCap::getData($_GET['pid'],'array');
-if(count($dd_array) == 1 && $isAdmin && !array_key_exists('project_constant',$dd_array) && !array_key_exists('project_id',$dd_array) || count($data_array) == 0){
+$des_projectname = $module->getProjectSetting('des-projectname');
+$des_privacy = $module->getProjectSetting('des-privacy');
+if($des_projectname == "" || $des_privacy == ""){
+    echo '  <div class="container" style="margin-top: 60px">  
+                <div class="alert alert-warning col-md-12">
+                 There are some missing module settings. To edit them go to the <a href="'.APP_PATH_WEBROOT.'https://redcaptest.vanderbilt.edu/external_modules/manager/project.php?pid='.$_REQUEST['pid'].'" target="_blank">External Modules - Project Module Manager</a>.    
+                </div>
+            </div>';
+}else if(count($dd_array) == 1 && $isAdmin && !array_key_exists('project_constant',$dd_array) && !array_key_exists('project_id',$dd_array) || count($data_array) == 0){
     echo '  <div class="container" style="margin-top: 60px">  
                 <div class="alert alert-warning col-md-12">
                     <div class="col-md-10"><span class="pull-left">
@@ -64,7 +72,6 @@ if(count($dd_array) == 1 && $isAdmin && !array_key_exists('project_constant',$dd
 
     include_once("functions.php");
 
-    $des_privacy = $module->getProjectSetting('des-privacy');
     $has_permission = false;
     $page = "browser.php?NOAUTH";
     ?>
