@@ -16,7 +16,7 @@ $module->query("UPDATE redcap_projects SET custom_record_label = ? WHERE project
 $module->query("UPDATE redcap_projects SET app_title = ? WHERE project_id = ?",[$newProjectTitle,$project_id]);
 
 $projects_array = ProjectData::getProjectsContantsArray();
-$projects_titles_array = ProjectData::getProjectsContantsArray();
+$projects_titles_array = ProjectData::getProjectsTitlesArray();
 $custom_record_label_array = array(0=>'', 1=>"[table_name]",2=>"[list_name]",3=>'',4=>"version [version]: [type]");
 $projects_array_repeatable = array(
     0=>array(0=>array('status'=>0,'instrument'=>'','params'=>'')),
