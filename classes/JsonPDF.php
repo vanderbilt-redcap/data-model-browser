@@ -126,7 +126,7 @@ class JsonPDF
                                         $dataFormat = "Numeric<br/>";
                                         if (array_key_exists('code_file', $codeformat) && $data['codes_print'][$id] == '1') {
                                             $dataFormat .= "<a href='#codelist_" . $data['record_id'] . "' style='cursor:pointer;text-decoration: none'>See Code List</a><br/>";
-                                            $htmlCodes .= "<table  border ='0' style='width: 100%;' record_id='" . $record_varname . "'><tr><td><a href='#' name='codelist_" . $data['record_id'] . "' style='text-decoration: none'><strong>" . $data['variable_name'][$id] . " code list:</strong></a><br/></td></tr></table>" . getHtmlCodesTable($codeformat['code_file'], $htmlCodes, $record_varname);
+                                            $htmlCodes .= "<table  border ='0' style='width: 100%;' record_id='" . $record_varname . "'><tr><td><a href='#' name='codelist_" . $data['record_id'] . "' style='text-decoration: none'><strong>" . $data['variable_name'][$id] . " code list:</strong></a><br/></td></tr></table>" . self::getHtmlCodesTable($codeformat['code_file'], $htmlCodes, $record_varname);
                                         }
                                     } else if ($codeformat['code_format'] == '4') {
                                         $dataFormat = "<a href='https://bioportal.bioontology.org/ontologies/" . $codeformat['code_ontology'] . "' target='_blank'>See Ontology Link</a><br/>";
@@ -157,6 +157,34 @@ class JsonPDF
 
         $pdf_content = array(0=>$tableHtml,1=>$requested_tables);
         return $pdf_content;
+    }
+
+    /**
+     * Function that parses the CVS file and transforms the content into a table
+     * @param $code_file, the code in the db of the csv file
+     * @param $htmlCodes, the html table with the content
+     * @return string, the html table with the content
+     */
+    function getHtmlCodesTable($code_file,$htmlCodes,$id){
+        $csv = self::parseCSVtoArray($code_file);
+        if(!empty($csv)) {
+            $htmlCodes = '<table border="1px" style="border-collapse: collapse;" record_id="'. $id .'">';
+            foreach ($csv as $header => $content) {
+                $htmlCodes .= '<tr style="border: 1px solid #000;">';
+                foreach ($content as $col => $value) {
+                    #Convert to UTF-8 to avoid weird characters
+                    $value = mb_convert_encoding($value,'UTF-8','HTML-ENTITIES');
+                    if ($header == 0) {
+                        $htmlCodes .= '<td>' . $col . '</td>';
+                    } else {
+                        $htmlCodes .= '<td>' . $value . '</td>';
+                    }
+                }
+                $htmlCodes .= '</tr>';
+            }
+            $htmlCodes .= '</table><br>';
+        }
+        return $htmlCodes;
     }
 
     /**
@@ -363,59 +391,61 @@ class JsonPDF
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='DATAMODELMETADATA'");
         $dataModelMetadataPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
-        $dataTablerecords = \REDCap::getData($dataModelMetadataPID, 'array');
-        $dataTable = ProjectData::getProjectInfoArray($dataTablerecords)[0];
-
         $jsonArray = array();
-        $jsonArray['project_name'] = $dataTable['project_name'];
-        $jsonArray['datamodel_name'] = $dataTable['datamodel_name'];
-        $jsonArray['datamodel_abbrev'] = $dataTable['datamodel_abbrev'];
-        $jsonArray['datamodel_url_y'] = $dataTable['datamodel_url_y'];
-        $jsonArray['datamodel_url'] = $dataTable['datamodel_url'];
-        $jsonArray['hub_y'] = $dataTable['hub_y'];
-        $jsonArray['sd_ext'] = $dataTable['sd_ext'];
-        $jsonArray['ed_ext'] = $dataTable['ed_ext'];
-        $jsonArray['date_approx_y'] = $dataTable['date_approx_y'];
-        $jsonArray['date_approx'] = $dataTable['date_approx'];
-        $jsonArray['n_age_groups'] = $dataTable['n_age_groups'];
-        $jsonArray['age_1_lower'] = $dataTable['age_1_lower'];
-        $jsonArray['age_1_upper'] = $dataTable['age_1_upper'];
-        $jsonArray['age_2_lower'] = $dataTable['age_2_lower'];
-        $jsonArray['age_2_upper'] = $dataTable['age_2_upper'];
-        $jsonArray['age_3_lower'] = $dataTable['age_3_lower'];
-        $jsonArray['age_3_upper'] = $dataTable['age_3_upper'];
-        $jsonArray['age_4_lower'] = $dataTable['age_4_lower'];
-        $jsonArray['age_4_upper'] = $dataTable['age_4_upper'];
-        $jsonArray['age_5_lower'] = $dataTable['age_5_lower'];
-        $jsonArray['age_5_upper'] = $dataTable['age_5_upper'];
-        $jsonArray['age_6_lower'] = $dataTable['age_6_lower'];
-        $jsonArray['age_6_upper'] = $dataTable['age_6_upper'];
+        if($dataModelMetadataPID != "") {
+            $dataTablerecords = \REDCap::getData($dataModelMetadataPID, 'array');
+            $dataTable = ProjectData::getProjectInfoArray($dataTablerecords)[0];
 
-        $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='DATAMODEL'");
-        $dataModelPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
+            $jsonArray['project_name'] = $dataTable['project_name'];
+            $jsonArray['datamodel_name'] = $dataTable['datamodel_name'];
+            $jsonArray['datamodel_abbrev'] = $dataTable['datamodel_abbrev'];
+            $jsonArray['datamodel_url_y'] = $dataTable['datamodel_url_y'];
+            $jsonArray['datamodel_url'] = $dataTable['datamodel_url'];
+            $jsonArray['hub_y'] = $dataTable['hub_y'];
+            $jsonArray['sd_ext'] = $dataTable['sd_ext'];
+            $jsonArray['ed_ext'] = $dataTable['ed_ext'];
+            $jsonArray['date_approx_y'] = $dataTable['date_approx_y'];
+            $jsonArray['date_approx'] = $dataTable['date_approx'];
+            $jsonArray['n_age_groups'] = $dataTable['n_age_groups'];
+            $jsonArray['age_1_lower'] = $dataTable['age_1_lower'];
+            $jsonArray['age_1_upper'] = $dataTable['age_1_upper'];
+            $jsonArray['age_2_lower'] = $dataTable['age_2_lower'];
+            $jsonArray['age_2_upper'] = $dataTable['age_2_upper'];
+            $jsonArray['age_3_lower'] = $dataTable['age_3_lower'];
+            $jsonArray['age_3_upper'] = $dataTable['age_3_upper'];
+            $jsonArray['age_4_lower'] = $dataTable['age_4_lower'];
+            $jsonArray['age_4_upper'] = $dataTable['age_4_upper'];
+            $jsonArray['age_5_lower'] = $dataTable['age_5_lower'];
+            $jsonArray['age_5_upper'] = $dataTable['age_5_upper'];
+            $jsonArray['age_6_lower'] = $dataTable['age_6_lower'];
+            $jsonArray['age_6_upper'] = $dataTable['age_6_upper'];
 
-        $jsonArray = self::getTableJsonName($dataModelPID, $dataTable['index_tablename'],'index_tablename',$jsonArray);
-        $jsonArray = self::getTableJsonName($dataModelPID, $dataTable['group_tablename'],'group_tablename',$jsonArray);
-        $jsonArray = self::getTableJsonName($dataModelPID, $dataTable['height_table'],'height_table',$jsonArray);
+            $RecordSetConstants = \REDCap::getData($project_id, 'array', null, null, null, null, false, false, false, "[project_constant]='DATAMODEL'");
+            $dataModelPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
-        $jsonArray = self::getTableVariableJsonName($dataModelPID, $dataTable['patient_id_var'],'patient_id_var',$jsonArray);
-        $jsonArray = self::getTableVariableJsonName($dataModelPID, $dataTable['default_group_var'],'default_group_var',$jsonArray);
-        $jsonArray = self::getTableVariableJsonName($dataModelPID, $dataTable['birthdate_var'],'birthdate_var',$jsonArray);
-        $jsonArray = self::getTableVariableJsonName($dataModelPID, $dataTable['death_date_var'],'death_date_var',$jsonArray);
-        $jsonArray = self::getTableVariableJsonName($dataModelPID, $dataTable['age_date_var'],'age_date_var',$jsonArray);
-        $jsonArray = self::getTableVariableJsonName($dataModelPID, $dataTable['enrol_date_var'],'enrol_date_var',$jsonArray);
-        $jsonArray = self::getTableVariableJsonName($dataModelPID, $dataTable['height_var'],'height_var',$jsonArray);
-        $jsonArray = self::getTableVariableJsonName($dataModelPID, $dataTable['height_date'],'height_date',$jsonArray);
-        $jsonArray = self::getTableVariableJsonName($dataModelPID, $dataTable['height_units'],'height_units',$jsonArray);
+            $jsonArray = self::getTableJsonName($dataModelPID, $dataTable['index_tablename'], 'index_tablename', $jsonArray);
+            $jsonArray = self::getTableJsonName($dataModelPID, $dataTable['group_tablename'], 'group_tablename', $jsonArray);
+            $jsonArray = self::getTableJsonName($dataModelPID, $dataTable['height_table'], 'height_table', $jsonArray);
 
-        #save files data
-        $jsonArray['project_logo_100_40'] = base64_encode(file_get_contents(self::getFile($this, $dataTable['project_logo_100_40'],'pdf')));
-        $jsonArray['project_logo_50_20'] = base64_encode(file_get_contents(self::getFile($this, $dataTable['project_logo_50_20'],'pdf')));
-        $jsonArray['sample_dataset'] = base64_encode(file_get_contents(self::getFile($this, $dataTable['sample_dataset'],'pdf')));
+            $jsonArray = self::getTableVariableJsonName($dataModelPID, $dataTable['patient_id_var'], 'patient_id_var', $jsonArray);
+            $jsonArray = self::getTableVariableJsonName($dataModelPID, $dataTable['default_group_var'], 'default_group_var', $jsonArray);
+            $jsonArray = self::getTableVariableJsonName($dataModelPID, $dataTable['birthdate_var'], 'birthdate_var', $jsonArray);
+            $jsonArray = self::getTableVariableJsonName($dataModelPID, $dataTable['death_date_var'], 'death_date_var', $jsonArray);
+            $jsonArray = self::getTableVariableJsonName($dataModelPID, $dataTable['age_date_var'], 'age_date_var', $jsonArray);
+            $jsonArray = self::getTableVariableJsonName($dataModelPID, $dataTable['enrol_date_var'], 'enrol_date_var', $jsonArray);
+            $jsonArray = self::getTableVariableJsonName($dataModelPID, $dataTable['height_var'], 'height_var', $jsonArray);
+            $jsonArray = self::getTableVariableJsonName($dataModelPID, $dataTable['height_date'], 'height_date', $jsonArray);
+            $jsonArray = self::getTableVariableJsonName($dataModelPID, $dataTable['height_units'], 'height_units', $jsonArray);
 
-        #we save the new JSON
-        if(!empty($jsonArray)){
-            $record_id = self::saveJSONCopy('0c', $jsonArray, $module, $project_id);
+            #save files data
+            $jsonArray['project_logo_100_40'] = base64_encode(file_get_contents(self::getFile($this, $dataTable['project_logo_100_40'], 'pdf')));
+            $jsonArray['project_logo_50_20'] = base64_encode(file_get_contents(self::getFile($this, $dataTable['project_logo_50_20'], 'pdf')));
+            $jsonArray['sample_dataset'] = base64_encode(file_get_contents(self::getFile($this, $dataTable['sample_dataset'], 'pdf')));
+
+            #we save the new JSON
+            if (!empty($jsonArray)) {
+                $record_id = self::saveJSONCopy('0c', $jsonArray, $module, $project_id);
+            }
         }
 
         return array('jsonArray' => json_encode($jsonArray,JSON_FORCE_OBJECT),'record_id' =>$record_id);

@@ -41,11 +41,11 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
         foreach ($this->getProjectsWithModuleEnabled() as $project_id){
             if($project_id != "") {
-                error_log("createpdf - project_id:" . $project_id);
-
                 $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
                 $settingsPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
                 if($settingsPID != "") {
+                    error_log("createpdf - project_id:" . $project_id);
+
                     $RecordSetSettings = \REDCap::getData($settingsPID, 'array');
                     $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
 

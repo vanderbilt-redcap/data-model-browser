@@ -168,37 +168,6 @@ function array_sort_by_column(&$arr, $col, $dir = SORT_ASC) {
     array_multisort($sort_col, $dir, $arr);
 }
 
-
-
-
-/**
- * Function that parses the CVS file and transforms the content into a table
- * @param $code_file, the code in the db of the csv file
- * @param $htmlCodes, the html table with the content
- * @return string, the html table with the content
- */
-function getHtmlCodesTable($code_file,$htmlCodes,$id){
-    $csv = \Vanderbilt\DataModelBrowserExternalModule\parseCSVtoArray($code_file);
-    if(!empty($csv)) {
-        $htmlCodes = '<table border="1px" style="border-collapse: collapse;" record_id="'. $id .'">';
-        foreach ($csv as $header => $content) {
-            $htmlCodes .= '<tr style="border: 1px solid #000;">';
-            foreach ($content as $col => $value) {
-                #Convert to UTF-8 to avoid weird characters
-                $value = mb_convert_encoding($value,'UTF-8','HTML-ENTITIES');
-                if ($header == 0) {
-                    $htmlCodes .= '<td>' . $col . '</td>';
-                } else {
-                    $htmlCodes .= '<td>' . $value . '</td>';
-                }
-            }
-            $htmlCodes .= '</tr>';
-        }
-        $htmlCodes .= '</table><br>';
-    }
-    return $htmlCodes;
-}
-
 function getHtmlTableCodesTableArrayExcel($module,$dataTable){
     $data_array = array();
     $dataFormat = $module->getChoiceLabels('data_format', DES_DATAMODEL);
