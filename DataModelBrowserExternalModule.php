@@ -105,24 +105,49 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         }
         $rowtype = $qtype->fetch_assoc();
 
-        $RecordSetJsonCopy = \REDCap::getData($jsoncopyPID, 'array', array('record_id' => $rowtype['record']));
-        $jsoncopy = ProjectData::getProjectInfoArray($RecordSetJsonCopy)[0];
-        $today = date("Y-m-d");
-        if($jsoncopy["jsoncopy_file"] != "" && strtotime(date("Y-m-d",strtotime($jsoncopy['json_copy_update_d']))) == strtotime($today)){
-            return true;
-        }else if(empty($jsoncopy) || strtotime(date("Y-m-d",strtotime($jsoncopy['json_copy_update_d']))) == "" || !array_key_exists('json_copy_update_d',$jsoncopy) || !array_key_exists('des_pdf',$settings) || $settings['des_pdf'] == ""){
-            $this->checkAndUpdateJSONCopyProject($type, $rowtype['record'], $jsoncopy, $settings, $project_id);
-            return true;
+        if($this->projectHasData($type,$project_id)) {
+            $RecordSetJsonCopy = \REDCap::getData($jsoncopyPID, 'array', array('record_id' => $rowtype['record']));
+            $jsoncopy = ProjectData::getProjectInfoArray($RecordSetJsonCopy)[0];
+            $today = date("Y-m-d");
+            if ($jsoncopy["jsoncopy_file"] != "" && strtotime(date("Y-m-d", strtotime($jsoncopy['json_copy_update_d']))) == strtotime($today)) {
+                return true;
+            } else if (empty($jsoncopy) || strtotime(date("Y-m-d", strtotime($jsoncopy['json_copy_update_d']))) == "" || !array_key_exists('json_copy_update_d', $jsoncopy) || !array_key_exists('des_pdf', $settings) || $settings['des_pdf'] == "") {
+                $this->checkAndUpdateJSONCopyProject($type, $rowtype['record'], $jsoncopy, $settings, $project_id);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function projectHasData($type,$project_id){
+        $constant = "";
+        if($type == "0a"){
+            $constant = "DATAMODEL";
+        }else if($type == "0b"){
+            $constant = "CODELIST";
+        }else if($type == "0c"){
+            $constant = "DATAMODELMETADATA";
+        }
+        $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='".$constant."'");
+        $pid = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
+        if($pid != ""){
+            $RecordSetProject= \REDCap::getData($pid, 'array');
+            $projectData = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetProject);
+            if(!empty($projectData)){
+                return true;
+            }
         }
         return false;
     }
 
     function checkIfJsonOrPDFBlank($settings, $project_id){
-        if($settings['des_pdf'] == "" || !array_key_exists('des_pdf',$settings)){
-            $this->createAndSavePDFCron($settings ,$project_id);
-        }
-        if($settings['des_variable_search'] == "" || !array_key_exists('des_variable_search',$settings)){
-            $this->createAndSaveJSONCron($project_id);
+        if($this->projectHasData("0a",$project_id)) {
+            if ($settings['des_pdf'] == "" || !array_key_exists('des_pdf', $settings)) {
+                $this->createAndSavePDFCron($settings, $project_id);
+            }
+            if ($settings['des_variable_search'] == "" || !array_key_exists('des_variable_search', $settings)) {
+                $this->createAndSaveJSONCron($project_id);
+            }
         }
     }
 

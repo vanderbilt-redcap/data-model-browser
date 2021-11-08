@@ -392,6 +392,7 @@ class JsonPDF
         $dataModelMetadataPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
         $jsonArray = array();
+        $record_id = "";
         if($dataModelMetadataPID != "") {
             $dataTablerecords = \REDCap::getData($dataModelMetadataPID, 'array');
             $dataTable = ProjectData::getProjectInfoArray($dataTablerecords)[0];
