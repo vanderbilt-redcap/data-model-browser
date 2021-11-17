@@ -21,7 +21,7 @@ $dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetData
 
 $requested_tables = getHtmlTableCodesTableArrayExcel($module,$dataTable);
 #EXEL SHEET
-$filename = "code_list_ " . date("Y-m-d_hi",time()) . ".xlsx";
+$filename = "CodeList_ " . date("Y-m-d_hi",time()) . ".xlsx";
 
 $styleArray = array(
     'font'  => array(

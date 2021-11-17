@@ -41,8 +41,8 @@ $dataTable = ProjectData::getProjectInfoArray($RecordSetDataModel);
     <?php echo $settings['des_doc_fronttext']?>
 </div>
 <div class="col-md-12 wiki_text wiki_text_size" style="padding-top: 0;padding-bottom: 30px;">
-    <?php if($settings['upload_file'] != ""){
-            foreach ($settings['upload_file'] as $index=>$event){
+    <?php if($settings['upload_name'] != ""){
+            foreach ($settings['upload_name'] as $index=>$event){
                 if ($settings['upload_text'][$index] != '' || $settings['upload_file'][$index] != '') {
                     $url = $module->getUrl('downloadFile.php?' . parseCSVtoLink($settings['upload_file'][$index]));
                     echo '<span style="display: block">' . $settings['upload_name'][$index] . ' (<i class="fa fa-arrow-down" style="color:#5cb85c"></i> 

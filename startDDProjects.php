@@ -19,7 +19,7 @@ $projects_array = ProjectData::getProjectsContantsArray();
 $projects_titles_array = ProjectData::getProjectsTitlesArray();
 $custom_record_label_array = array(0=>'', 1=>"[table_name]",2=>"[list_name]",3=>'',4=>"version [version]: [type]");
 $projects_array_repeatable = array(
-    0=>array(0=>array('status'=>0,'instrument'=>'','params'=>'')),
+    0=>array(0=>array('status'=>0,'instrument'=>'display_file','params'=>'[upload_name')),
     1=>array(0=>array('status'=>1,'instrument'=>'variable_metadata','params'=>'[variable_name]')),
     2=>array(0=>array('status'=>0,'instrument'=>'','params'=>'')),
     3=>array(0=>array('status'=>0,'instrument'=>'','params'=>'')),

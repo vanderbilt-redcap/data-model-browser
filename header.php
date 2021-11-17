@@ -14,7 +14,13 @@
                     <? } ?>
                 </a>
 
-                <a href="<?=$module->getUrl("browser.php?NOAUTH")?>" style="text-decoration: none;float:left" class="hub_header_title">
+                <?php
+                $style= "";
+                if($settings['des_logo'] == ""){
+                    $style = "padding-left:20px;padding-bottom: 15px";
+                }
+                ?>
+                <a href="<?=$module->getUrl("browser.php?NOAUTH")?>" style="text-decoration: none;float:left;<?=$style?>" class="hub_header_title">
                     <span class=""><?=$settings['des_doc_title']?></span>
                 </a>
             </div>
