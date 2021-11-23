@@ -21,7 +21,7 @@ if(empty($deprecated)){
     $deprecated = 'false';
 }
 
-$RecordSetDataModel = \REDCap::getData(DES_DATAMODEL, 'array');
+$RecordSetDataModel = \REDCap::getData($pidsArray['DATAMODEL'], 'array');
 $dataTable = ProjectData::getProjectInfoArray($RecordSetDataModel);
 
 ?>

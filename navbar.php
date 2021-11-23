@@ -20,7 +20,7 @@ if(array_key_exists('page',$_REQUEST)){
                 $tid = $_REQUEST['tid'];
                 $vid = isset($_REQUEST['vid']) ? $_REQUEST['vid']:"";
                 $path = "&tid=".$tid."&vid=".$vid;
-                $dataTable = \Vanderbilt\DataModelBrowserExternalModule\getTablesInfo($module,DES_DATAMODEL,$tid);
+                $dataTable = \Vanderbilt\DataModelBrowserExternalModule\getTablesInfo($module,$pidsArray['DATAMODEL'],$tid);
                 $active = "";
                 foreach( $dataTable as $data ) {
                     if (!empty($data['record_id'])) {
@@ -44,7 +44,7 @@ if(array_key_exists('page',$_REQUEST)){
                     }
                 }
             }else if($_REQUEST['option'] == 'search'){
-                echo "<span> > </span><a href=".$page."'&pid=".DES_DATAMODEL."&option=search' class='wiki_active'>Variable search</a>";
+                echo "<span> > </span><a href=".$page."'&pid=".$pidsArray['DATAMODEL']."&option=search' class='wiki_active'>Variable search</a>";
             }?>
 
         </div>

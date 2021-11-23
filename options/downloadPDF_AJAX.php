@@ -7,16 +7,15 @@ include_once __DIR__ ."/../functions.php";
 
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
-use Vanderbilt\DataModelBrowserExternalModule\ProjectData;
 
-$RecordSetSettings = \REDCap::getData(DES_SETTINGS, 'array');
+$RecordSetSettings = \REDCap::getData($pidsArray['SETTINGS'], 'array');
 $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
 
 $option = $_REQUEST['option'];
 $deprecated = $_REQUEST['deprecated'];
 $draft = $_REQUEST['draft'];
 
-$RecordSetDataModel = \REDCap::getData(DES_DATAMODEL, 'array');
+$RecordSetDataModel = \REDCap::getData($pidsArray['DATAMODEL'], 'array');
 $dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
 
 $requested_tables = getHtmlTableCodesTableArrayExcel($module,$dataTable);

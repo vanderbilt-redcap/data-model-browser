@@ -1,51 +1,24 @@
 <?php
+namespace Vanderbilt\DataModelBrowserExternalModule;
 
-use Vanderbilt\Victrlib\Env;
-# Define the environment: options include "DEV", "TEST" or "PROD"
-if (is_file('/app001/www/redcap/plugins/victrlib/src/Env.php'))
-    include_once('/app001/www/redcap/plugins/victrlib/src/Env.php');
+use ExternalModules\AbstractExternalModule;
+use ExternalModules\ExternalModules;
 
-if (class_exists("\\Vanderbilt\\Victrlib\\Env")) {
+require_once (__DIR__ . '/vendor/autoload.php');
+include_once(__DIR__ . "/functions.php");
+include_once(__DIR__ . "/classes/ProjectData.php");
 
-    if (Env::isProd()) {
-        define("ENVIRONMENT", "PROD");
-    } else if (Env::isStaging()) {
-        define("ENVIRONMENT", "TEST");
-    }else{
-        define("ENVIRONMENT", "DEV");
-    }
-}
-else {
-    define("ENVIRONMENT", "DEV");
-}
+ProjectData::getEnvironment();
 
 #Mapper Project
 $project_id_main = ($project_id != '')?$project_id:$_GET['pid'];
-define(ENVIRONMENT.'_DES_PROJECTS', $project_id_main);
+#Get Projects ID's
+$pidsArray = ProjectData::getPIDsArray($project_id_main);
 
-if(defined(ENVIRONMENT."_DES_PROJECTS")) {
-    define("DES_PROJECTS", constant(ENVIRONMENT."_DES_PROJECTS"));
-}
+$RecordSetSettings = \REDCap::getData($pidsArray['SETTINGS'], 'array', null);
+$settings = ProjectData::getProjectInfoArray($RecordSetSettings)[0];
 
 if(APP_PATH_WEBROOT[0] == '/'){
     $APP_PATH_WEBROOT_ALL = substr(APP_PATH_WEBROOT, 1);
 }
 define('APP_PATH_WEBROOT_ALL',APP_PATH_WEBROOT_FULL.$APP_PATH_WEBROOT_ALL);
-
-# Define the projects stored in DES_PROJECTS
-$projects = \REDCap::getData(array('project_id'=>DES_PROJECTS),'array');
-
-$linkedProjects = array();
-foreach ($projects as $event){
-    foreach ($event as $project) {
-        define(ENVIRONMENT . '_DES_' . $project['project_constant'], $project['project_id']);
-        array_push($linkedProjects,"DES_".$project['project_constant']);
-    }
-}
-
-# Define the environment for each project
-foreach($linkedProjects as $projectTitle) {
-    if(defined(ENVIRONMENT."_".$projectTitle)) {
-        define($projectTitle, constant(ENVIRONMENT."_".$projectTitle));
-    }
-}

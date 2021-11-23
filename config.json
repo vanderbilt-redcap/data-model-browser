@@ -37,7 +37,7 @@
 		},
 		{
 			"key": "des-privacy-description",
-			"name": "<div>Select a privacy type for the Data Model Browser:</div><br><div class='alert alert-info' style='border-color:#bce8f1 !important'><ul><li><strong>Public</strong> (no login required; anyone with the link can view/access the Browser page)</li><li><strong>This Project's users only</strong> (REDCap login required; only users on this project can access the Browser page)</li><li><strong>A different Project's users</strong> (REDCap login required; only users from another project can access the Browser page)</li></ul></div>",
+			"name": "<div>Select a privacy type for the Data Model Browser:</div><br><div class='alert alert-info' style='border-color:#bce8f1 !important'><ul><li><strong>Public</strong> (no login required; anyone with the link can view the Browser page)</li><li><strong>This Project's users only</strong> (REDCap login required; only this project's users can view the Browser page)</li><li><strong>Another Project's users </strong> (REDCap login required; only users from another project can view the Browser page. You can only select other projects where you have Project Setup rights.)</li></ul></div>",
 			"type": "descriptive"
 		},
 		{
@@ -54,7 +54,7 @@
 					"value": "main"
 				},
 				{
-					"name": "A different Project's users",
+					"name": "Another Project's users",
 					"value": "other"
 				}
 			],

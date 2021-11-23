@@ -170,7 +170,7 @@ function array_sort_by_column(&$arr, $col, $dir = SORT_ASC) {
 
 function getHtmlTableCodesTableArrayExcel($module,$dataTable){
     $data_array = array();
-    $dataFormat = $module->getChoiceLabels('data_format', DES_DATAMODEL);
+    $dataFormat = $module->getChoiceLabels('data_format', $pidsArray['DATAMODEL']);
     foreach ($dataTable as $data) {
         if (!empty($data['record_id']) && ($data['table_status'] == "1"  || !array_key_exists('table_status',$data))) {
             $data_code_array = array();
@@ -185,7 +185,7 @@ function getHtmlTableCodesTableArrayExcel($module,$dataTable){
                     }
                     if ($data['has_codes'][$id] == '1') {
                         if (!empty($data['code_list_ref'][$id])) {
-                            $RecordSetCodeList = \REDCap::getData(DES_CODELIST, 'array', array('record_id' => $data['code_list_ref'][$id]));
+                            $RecordSetCodeList = \REDCap::getData($pidsArray['CODELIST'], 'array', array('record_id' => $data['code_list_ref'][$id]));
                             $codeformat = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList)[0];
                             if ($codeformat['code_format'] == '1') {
                                 $codeOptions = empty($codeformat['code_list']) ? $data['code_text'][$id] : explode(" | ", $codeformat['code_list']);

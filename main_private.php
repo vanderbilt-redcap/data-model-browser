@@ -24,7 +24,7 @@
 </script>
 <?php
 include_once("projects.php");
-$RecordSetSettings = \REDCap::getData(DES_SETTINGS, 'array');
+$RecordSetSettings = \REDCap::getData($pidsArray['SETTINGS'], 'array');
 $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
 include_once("functions.php");
 $des_privacy = $module->getProjectSetting('des-privacy');

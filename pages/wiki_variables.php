@@ -22,9 +22,9 @@ if(empty($deprecated)){
 }
 
 #We get the Tables and Variables information
-$RecordSetDataModel = \REDCap::getData(DES_DATAMODEL, 'array', array('record_id' => $tid));
+$RecordSetDataModel = \REDCap::getData($pidsArray['DATAMODEL'], 'array', array('record_id' => $tid));
 $dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
-$dataformatChoices = $module->getChoiceLabels('data_format', DES_DATAMODEL);
+$dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMODEL']);
 ?>
 <br/>
 <br/>
@@ -126,7 +126,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', DES_DATAMODEL);
 
                                                 if($data['variable_replacedby'][$id] != ""){
                                                     $variable_replacedby = explode("|",$data['variable_replacedby'][$id]);
-                                                    $RecordSetTable= \REDCap::getData(DES_DATAMODEL, 'array', array('record_id' => $variable_replacedby[0]));
+                                                    $RecordSetTable= \REDCap::getData($pidsArray['DATAMODEL'], 'array', array('record_id' => $variable_replacedby[0]));
                                                     $table = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetTable)[0];
                                                     $table_name = $table['table_name'];
                                                     $var_name = $table['variable_name'][$variable_replacedby[1]];
@@ -163,7 +163,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', DES_DATAMODEL);
                                             echo $dataFormat;
                                         } else if ($data['has_codes'][$id] == '1') {
                                             if(!empty($data['code_list_ref'][$id])){
-                                                $RecordSetCodeList = \REDCap::getData(DES_CODELIST, 'array', array('record_id' => $data['code_list_ref'][$id]));
+                                                $RecordSetCodeList = \REDCap::getData($pidsArray['CODELIST'], 'array', array('record_id' => $data['code_list_ref'][$id]));
                                                 $codeformat = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList)[0];
 
                                                 if ($codeformat['code_format'] == '1') {
