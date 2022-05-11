@@ -38,17 +38,22 @@ use Vanderbilt\DataModelBrowserExternalModule\ProjectData;
     <?php } ?>
 
 <?php
-#User rights
-$UserRights = \REDCap::getUserRights(USERID)[USERID];
-$isAdmin = false;
-if($UserRights['user_rights'] == '1'){
-    $isAdmin = true;
-}
-
 $dd_array = \REDCap::getDataDictionary('array');
 $data_array = \REDCap::getData($_GET['pid'],'array');
 $des_projectname = $module->getProjectSetting('des-projectname');
 $des_privacy = $module->getProjectSetting('des-privacy');
+
+#User rights
+$isAdmin = false;
+#if its a public noauth, we don't have the userid
+if($des_privacy != 'public' && $des_privacy != "") {
+    $UserRights = \REDCap::getUserRights(USERID)[USERID];
+
+    if ($UserRights['user_rights'] == '1') {
+        $isAdmin = true;
+    }
+}
+
 if($des_projectname == "" || $des_privacy == ""){
     echo '  <div class="container" style="margin-top: 60px">  
                 <div class="alert alert-warning col-md-12">

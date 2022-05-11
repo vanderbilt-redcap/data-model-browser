@@ -11,7 +11,7 @@
                 <a href="<?=$module->getUrl("browser.php?NOAUTH")?>" style="text-decoration: none;float:left">
                     <?php if($settings['des_logo'] != ""){?>
                    <?=\Vanderbilt\DataModelBrowserExternalModule\printFile($module,$settings['des_logo'],'logo')?>
-                    <? } ?>
+                    <?php } ?>
                 </a>
 
                 <?php

@@ -103,3 +103,68 @@ function loadStatusButton(status, option){
     }
     return option;
 }
+
+/**
+ * Function that loads the SOP table
+ * @param data, data we send to the ajax
+ * @param url, url of the ajax file
+ * @param loadAJAX, where we load our content
+ */
+function loadAjax(data, url, loadAJAX){
+    $('#errMsgContainer').hide();
+    $('#succMsgContainer').hide();
+    $('#warnMsgContainer').hide();
+    if(data != '') {
+        $.ajax({
+            type: "POST",
+            url: url,
+            data:data
+            ,
+            error: function (xhr, status, error) {
+                alert(xhr.responseText);
+            },
+            success: function (result) {
+                jsonAjax = jQuery.parseJSON(result);
+
+                if(jsonAjax.html != '' && jsonAjax.html != undefined) {
+                    $("#" + loadAJAX).html(jsonAjax.html);
+                }
+
+                if(jsonAjax.number_updates != '' && jsonAjax.number_updates != undefined && jsonAjax.number_updates != "0"){
+                    $('#succMsgContainer').show();
+                    $('#succMsgContainer').html(' <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a> <strong>Success!</strong> '+jsonAjax.number_updates+' NEW Latest update/s were saved.');
+                }
+
+                if(jsonAjax.variablesInfo != '' && jsonAjax.variablesInfo != undefined){
+                    var value = jsonAjax.variablesInfo;
+                    $.each(jsonAjax.variablesInfo, function (i, object) {;
+                        if(object.display == "none"){
+                            $("#"+i+"_row").hide();
+                        }else{
+                            $("#"+i+"_row").show();
+                        };
+                    });
+                }
+
+                //If table sortable add function
+                if(jsonAjax.sortable == "true"){
+                    $("#"+loadAJAX+"_table").tablesorter();
+                }
+
+                //Error Messages (Successful, Warning and Error)
+                if(jsonAjax.succmessage != '' && jsonAjax.succmessage != undefined ){
+                    $('#succMsgContainer').show();
+                    $('#succMsgContainer').html(jsonAjax.succmessage);
+                }else if(jsonAjax.warnmessage != '' && jsonAjax.warnmessage != undefined ){
+                    $('#warnMsgContainer').show();
+                    $('#warnMsgContainer').html(jsonAjax.warnmessage);
+                }else if(jsonAjax.errmessage != '' && jsonAjax.errmessage != undefined ){
+                    $('#errMsgContainer').show();
+                    $('#errMsgContainer').html(jsonAjax.errmessage);
+                }
+
+                $('.divModalLoading').hide();
+            }
+        });
+    }
+}

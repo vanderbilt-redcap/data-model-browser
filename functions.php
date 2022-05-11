@@ -149,7 +149,9 @@ function generateTableArray($module,$event_id, $project_id, $dataTable,$tableID,
     foreach($recordsTable as $record ){
 
         #we sort the variables by value and keep key
-        asort($record['variable_order']);
+        if(is_array($record['variable_order'])) {
+            asort($record['variable_order']);
+        }
 
         if(!empty($record['record_id'])){//Variables
             $dataTable[$record['record_id']] = $record;

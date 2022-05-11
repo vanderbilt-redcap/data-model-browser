@@ -103,7 +103,7 @@ if(!$has_permission){
     exit;
 }
 if($has_permission){
-    if($_REQUEST['option'] !== 'search' && $_REQUEST['option'] !== 'variableInfo'  ) {
+    if($_REQUEST['option'] !== 'search' && $_REQUEST['option'] !== 'variableInfo' && $_REQUEST['option'] !== 'json') {
         include('downloadButtons.php');
     }
 ?>
@@ -121,6 +121,8 @@ if($has_permission){
     }else if( array_key_exists('option', $_REQUEST) && $_REQUEST['option'] === 'search' )
     {
         include('pages/wiki_variable_search.php');
+    }else if( array_key_exists('option', $_REQUEST) && $_REQUEST['option'] === 'json' ) {
+        include('jsoncopy/copyfiles.php');
     }
     ?>
 </div>

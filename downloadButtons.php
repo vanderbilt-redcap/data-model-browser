@@ -13,6 +13,22 @@
         <div style="display: inline-block;float: right;padding-right: 10px">
             <a href="<?=\Vanderbilt\DataModelBrowserExternalModule\printFile($module,$settings['des_pdf'],'url');?>" class="btn btn-default btn-md"><i class="fa fa-arrow-down"></i> Data Model</a>
         </div>
+        <?php
+        #Only users that are admins or have Design rights
+        $designRights = "0";
+        if($des_privacy != 'public' && $des_privacy != "") {
+            $q = $module->query("SELECT design FROM redcap_user_rights WHERE project_id=? AND username =?", [$project_id, USERID]);
+
+            while ($row = $q->fetch_assoc()) {
+                $designRights = $row['design'];
+            }
+        }
+        if($isAdmin || $designRights == "1"){
+        ?>
+        <div style="display: inline-block;float: right;padding-right: 10px">
+            <a href="<?=$module->getUrl($page."&pid=".$_GET['pid']."&option=json");?>" class="btn btn-default btn-md"><i class="fa fa-file-code-o"></i> JSON</a>
+        </div>
+        <?php } ?>
     </div>
 </div>
 <script>

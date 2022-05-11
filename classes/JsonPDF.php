@@ -10,7 +10,7 @@ class JsonPDF
      * @param $fieldsSelected, the selected fields
      * @return string, the html content
      */
-    function generateTablesHTML_pdf($module,$dataTable,$draft,$deprecated, $project_id, $dataModelPID){
+    public static function generateTablesHTML_pdf($module,$dataTable,$draft,$deprecated, $project_id, $dataModelPID){
         $tableHtml = "";
         $requested_tables = "<ol>";
         $table_counter = 0;
@@ -91,7 +91,7 @@ class JsonPDF
                             if (array_key_exists('variable_status', $data) && array_key_exists($id, $data['variable_status'])) {
                                 if ($data['variable_status'][$id] == "0" && $draft == "true") {//DRAFT
                                     $variable_status = "style='background-color: #ffffe6;'";
-                                    $variable_text = "<span style='color:red;font-weight:bold'>DRAFT</span><br/>";
+                                    $variable_text = "<span style='color:#ff0000;font-weight:bold'>DRAFT</span><br/>";
                                 } else if ($data['variable_status'][$id] == "2" && $deprecated == "true") {//DEPRECATED
                                     $variable_status = "style='background-color: #ffe6e6;'";
                                     $variable_text = "<span style='color:red;font-weight:bold'>DEPRECATED</span><br/>";
@@ -165,7 +165,7 @@ class JsonPDF
      * @param $htmlCodes, the html table with the content
      * @return string, the html table with the content
      */
-    function getHtmlCodesTable($code_file,$htmlCodes,$id){
+    public static function getHtmlCodesTable($code_file,$htmlCodes,$id){
         $csv = self::parseCSVtoArray($code_file);
         if(!empty($csv)) {
             $htmlCodes = '<table border="1px" style="border-collapse: collapse;" record_id="'. $id .'">';
@@ -192,7 +192,7 @@ class JsonPDF
      * @param $DocID, the id of the document
      * @return array, the generated array with the data
      */
-    function parseCSVtoArray($DocID){
+    public static function parseCSVtoArray($DocID){
         $sqlTableCSV = "SELECT * FROM `redcap_edocs_metadata` WHERE doc_id = '".$DocID."'";
         $qTableCSV = db_query($sqlTableCSV);
         $csv = array();
@@ -208,7 +208,7 @@ class JsonPDF
      * @param $filename, the file name
      * @return array, the generated array with the CSV data
      */
-    function createArrayFromCSV($filepath,$filename, $addHeader = false){
+    public static function createArrayFromCSV($filepath,$filename, $addHeader = false){
         $file = $filepath.$filename;
         $csv = array_map('str_getcsv', file($file));
         array_walk($csv, function(&$a) use ($csv) {
@@ -227,24 +227,22 @@ class JsonPDF
      * @param $type, the project type
      * @return int|string, the version
      */
-    function returnJSONCopyVersion($type, $jsoncopyID){
+    public static function returnJSONCopyVersion($type, $jsoncopyID){
         $RecordSetJsonCopy = \REDCap::getData($jsoncopyID, 'array', null,null,null,null,false,false,false,"[type]='".$type."'");
         $datatype = ProjectData::getProjectInfoArray($RecordSetJsonCopy)[0];
         $lastversion = 0;
         $record_id = 0;
         $data = array();
-        if(empty($datatype)){
-            $lastversion = '0';
+        if(empty($datatype) || $datatype == null){
+            $lastversion = 0;
         }else{
             #we get the last version
-            foreach($datatype as $data)
+            if(intval($datatype['version']) > intval($lastversion))
             {
-                if($data['version'] > $lastversion)
-                {
-                    $lastversion = $data['version'];
-                    $record_id = $data['record_id'];
-                }
+                $lastversion = $datatype['version'];
+                $record_id = $datatype['record_id'];
             }
+
         }
         $data['lastversion'] = $lastversion;
         $data['id'] = $record_id;
@@ -252,7 +250,7 @@ class JsonPDF
         return $data;
     }
 
-    function saveJSONCopy($type, $jsonArray, $module, $project_id){
+    public static function saveJSONCopy($type, $jsonArray, $module, $project_id){
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='JSONCOPY'");
         $jsoncopyPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
@@ -291,7 +289,7 @@ class JsonPDF
      * Function that creates a JSON copy of the Harmonist 0A: Data Model
      * @return string , the JSON
      */
-    function createProject0AJSON($module, $project_id){
+    public static function createProject0AJSON($module, $project_id){
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='DATAMODEL'");
         $dataModelPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
@@ -314,19 +312,21 @@ class JsonPDF
                         }
 
                         $jsonVarArray['variables'][trim($data['variable_name'][$id])] = array();
-                        $variables_array = array(
+                        $variables_array  = array(
                             "data_format" => trim($dataFormat[$data['data_format'][$id]]),
                             "variable_status" => $data['variable_status'][$id],
                             "description" => htmlentities($data['description'][$id]),
                             "variable_required" => $data['variable_required'][$id][1],
                             "variable_key" => $data['variable_key'][$id][1],
                             "variable_deprecated_d" => $data['variable_deprecated_d'][$id],
-                            "variable_replacedby" => $data['variable_replacedby'][$id],
+                            "variable_replacedby" => htmlentities($data['variable_replacedby'][$id]),
                             "variable_deprecatedinfo" => htmlentities($data['variable_deprecatedinfo'][$id]),
                             "has_codes" => $has_codes,
                             "code_list_ref" => $code_list_ref,
                             "variable_order" => $data['variable_order'][$id],
-                            "variable_missingaction" => $data['variable_missingaction'][$id][1]
+                            "variable_missingaction" => $data['variable_missingaction'][$id][1],
+                            "variable_reportcomplete" => $data['variable_reportcomplete'][$id][1],
+                            "variable_indexid" => $data['variable_indexid'][$id][1]
                         );
                         $jsonVarArray['variables'][$data['variable_name'][$id]] = $variables_array;
                     }
@@ -347,7 +347,7 @@ class JsonPDF
      * Function that creates a JSON copy of the Harmonist 0A: Data Model
      * @return string, the JSON
      */
-    function createProject0BJSON($module, $project_id){
+    public static function createProject0BJSON($module, $project_id){
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='CODELIST'");
         $codeListPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
@@ -387,7 +387,7 @@ class JsonPDF
      * Function that creates a JSON copy of the Harmonist 0C: Data Model Metadata
      * @return string, the JSON
      */
-    function createProject0CJSON($module, $project_id){
+    public static function createProject0CJSON($module, $project_id){
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='DATAMODELMETADATA'");
         $dataModelMetadataPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
@@ -439,9 +439,9 @@ class JsonPDF
             $jsonArray = self::getTableVariableJsonName($dataModelPID, $dataTable['height_units'], 'height_units', $jsonArray);
 
             #save files data
-            $jsonArray['project_logo_100_40'] = base64_encode(file_get_contents(self::getFile($this, $dataTable['project_logo_100_40'], 'pdf')));
-            $jsonArray['project_logo_50_20'] = base64_encode(file_get_contents(self::getFile($this, $dataTable['project_logo_50_20'], 'pdf')));
-            $jsonArray['sample_dataset'] = base64_encode(file_get_contents(self::getFile($this, $dataTable['sample_dataset'], 'pdf')));
+            $jsonArray['project_logo_100_40'] = base64_encode(file_get_contents(self::getFile($module, $dataTable['project_logo_100_40'], 'pdf')));
+            $jsonArray['project_logo_50_20'] = base64_encode(file_get_contents(self::getFile($module, $dataTable['project_logo_50_20'], 'pdf')));
+            $jsonArray['sample_dataset'] = base64_encode(file_get_contents(self::getFile($module, $dataTable['sample_dataset'], 'pdf')));
 
             #we save the new JSON
             if (!empty($jsonArray)) {
@@ -452,11 +452,11 @@ class JsonPDF
         return array('jsonArray' => json_encode($jsonArray,JSON_FORCE_OBJECT),'record_id' =>$record_id);
     }
 
-    function getTableVariableJsonName($project_id,$data,$varName,$jsonArray){
+    public static function getTableVariableJsonName($project_id,$data,$varName,$jsonArray){
         if($data != ""){
             $variable = explode(":",$data);
             $dataTableDataModelRecords = \REDCap::getData($project_id, 'array',array('record_id' => $variable[0]));
-            $tableData = ProjectData::getProjectInfoArray($dataTableDataModelRecords)[0];
+            $tableData = ProjectData::getProjectInfoArrayRepeatingInstruments($dataTableDataModelRecords);
             if($variable[1] == "1"){
                 $variable[1] = "";
             }
@@ -465,7 +465,7 @@ class JsonPDF
         return $jsonArray;
     }
 
-    function getTableJsonName($project_id,$data,$varName,$jsonArray){
+    public static function getTableJsonName($project_id,$data,$varName,$jsonArray){
         if($data != ""){
             $dataTableDataModelRecords = \REDCap::getData($project_id, 'array',array('record_id' => $data));
             $tableData = ProjectData::getProjectInfoArray($dataTableDataModelRecords)[0];
@@ -474,7 +474,7 @@ class JsonPDF
         return $jsonArray;
     }
 
-    function getFile($module, $edoc, $type){
+    public static function getFile($module, $edoc, $type){
         $file = "#";
         if($edoc != ""){
             $q = $module->query("SELECT stored_name,doc_name,doc_size,mime_type FROM redcap_edocs_metadata WHERE doc_id=?",[$edoc]);
@@ -502,7 +502,7 @@ class JsonPDF
     }
 
 
-    function numberToBase($number, $base) {
+    public static function numberToBase($number, $base) {
         $newString = "";
         while($number > 0) {
             $lastDigit = $number % $base;
@@ -514,7 +514,7 @@ class JsonPDF
         return $newString;
     }
 
-    function convertDigit($number, $base) {
+    public static function convertDigit($number, $base) {
         if($base > 192) {
             chr($number);
         }
@@ -533,7 +533,7 @@ class JsonPDF
         }
     }
 
-    function getRandomIdentifier($length = 6) {
+    public static function getRandomIdentifier($length = 6) {
         $output = "";
         $startNum = pow(32,5) + 1;
         $endNum = pow(32,6);
