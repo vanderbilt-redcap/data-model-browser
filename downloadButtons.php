@@ -16,7 +16,7 @@
         <?php
         #Only users that are admins or have Design rights
         $designRights = "0";
-        if($des_privacy != 'public' && $des_privacy != "") {
+        if(defined('USERID')) {
             $q = $module->query("SELECT design FROM redcap_user_rights WHERE project_id=? AND username =?", [$project_id, USERID]);
 
             while ($row = $q->fetch_assoc()) {
