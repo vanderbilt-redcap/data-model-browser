@@ -47,6 +47,7 @@ $des_privacy = $module->getProjectSetting('des-privacy');
 $isAdmin = false;
 #if its a public noauth, we don't have the userid
 if(defined('USERID')) {
+    print_array("<br><br><br><br><br><br><br>IN");
     $UserRights = \REDCap::getUserRights(USERID)[USERID];
 
     if ($UserRights['user_rights'] == '1') {
