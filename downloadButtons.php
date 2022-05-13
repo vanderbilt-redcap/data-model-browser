@@ -16,6 +16,7 @@
         <?php
         #Only users that are admins or have Design rights
         $designRights = "0";
+        print_array(USERID);
         if(defined('USERID')) {
             $q = $module->query("SELECT design FROM redcap_user_rights WHERE project_id=? AND username =?", [$project_id, USERID]);
 
