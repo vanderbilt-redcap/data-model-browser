@@ -294,8 +294,6 @@ class JsonPDF
         $dataModelPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
         $dataFormat = $module->getChoiceLabels('data_format', $dataModelPID);
-        $variable_splitdate_m = $module->getChoiceLabels('variable_splitdate_m', $dataModelPID);
-        $variable_splitdate_d = $module->getChoiceLabels('variable_splitdate_d', $dataModelPID);
 
         $RecordSetDataModel = \REDCap::getData($dataModelPID, 'array', null);
         $dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
@@ -322,8 +320,9 @@ class JsonPDF
                             "variable_key" => $data['variable_key'][$id][1],
                             "variable_deprecated_d" => $data['variable_deprecated_d'][$id],
                             "variable_replacedby" => htmlentities($data['variable_replacedby'][$id]),
-                            "variable_splitdate_m" => trim($variable_splitdate_m[$data['variable_splitdate_m'][$id]]),
-                            "variable_splitdate_d" => trim($variable_splitdate_d[$data['variable_splitdate_d'][$id]]),
+                            "variable_splitdate_m" => htmlentities($data['variable_splitdate_m'][$id]),
+                            "variable_splitdate_d" => htmlentities($data['variable_splitdate_d'][$id]),
+                            "variable_splitdate_y" => $data['variable_splitdate_y'][$id][1],
                             "variable_deprecatedinfo" => htmlentities($data['variable_deprecatedinfo'][$id]),
                             "has_codes" => $has_codes,
                             "code_list_ref" => $code_list_ref,
