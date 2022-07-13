@@ -229,20 +229,20 @@ class JsonPDF
      */
     public static function returnJSONCopyVersion($type, $jsoncopyID){
         $RecordSetJsonCopy = \REDCap::getData($jsoncopyID, 'array', null,null,null,null,false,false,false,"[type]='".$type."'");
-        $datatype = ProjectData::getProjectInfoArray($RecordSetJsonCopy)[0];
-        $lastversion = 0;
+        $datatype = ProjectData::getProjectInfoArray($RecordSetJsonCopy);
+
         $record_id = 0;
         $data = array();
         if(empty($datatype) || $datatype == null){
             $lastversion = 0;
         }else{
-            #we get the last version
-            if(intval($datatype['version']) > intval($lastversion))
-            {
-                $lastversion = $datatype['version'];
-                $record_id = $datatype['record_id'];
+            $lastversion = 0;
+            foreach ($datatype as $version_data){
+                if($lastversion < $version_data['version']){
+                    $lastversion = $version_data['version'];
+                    $record_id = $version_data['record_id'];
+                }
             }
-
         }
         $data['lastversion'] = $lastversion;
         $data['id'] = $record_id;
