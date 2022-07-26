@@ -298,11 +298,13 @@ function generateRequestedTablesList_pdf($dataTable,$draft,$deprecated){
 }
 
 function isUserExpiredOrSuspended($module,$username,$field){
-    $result = $module->query("SELECT * FROM redcap_user_information WHERE username = ? AND ".$field." IS NOT NULL",[$username]);
-    if (db_num_rows($result) > 0) {
-        return true;
+    $result = $module->query("SELECT ".$field." FROM redcap_user_information WHERE username = ?",[$username]);
+    while($row = db_fetch_assoc($result)){
+        if(!isset($row[$field])) {
+            return false;
+        }
     }
-    return false;
+    return true;
 }
 /**
  * Function that searches the file name in the database, parses it and returns an array with the content
