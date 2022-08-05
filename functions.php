@@ -300,10 +300,12 @@ function generateRequestedTablesList_pdf($dataTable,$draft,$deprecated){
 function isUserExpiredOrSuspended($module,$username,$field){
     $result = $module->query("SELECT ".$field." FROM redcap_user_information WHERE username = ?",[$username]);
     while($row = db_fetch_assoc($result)){
-        if(!isset($row[$field])) {
+        if($row[$field] == null || $row[$field] == "" || strtotime($row[$field]) > strtotime(date("Y-m-d"))) {
+            #Not Expired
             return false;
         }
     }
+    #User Expired
     return true;
 }
 /**
