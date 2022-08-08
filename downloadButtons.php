@@ -6,7 +6,7 @@
             </div>
         </div>
         <div style="display: inline-block;float: right;">
-            <form method="POST" action="<?=$module->getUrl('options/downloadPDF_AJAX.php');?>" id='downloadPDF2' style="padding-right: 10px">
+            <form method="POST" action="<?=$module->getUrl('options/downloadPDF_AJAX.php?NOAUTH');?>" id='downloadPDF2' style="padding-right: 10px">
                 <a onclick="$('#downloadPDF2').submit();" class="btn btn-default btn-md"><i class="fa fa-arrow-down"></i> Codes CSV</a>
             </form>
         </div>
