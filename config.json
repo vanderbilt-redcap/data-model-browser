@@ -24,7 +24,7 @@
 		]
 	},
 
-	"no-auth-pages":["browser","downloadFile","startDDProjects","functions", "main"],
+	"no-auth-pages":["browser","downloadFile","startDDProjects","functions", "main","downloadPDF_AJAX"],
 
 	"description": "This module’s main use is to create an auto-generated, web-browsable version of a Data Exchange Standard, a common data model for sharing.",
 
