@@ -55,7 +55,7 @@ function printFile($module,$edoc, $type){
     if($edoc != ""){
         $q = $module->query("SELECT stored_name,doc_name,doc_size,mime_type FROM redcap_edocs_metadata WHERE doc_id=?",[$edoc]);
         while ($row = $q->fetch_assoc()) {
-            $url = 'downloadFile.php?sname=' . $row['stored_name'] . '&file=' . urlencode($row['doc_name']);
+            $url = 'downloadFile.php?sname=' . $row['stored_name'] . '&file=' . urlencode($row['doc_name'])."&NOAUTH";
             $base64 = base64_encode(file_get_contents(EDOC_PATH.$row['stored_name']));
             if($type == "img"){
                 $file = '<br/><div class="inside-panel-content"><img src="data:'.$row['mime_type'].';base64,' . $base64. '" style="display: block; margin: 0 auto;"></div>';
