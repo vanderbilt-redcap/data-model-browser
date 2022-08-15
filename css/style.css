@@ -630,3 +630,9 @@ a[href]:after {
         width: 350px !important;
     }
 }
+.footer, .footer a{
+    text-align: center;
+    font-size: 11px;
+    color: #bfbfbf;
+    padding-bottom: 30px;
+}

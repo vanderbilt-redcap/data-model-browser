@@ -17,8 +17,6 @@ table_deprecated_d,table_metadata,,text,"Date of table deprecation",,"(approxima
 table_required,table_metadata,,checkbox,"REQUIRED
 <span style=""font-weight:lighter"">This table is required for database integrity and should always be included with data submissions.</span>","1, YES",,,,,,,,,,,,
 table_display_y,table_metadata,"Display Settings",yesno,"Display this table in human-readable documents and forms?",,,,,,,,,,,,,
-table_display_name,table_metadata,,text,"Table display name
-<div style=""font-weight:lighter"">Longer display name for human-readable documents</div>",,,,,,,,,,,,,
 table_order,table_metadata,,text,"Display order for this table 
 <div style=""font-weight:lighter; font-style:italic"">Decimals are allowable, e.g., use 1.5 to place a table between tables 1 and 2)</div>",,,number,,,,,,RH,,,,
 variable_name,variable_metadata,"<div style=""color:white; text-align:center; border: 1px #1abc9c; background-color:#16a085;""><h3 style=""margin:0px; padding:10px"">Variable Definition</h3></div>",text,"Variable name",,,,,,,,,,,,,

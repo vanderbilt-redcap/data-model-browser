@@ -235,13 +235,13 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                                                 echo $dataFormat;
                                             }
                                         }
+                                        if (!empty($data['code_text'][$id])) {
+                                            echo "<div><i>" . htmlentities($data['code_text'][$id]) . "</i></div>";
+                                        }
                                         echo '</td><td id="'.$record_var_aux.'_description"><div style="padding-bottom: 8px;padding-top: 8px">'.$required_text;
                                         echo "<div>".$variable_text.mb_convert_encoding($data['description'][$id], 'UTF-8','HTML-ENTITIES')."</div>";
                                         if (!empty($data['description_extra'][$id])) {
                                             echo "<div><i>" . htmlentities($data['description_extra'][$id]) . "</i></div>";
-                                        }
-                                        if (!empty($data['code_text'][$id])) {
-                                            echo "<div><i>" . htmlentities($data['code_text'][$id]) . "</i></div>";
                                         }
                                         echo $deprecated_text;
                                         echo '</div></td>';

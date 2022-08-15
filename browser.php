@@ -119,6 +119,7 @@ if($des_projectname == "" || $des_privacy == ""){
     }
     ?>
     <br/>
+    <?php include('footer.php'); ?>
     </body>
     </html>
 <?php
