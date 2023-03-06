@@ -17,8 +17,8 @@ $draft = $_REQUEST['draft'];
 
 $RecordSetDataModel = \REDCap::getData($pidsArray['DATAMODEL'], 'array');
 $dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
+$requested_tables = getHtmlTableCodesTableArrayExcel($module,$dataTable,$pidsArray);
 
-$requested_tables = getHtmlTableCodesTableArrayExcel($module,$dataTable);
 #EXEL SHEET
 $filename = "CodeList_ " . date("Y-m-d_hi",time()) . ".xlsx";
 

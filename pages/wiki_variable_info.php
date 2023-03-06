@@ -14,7 +14,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
 <div class="container-fluid">
     <div class='row' style=''>
         <?PHP foreach( $dataTable as $data ){
-            if(!empty($data['record_id'])) {
+            if(!empty($data['record_id']) && $data['variable_status'][$vid] != "" && $data['variable_status'][$vid] != 3) {
                 ?>
                 <div class="col-md-12">
                     <span class="wiki_title"><?PHP echo $data['variable_name'][$vid];?></span>
@@ -32,7 +32,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                     <?php
                         $codeTable = "";
                         $dataFormat = $dataformatChoices[$data['data_format'][$vid]];
-                        if ($data['has_codes'][$vid] == '0') {
+                        if ($data['has_codes'][$vid] == '0' || empty($data['has_codes'][$vid])) {
                             echo $dataFormat;
                             if (!empty($data['code_text'][$vid])) {
                                 echo "<br/>".$data['code_text'][$vid];

@@ -79,7 +79,7 @@ $dataTable = ProjectData::getProjectInfoArray($RecordSetDataModel);
                                     </thead>';
 
                         foreach( $dataTable as $data ) {
-                            if (!empty($data['record_id'])) {
+                            if (!empty($data['record_id']) && $data['table_status'] != "3") {
                                 $variable_display = "";
                                 $variable_text = "";
                                 $variable_class = "";

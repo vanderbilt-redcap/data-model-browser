@@ -170,11 +170,11 @@ function array_sort_by_column(&$arr, $col, $dir = SORT_ASC) {
     array_multisort($sort_col, $dir, $arr);
 }
 
-function getHtmlTableCodesTableArrayExcel($module,$dataTable){
+function getHtmlTableCodesTableArrayExcel($module,$dataTable,$pidsArray){
     $data_array = array();
     $dataFormat = $module->getChoiceLabels('data_format', $pidsArray['DATAMODEL']);
     foreach ($dataTable as $data) {
-        if (!empty($data['record_id']) && ($data['table_status'] == "1"  || !array_key_exists('table_status',$data))) {
+        if (!empty($data['record_id']) && ($data['table_status'] == "1"  || !array_key_exists('table_status',$data) || $data['table_status'] != 3)) {
             $data_code_array = array();
             foreach ($data['variable_order'] as $id=>$value) {
                 if($data['variable_status'][$id] == "1" && $data['has_codes'][$id] == "1") {
