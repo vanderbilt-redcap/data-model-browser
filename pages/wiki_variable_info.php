@@ -65,7 +65,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                                     echo $dataFormat;
 
                                 } else if ($codeformat['code_format'] == '3') {
-                                    echo "Numeric <span><i>(coded)</i></span>";
+                                    echo $dataFormat." <span><i>(coded)</i></span>";
                                     if (array_key_exists('code_file', $codeformat) && $codeformat['code_file'] != "") {
                                         $codeTable = "true";
                                     }
