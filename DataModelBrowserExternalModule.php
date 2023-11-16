@@ -29,7 +29,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     }
 
     function addProjectToList($project_id, $eventId, $record, $fieldName, $value){
-        $this->query("INSERT INTO redcap_data (project_id, event_id, record, field_name, value) VALUES (?, ?, ?, ?, ?)",
+        $this->query("INSERT INTO ".\Vanderbilt\DataModelBrowserExternalModule\getDataTable($project_id)." (project_id, event_id, record, field_name, value) VALUES (?, ?, ?, ?, ?)",
             [$project_id, $eventId, $record, $fieldName, $value]);
     }
 
@@ -99,9 +99,9 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='JSONCOPY'");
         $jsoncopyPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
         if(ENVIRONMENT == "DEV"){
-            $qtype = $this->query("SELECT MAX(record) as record FROM redcap_data WHERE project_id=? AND field_name=? and value=? order by record",[$jsoncopyPID,'type',$type]);
+            $qtype = $this->query("SELECT MAX(record) as record FROM ".\Vanderbilt\DataModelBrowserExternalModule\getDataTable($jsoncopyPID)." WHERE project_id=? AND field_name=? and value=? order by record",[$jsoncopyPID,'type',$type]);
         }else{
-            $qtype = $this->query("SELECT MAX(CAST(record AS Int)) as record FROM redcap_data WHERE project_id=? AND field_name=? and value=? order by record",[$jsoncopyPID,'type',$type]);
+            $qtype = $this->query("SELECT MAX(CAST(record AS Int)) as record FROM ".\Vanderbilt\DataModelBrowserExternalModule\getDataTable($jsoncopyPID)." WHERE project_id=? AND field_name=? and value=? order by record",[$jsoncopyPID,'type',$type]);
         }
         $rowtype = $qtype->fetch_assoc();
 
