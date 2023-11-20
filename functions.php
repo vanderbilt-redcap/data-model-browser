@@ -200,7 +200,7 @@ function getHtmlTableCodesTableArrayExcel($module,$dataTable,$pidsArray){
                             } else {
                                 if ($codeformat['code_format'] == '3') {
                                     if (array_key_exists('code_file', $codeformat) && $data['codes_print'][$id] == '1') {
-                                        $data_array = \Vanderbilt\DataModelBrowserExternalModule\getHtmlCodesTableArrayExcel($data_array, $data_code_array, $codeformat['code_file']);
+                                        $data_array = \Vanderbilt\DataModelBrowserExternalModule\getHtmlCodesTableArrayExcel($module, $data_array, $data_code_array, $codeformat['code_file']);
                                     }
                                 } else if ($codeformat['code_format'] == '4') {
                                     $data_code_array[2] = 'https://bioportal.bioontology.org/ontologies/' . $codeformat['code_ontology'];
@@ -220,9 +220,9 @@ function getHtmlTableCodesTableArrayExcel($module,$dataTable,$pidsArray){
     return $data_array;
 }
 
-function getHtmlCodesTableArrayExcel($data_array,$data_code_array,$code_file)
+function getHtmlCodesTableArrayExcel($module, $data_array,$data_code_array,$code_file)
 {
-    $csv = \Vanderbilt\DataModelBrowserExternalModule\parseCSVtoArray($code_file);
+    $csv = \Vanderbilt\DataModelBrowserExternalModule\parseCSVtoArray($module,$code_file);
     if (!empty($csv)) {
         foreach ($csv as $header => $content) {
             if ($header != 0) {
@@ -313,12 +313,12 @@ function isUserExpiredOrSuspended($module,$username,$field){
  * @param $DocID, the id of the document
  * @return array, the generated array with the data
  */
-function parseCSVtoArray($DocID){
+function parseCSVtoArray($module,$DocID){
     $sqlTableCSV = "SELECT * FROM `redcap_edocs_metadata` WHERE doc_id = '".$DocID."'";
     $qTableCSV = db_query($sqlTableCSV);
     $csv = array();
     while ($rowTableCSV = db_fetch_assoc($qTableCSV)) {
-        $csv = \Vanderbilt\DataModelBrowserExternalModule\createArrayFromCSV(EDOC_PATH,$rowTableCSV['stored_name']);
+        $csv = \Vanderbilt\DataModelBrowserExternalModule\createArrayFromCSV($module->framework->getSafePath($rowTableCSV['stored_name'], EDOC_PATH));
     }
     return $csv;
 }
@@ -328,9 +328,8 @@ function parseCSVtoArray($DocID){
  * @param $filename, the file name
  * @return array, the generated array with the CSV data
  */
-function createArrayFromCSV($filepath,$filename, $addHeader = false){
-    $file = $filepath.$filename;
-    $csv = array_map('str_getcsv', file($file));
+function createArrayFromCSV($filepath, $addHeader = false){
+    $csv = array_map('str_getcsv', file($filepath));
     array_walk($csv, function(&$a) use ($csv) {
         $a = array_combine($csv[0], $a);
     });

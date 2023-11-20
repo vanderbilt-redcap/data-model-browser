@@ -20,7 +20,7 @@
 <script>
     var startDDProjects_url = <?=json_encode($module->getUrl('startDDProjects.php'))?>;
     var downloadPDF_AJAX_url = <?=json_encode($module->getUrl('options/downloadPDF_AJAX.php'))?>;
-    var pid = <?=json_encode($_GET['pid'])?>;
+    var pid = <?=json_encode((int)$_GET['pid'])?>;
 </script>
 <?php
 include_once("projects.php");

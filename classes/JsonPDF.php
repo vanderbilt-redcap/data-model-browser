@@ -126,7 +126,7 @@ class JsonPDF
                                         $dataFormat = "Numeric<br/>";
                                         if (array_key_exists('code_file', $codeformat) && $data['codes_print'][$id] == '1') {
                                             $dataFormat .= "<a href='#codelist_" . $data['record_id'] . "' style='cursor:pointer;text-decoration: none'>See Code List</a><br/>";
-                                            $htmlCodes .= "<table  border ='0' style='width: 100%;' record_id='" . $record_varname . "'><tr><td><a href='#' name='codelist_" . $data['record_id'] . "' style='text-decoration: none'><strong>" . $data['variable_name'][$id] . " code list:</strong></a><br/></td></tr></table>" . self::getHtmlCodesTable($codeformat['code_file'], $htmlCodes, $record_varname);
+                                            $htmlCodes .= "<table  border ='0' style='width: 100%;' record_id='" . $record_varname . "'><tr><td><a href='#' name='codelist_" . $data['record_id'] . "' style='text-decoration: none'><strong>" . $data['variable_name'][$id] . " code list:</strong></a><br/></td></tr></table>" . self::getHtmlCodesTable($module, $codeformat['code_file'], $htmlCodes, $record_varname);
                                         }
                                     } else if ($codeformat['code_format'] == '4') {
                                         $dataFormat = "<a href='https://bioportal.bioontology.org/ontologies/" . $codeformat['code_ontology'] . "' target='_blank'>See Ontology Link</a><br/>";
@@ -165,8 +165,8 @@ class JsonPDF
      * @param $htmlCodes, the html table with the content
      * @return string, the html table with the content
      */
-    public static function getHtmlCodesTable($code_file,$htmlCodes,$id){
-        $csv = self::parseCSVtoArray($code_file);
+    public static function getHtmlCodesTable($module,$code_file,$htmlCodes,$id){
+        $csv = self::parseCSVtoArray($module,$code_file);
         if(!empty($csv)) {
             $htmlCodes = '<table border="1px" style="border-collapse: collapse;" record_id="'. $id .'">';
             foreach ($csv as $header => $content) {
@@ -192,12 +192,12 @@ class JsonPDF
      * @param $DocID, the id of the document
      * @return array, the generated array with the data
      */
-    public static function parseCSVtoArray($DocID){
+    public static function parseCSVtoArray($module,$DocID){
         $sqlTableCSV = "SELECT * FROM `redcap_edocs_metadata` WHERE doc_id = '".$DocID."'";
         $qTableCSV = db_query($sqlTableCSV);
         $csv = array();
         while ($rowTableCSV = db_fetch_assoc($qTableCSV)) {
-            $csv = self::createArrayFromCSV(EDOC_PATH,$rowTableCSV['stored_name']);
+            $csv = self::createArrayFromCSV($module->framework->getSafePath($rowTableCSV['stored_name'], EDOC_PATH));
         }
         return $csv;
     }
@@ -370,7 +370,7 @@ class JsonPDF
                 }
             }else if($data['code_format'] == '3'){
                 $jsonVarContentArray  = array();
-                $csv = self::parseCSVtoArray($data['code_file']);
+                $csv = self::parseCSVtoArray($module, $data['code_file']);
                 foreach ($csv as $header=>$content){
                     if($header != 0){
                         //Convert to UTF-8 to avoid weird characters

@@ -200,7 +200,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                                                                 '<div class="panel-heading">' . $name . '</div>' .
                                                                 '<div class="table-responsive panel-collapse collapse in">' .
                                                                 '<table border="1" class="code_modal_table">';
-                                                            $csv = \Vanderbilt\DataModelBrowserExternalModule\parseCSVtoArray($codeformat['code_file']);
+                                                            $csv = \Vanderbilt\DataModelBrowserExternalModule\parseCSVtoArray($module,$codeformat['code_file']);
                                                             if (empty($csv)) {
                                                                 echo '<div style="text-align: center;color:red;">No Codes found for file:' . $codeformat['code_file'] . '</div>';
                                                             }
