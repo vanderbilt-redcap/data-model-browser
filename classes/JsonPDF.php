@@ -193,10 +193,9 @@ class JsonPDF
      * @return array, the generated array with the data
      */
     public static function parseCSVtoArray($module,$DocID){
-        $sqlTableCSV = "SELECT * FROM `redcap_edocs_metadata` WHERE doc_id = '".$DocID."'";
-        $qTableCSV = db_query($sqlTableCSV);
+        $q = $module->query("SELECT * FROM `redcap_edocs_metadata` WHERE doc_id = ?",[$DocID]);
         $csv = array();
-        while ($rowTableCSV = db_fetch_assoc($qTableCSV)) {
+        while ($rowTableCSV = $q->fetch_assoc()) {
             $csv = self::createArrayFromCSV($module->framework->getSafePath($rowTableCSV['stored_name'], EDOC_PATH));
         }
         return $csv;
@@ -261,12 +260,12 @@ class JsonPDF
         $filename = "jsoncopy_file_".$type."_".date("YmdsH").".txt";
         $storedName = date("YmdsH")."_pid".$jsoncopyPID."_".self::getRandomIdentifier(6).".txt";
 
-        $file = fopen(EDOC_PATH.$storedName,"wb");
+        $file = fopen($module->framework->getSafePath($storedName, EDOC_PATH),"wb");
         fwrite($file,json_encode($jsonArray,JSON_FORCE_OBJECT));
         fclose($file);
 
-        $output = file_get_contents(EDOC_PATH.$storedName);
-        $filesize = file_put_contents(EDOC_PATH.$storedName, $output);
+        $output = file_get_contents($module->framework->getSafePath($storedName, EDOC_PATH));
+        $filesize = file_put_contents($module->framework->getSafePath($storedName, EDOC_PATH), $output);
 
         //Save document on DB
         $q = $module->query("INSERT INTO redcap_edocs_metadata (stored_name,doc_name,doc_size,file_extension,mime_type,gzipped,project_id,stored_date) VALUES(?,?,?,?,?,?,?,?)",
@@ -483,7 +482,7 @@ class JsonPDF
             $q = $module->query("SELECT stored_name,doc_name,doc_size,mime_type FROM redcap_edocs_metadata WHERE doc_id=?",[$edoc]);
             while ($row = $q->fetch_assoc()) {
                 $url = 'downloadFile.php?sname=' . $row['stored_name'] . '&file=' . urlencode($row['doc_name']);
-                $base64 = base64_encode(file_get_contents(EDOC_PATH.$row['stored_name']));
+                $base64 = base64_encode(file_get_contents($module->framework->getSafePath($row['stored_name'], EDOC_PATH)));
                 if($type == "img"){
                     $file = '<br/><div class="inside-panel-content"><img src="data:'.$row['mime_type'].';base64,' . $base64. '" style="display: block; margin: 0 auto;"></div>';
                 }else if($type == "logo"){
@@ -491,7 +490,7 @@ class JsonPDF
                 }else if($type == "src") {
                     $file = 'data:' . $row['mime_type'] . ';base64,' . $base64;
                 }else if($type == "pdf") {
-                    $file = EDOC_PATH.$row['stored_name'];
+                    $file = $module->framework->getSafePath($row['stored_name'], EDOC_PATH);
                 }else if($type == "imgpdf"){
                     $file = '<div style="max-width: 450px;height: 500px;"><img src="data:'.$row['mime_type'].';base64,' . $base64. '" style="display: block; margin: 0 auto;width:450px;height: 450px;"></div>';
                 }else if($type == "url") {

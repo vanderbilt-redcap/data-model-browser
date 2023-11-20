@@ -17,12 +17,12 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
             if(!empty($data['record_id']) && $data['variable_status'][$vid] != "" && $data['variable_status'][$vid] != 3) {
                 ?>
                 <div class="col-md-12">
-                    <span class="wiki_title"><?PHP echo $data['variable_name'][$vid];?></span>
+                    <span class="wiki_title"><?PHP echo htmlspecialchars($data['variable_name'][$vid],ENT_QUOTES);?></span>
                 </div>
                 <div class="col-md-12 wiki_text wiki_text_size">
-                    <span style="display:block;"><?PHP echo htmlentities($data['description'][$vid]); ?></span>
+                    <span style="display:block;"><?PHP echo htmlspecialchars($data['description'][$vid],ENT_QUOTES); ?></span>
                     <?php if (!empty($data['description_extra'][$vid])) {
-                        ?><span style="display:block;"><i><?PHP echo htmlentities($data['description_extra'][$vid]); ?></i></span><?php
+                        ?><span style="display:block;"><i><?PHP echo htmlspecialchars($data['description_extra'][$vid],ENT_QUOTES); ?></i></span><?php
                     }?>
                 </div>
 
@@ -35,7 +35,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                         if ($data['has_codes'][$vid] == '0' || empty($data['has_codes'][$vid])) {
                             echo $dataFormat;
                             if (!empty($data['code_text'][$vid])) {
-                                echo "<br/>".$data['code_text'][$vid];
+                                echo "<br/>".htmlspecialchars($data['code_text'][$vid],ENT_QUOTES);
                             }
                         } else if ($data['has_codes'][$vid] == '1') {
                             if(!empty($data['code_list_ref'][$vid])){
@@ -62,7 +62,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                                     if (!empty($codeOptions[0])) {
                                         $dataFormat .= "</tbody></table></div></div></div>";
                                     }
-                                    echo $dataFormat;
+                                    echo filter_tags($dataFormat);
 
                                 } else if ($codeformat['code_format'] == '3') {
                                     echo $dataFormat." <span><i>(coded)</i></span>";
@@ -70,7 +70,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                                         $codeTable = "true";
                                     }
                                 } else {
-                                    echo $dataFormat." <span><i>(coded)</i></span>";
+                                    echo filter_tags($dataFormat)." <span><i>(coded)</i></span>";
                                 }
                             }
                         }
@@ -90,21 +90,21 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                                 if(array_key_exists('variable_added_d', $data) && !empty($data['variable_added_d'][$vid])){
                                     $date_d = "(".$data['variable_added_d'][$vid].")";
                                 }
-                                ?><span style="display:block;"><span class="fa fa-clock-o wiki_draft"></span> <em>Draft <?=$date_d?></em></span><?php
+                                ?><span style="display:block;"><span class="fa fa-clock-o wiki_draft"></span> <em>Draft <?=htmlspecialchars($date_d,ENT_QUOTES)?></em></span><?php
                             }
                             if ($data['variable_status'][$vid] == "1") {
                                 $date_d = "";
                                 if(array_key_exists('variable_added_d', $data) && !empty($data['variable_added_d'][$vid])){
                                     $date_d = "(".$data['variable_added_d'][$vid].")";
                                 }
-                                ?><span style="display:block;"><span class="fa fa-check wiki_activevar"></span> <em>Active <?=$date_d?></em></span><?php
+                                ?><span style="display:block;"><span class="fa fa-check wiki_activevar"></span> <em>Active <?=htmlspecialchars($date_d,ENT_QUOTES)?></em></span><?php
                             }
                             if ($data['variable_status'][$vid] == "2") {
                                 $date_d = "";
                                 if(array_key_exists('variable_deprecated_d', $data) && !empty($data['variable_deprecated_d'][$vid])){
                                     $date_d = "(".$data['variable_deprecated_d'][$vid].")";
                                 }
-                                ?><span style="display:block;"><em class='fa fa-exclamation-circle wiki_deprecated'></em> <em>Deprecated <?=$date_d?></em></span><?php
+                                ?><span style="display:block;"><em class='fa fa-exclamation-circle wiki_deprecated'></em> <em>Deprecated <?=htmlspecialchars($date_d,ENT_QUOTES)?></em></span><?php
 
                             }
                         }else if (empty($data['variable_status'])) {
@@ -118,9 +118,9 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                     <div class="col-md-12">
                         <span class="wiki_title_small">Code list</span>
                         <div class="wiki_text_inside wiki_text_size">
-                            <span style="display:block;"><?PHP echo $data['variable_name'][$vid];?> codes ( <i class="fa fa-arrow-down"></i> <a href="<?= $module->getUrl('downloadFile.php?' . parseCSVtoLink($codeformat['code_file']));?>" target="_blank">Download CSV</a> )</span>
+                            <span style="display:block;"><?PHP echo htmlspecialchars($data['variable_name'][$vid],ENT_QUOTES);?> codes ( <i class="fa fa-arrow-down"></i> <a href="<?= $module->getUrl('downloadFile.php?' . parseCSVtoLink($module,$codeformat['code_file']));?>" target="_blank">Download CSV</a> )</span>
                             <?php if(!empty($codeformat) && array_key_exists('codelist_update_d', $codeformat) && !empty($codeformat['codelist_update_d'])) {
-                                ?><span style="display:block;"><i>Last code list update: <?=$codeformat['codelist_update_d']?></i></span><?php
+                                ?><span style="display:block;"><i>Last code list update: <?=htmlspecialchars($codeformat['codelist_update_d'],ENT_QUOTES)?></i></span><?php
                             }else{
                                 ?><span style="display:block;"><i>Unknown Date</i></span><?php
                             }
@@ -130,7 +130,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                     <div class="col-md-12">
                         <div class="wiki wiki_text_inside" style="padding-top: 0;">
                             <div class="panel panel-default">
-                                <div class="panel-heading"><?PHP echo $data['variable_name'][$vid];?></div>
+                                <div class="panel-heading"><?PHP echo htmlspecialchars($data['variable_name'][$vid],ENT_QUOTES);?></div>
                                 <div class="table-responsive panel-collapse collapse in">
                                     <table class="table table-bordered table-hover code_modal_table">
                                         <?PHP if(!empty($codeTable)){ ?>

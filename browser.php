@@ -91,7 +91,7 @@ if($des_projectname == "" || $des_privacy == ""){
         <meta name="author" content="">
         <link rel="icon" href="<?=printFile($module,$settings['des_favicon'],'url')?>">
 
-        <title><?=$settings['des_doc_title']?></title>
+        <title><?=htmlspecialchars($settings['des_doc_title'],ENT_QUOTES)?></title>
 
         <script type='text/javascript'>
             var app_path_webroot = '<?=APP_PATH_WEBROOT?>';

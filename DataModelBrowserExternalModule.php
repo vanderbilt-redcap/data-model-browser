@@ -15,10 +15,6 @@ require_once(dirname(__FILE__)."/vendor/autoload.php");
 
 class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalModule{
 
-    public function __construct(){
-        parent::__construct();
-    }
-
     function createProjectAndImportDataDictionary($value_constant,$project_title)
     {
         $project_id = $this->framework->createProject($project_title, 0);
@@ -205,7 +201,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         $dompdf->render();
         #Download option
         $output = $dompdf->output();
-        $filesize = file_put_contents(EDOC_PATH.$storedName, $output);
+        $filesize = file_put_contents($this->framework->getSafePath($storedName, EDOC_PATH), $output);
 
         #Save document on DB
         $q = $this->query("INSERT INTO redcap_edocs_metadata (stored_name,mime_type,doc_name,doc_size,file_extension,gzipped,project_id,stored_date) VALUES(?,?,?,?,?,?,?,?)",
@@ -241,7 +237,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             }
 
             $attachments = array(
-                $filename.".pdf" => EDOC_PATH.$storedName
+                $filename.".pdf" => $this->framework->getSafePath($storedName, EDOC_PATH)
             );
 
             $emails = explode(';', $settings['des_pdf_notification_email']);
@@ -300,12 +296,12 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         $filename = "jsoncopy_file_variable_search_".date("YmdsH").".txt";
         $storedName = date("YmdsH")."_pid".$settingsPID."_".JsonPDF::getRandomIdentifier(6).".txt";
 
-        $file = fopen(EDOC_PATH.$storedName,"wb");
+        $file = fopen($this->framework->getSafePath($storedName, EDOC_PATH),"wb");
         fwrite($file,json_encode($jsonArray,JSON_FORCE_OBJECT));
         fclose($file);
 
-        $output = file_get_contents(EDOC_PATH.$storedName);
-        $filesize = file_put_contents(EDOC_PATH.$storedName, $output);
+        $output = file_get_contents($this->framework->getSafePath($storedName, EDOC_PATH));
+        $filesize = file_put_contents($this->framework->getSafePath($storedName, EDOC_PATH), $output);
 
         //Save document on DB
         $q = $this->query("INSERT INTO redcap_edocs_metadata (stored_name,doc_name,doc_size,file_extension,mime_type,gzipped,project_id,stored_date) VALUES(?,?,?,?,?,?,?,?)",
@@ -384,7 +380,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
             while ($row = $q->fetch_assoc()) {
                 if($option == 'pdf'){
-                    $img = EDOC_PATH.$row['stored_name'];
+                    $img = $this->framework->getSafePath($row['stored_name'], EDOC_PATH);
                 }else{
                     $img = 'downloadFile.php?sname='.$row['stored_name']."&file=". urlencode($row['doc_name']);
                 }

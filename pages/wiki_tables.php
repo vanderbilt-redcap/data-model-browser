@@ -34,19 +34,19 @@ $dataTable = ProjectData::getProjectInfoArray($RecordSetDataModel);
 
 <br/>
 <div class="col-md-12">
-    <span class="wiki_title"><?=$settings['des_doc_subtitle']?></span>
+    <span class="wiki_title"><?=htmlentities($settings['des_doc_subtitle'],ENT_QUOTES)?></span>
 </div>
 
 <div class="col-md-12 wiki wiki_text wiki_text_size">
-    <?php echo $settings['des_doc_fronttext']?>
+    <?php echo filter_tags($settings['des_doc_fronttext'])?>
 </div>
 <div class="col-md-12 wiki_text wiki_text_size" style="padding-top: 0;padding-bottom: 30px;">
     <?php if($settings['upload_name'] != ""){
             foreach ($settings['upload_name'] as $index=>$event){
                 if ($settings['upload_text'][$index] != '' || $settings['upload_file'][$index] != '') {
-                    $url = $module->getUrl('downloadFile.php?' . parseCSVtoLink($settings['upload_file'][$index]));
-                    echo '<span style="display: block">' . $settings['upload_name'][$index] . ' (<i class="fa fa-arrow-down" style="color:#5cb85c"></i> 
-                            <a href="'.$url. '" target="_blank">' . $settings['upload_text'][$index] . '</a>, last updated ' . $settings['upload_date'][$index] . ')</span>';
+                    $url = $module->getUrl('downloadFile.php?' . parseCSVtoLink($module,$settings['upload_file'][$index]));
+                    echo '<span style="display: block">' . htmlentities($settings['upload_name'][$index],ENT_QUOTES) . ' (<i class="fa fa-arrow-down" style="color:#5cb85c"></i> 
+                            <a href="'.$url. '" target="_blank">' . htmlentities($settings['upload_text'][$index],ENT_QUOTES) . '</a>, last updated ' . htmlentities($settings['upload_date'][$index],ENT_QUOTES) . ')</span>';
                 }
             }
        }
@@ -109,14 +109,14 @@ $dataTable = ProjectData::getProjectInfoArray($RecordSetDataModel);
                                     }
                                 }
 
-                                $record_var_aux = empty($data['record_id']) ? '1' : $data['record_id'];
+                                $record_var_aux = htmlspecialchars(empty($data['record_id']) ? '1' : $data['record_id'],ENT_QUOTES);
                                 $definition = mb_convert_encoding(array_key_exists('table_definition',$data)?$data['table_definition']:"",'UTF-8','HTML-ENTITIES');
                                 $url = $module->getUrl($page."&pid=".$_GET['pid']."&tid=".$data['record_id']."&option=variables");
                                 echo '<tr class="'.$required_class.$variable_class.'" style="' . $variable_display . '" id="'.$record_var_aux.'_row">'.
                                     '<td class="'.$required_class.'">'.
-                                    '<a href="'.$url.'" id="tables_link">'.$data['table_name'].'</a>'.
+                                    '<a href="'.$url.'" id="tables_link">'.htmlspecialchars($data['table_name'],ENT_QUOTES).'</a>'.
                                     '</td>'.
-                                    '<td id="'.$record_var_aux.'_description">'.$required_text.$variable_text.htmlentities($definition).'</td>'.
+                                    '<td id="'.$record_var_aux.'_description">'.htmlspecialchars($required_text.$variable_text.htmlentities($definition),ENT_QUOTES).'</td>'.
                                     '</tr>';
                             }
                         }
