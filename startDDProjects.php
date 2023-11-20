@@ -79,7 +79,6 @@ $module->clearProjectCache();
 #Upload SQL fields to projects
 #Get Projects ID's
 $pidsArray = ProjectData::getPIDsArray($project_id);
-error_log("projects_array_sql");
 $projects_array_sql = array(
     $pidsArray['DATAMODEL']=>array(
         'variable_replacedby' => array(
@@ -156,7 +155,6 @@ $projects_array_sql = array(
         )
     )
 );
-error_log("3");
 foreach ($projects_array_sql as $projectid=>$projects){
     foreach ($projects as $varid=>$options){
         foreach ($options as $optionid=>$value){
@@ -172,7 +170,6 @@ foreach ($projects_array_sql as $projectid=>$projects){
         }
     }
 }
-error_log("4");
 echo json_encode(array(
         'status' =>'success'
     )
