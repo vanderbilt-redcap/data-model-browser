@@ -17,8 +17,8 @@ if(array_key_exists('page',$_REQUEST)){
                echo '<a href="'.$module->getUrl($page."&pid=".$_GET['pid']).'" '.$active.' style="padding-top: 40px;">Home</a>';
             }
             if( array_key_exists('option', $_REQUEST) && ($_REQUEST['option'] === 'variables' || $_REQUEST['option'] === 'variableInfo')){
-                $tid = $_REQUEST['tid'];
-                $vid = isset($_REQUEST['vid']) ? $_REQUEST['vid']:"";
+                $tid =htmlspecialchars($_REQUEST['tid'], ENT_QUOTES);
+                $vid = isset($_REQUEST['vid']) ? htmlspecialchars($_REQUEST['vid'], ENT_QUOTES):"";
                 $path = "&tid=".$tid."&vid=".$vid;
                 $dataTable = \Vanderbilt\DataModelBrowserExternalModule\getTablesInfo($module,$pidsArray['DATAMODEL'],$tid);
                 $active = "";

@@ -4,6 +4,7 @@ namespace Vanderbilt\DataModelBrowserExternalModule;
 use ExternalModules\AbstractExternalModule;
 use ExternalModules\ExternalModules;
 use Vanderbilt\DataModelBrowserExternalModule\ProjectData;
+$pid = (int)$_GET['pid'];
 ?>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -26,20 +27,20 @@ use Vanderbilt\DataModelBrowserExternalModule\ProjectData;
     <script>
         var startDDProjects_url = <?=json_encode($module->getUrl('startDDProjects.php'))?>;
         var downloadPDF_AJAX_url = <?=json_encode($module->getUrl('options/downloadPDF_AJAX.php'))?>;
-        var pid = <?=json_encode($_GET['pid'])?>;
+        var pid = <?=json_encode($pid)?>;
     </script>
 
     <?php if(array_key_exists('message',$_REQUEST) && $_REQUEST['message']=='S'){?>
         <div class="container" style="margin-top: 80px">
             <div class="alert alert-success col-md-12">
-               Data Dictionary and projects successfully installed. To see the Project Ids go to the <a href="<?=APP_PATH_WEBROOT?>DataEntry/record_status_dashboard.php?pid=<?=$_REQUEST['pid']?>" target="_blank">Record Dashboard</a>.
+               Data Dictionary and projects successfully installed. To see the Project Ids go to the <a href="<?=APP_PATH_WEBROOT?>DataEntry/record_status_dashboard.php?pid=<?=$pid?>" target="_blank">Record Dashboard</a>.
             </div>
         </div>
     <?php } ?>
 
 <?php
 $dd_array = \REDCap::getDataDictionary('array');
-$data_array = \REDCap::getData($_GET['pid'],'array');
+$data_array = \REDCap::getData($pid,'array');
 $des_projectname = $module->getProjectSetting('des-projectname');
 $des_privacy = $module->getProjectSetting('des-privacy');
 
@@ -57,7 +58,7 @@ if(defined('USERID')) {
 if($des_projectname == "" || $des_privacy == ""){
     echo '  <div class="container" style="margin-top: 60px">  
                 <div class="alert alert-warning col-md-12">
-                 There are some missing module settings. To edit them go to the <a href="'.APP_PATH_WEBROOT_FULL.'external_modules/manager/project.php?pid='.$_REQUEST['pid'].'" target="_blank">External Modules - Project Module Manager</a>.    
+                 There are some missing module settings. To edit them go to the <a href="'.APP_PATH_WEBROOT_FULL.'external_modules/manager/project.php?pid='.$pid.'" target="_blank">External Modules - Project Module Manager</a>.    
                 </div>
             </div>';
 }else if(count($dd_array) == 1 && $isAdmin && !array_key_exists('project_constant',$dd_array) && !array_key_exists('project_id',$dd_array) || count($data_array) == 0){

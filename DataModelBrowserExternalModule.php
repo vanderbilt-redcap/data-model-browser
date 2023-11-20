@@ -328,7 +328,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         if($jsoncocpy["jsoncopy_file"] != ""){
             $q = $this->query("SELECT stored_name,doc_name,doc_size,mime_type FROM redcap_edocs_metadata WHERE doc_id=?",[$jsoncocpy["jsoncopy_file"]]);
             while ($row = $q->fetch_assoc()) {
-                $path = EDOC_PATH.$row['stored_name'];
+                $path = $this->framework->getSafePath($row['stored_name'], EDOC_PATH);
                 $strJsonFileContents = file_get_contents($path);
                 $last_array = json_decode($strJsonFileContents, true);
                 $array_data = call_user_func_array(array($jsonPdf, "createProject".strtoupper($type)."JSON"),array($this, $project_id));
@@ -784,7 +784,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         return $property->setValue($this, $value);
     }
 
-    private function getDataTable($project_id){
+    public function getDataTable($project_id){
         return method_exists('\REDCap', 'getDataTable') ? \REDCap::getDataTable($project_id) : "redcap_data";
     }
 }

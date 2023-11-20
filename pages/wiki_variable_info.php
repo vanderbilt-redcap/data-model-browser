@@ -135,7 +135,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                                     <table class="table table-bordered table-hover code_modal_table">
                                         <?PHP if(!empty($codeTable)){ ?>
                                             <?PHP
-                                            $csv = \Vanderbilt\DataModelBrowserExternalModule\parseCSVtoArray($codeformat['code_file']);
+                                            $csv = \Vanderbilt\DataModelBrowserExternalModule\parseCSVtoArray($module,$codeformat['code_file']);
                                             if(empty($csv)){
                                                 ?><div style="text-align: center;color:red;">No Codes found for file: <?=$codeformat['code_file']?></div><?PHP
                                             }

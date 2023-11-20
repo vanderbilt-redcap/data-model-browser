@@ -3,8 +3,8 @@ namespace Vanderbilt\DataModelBrowserExternalModule;
 
 $deprecated = empty($_POST['deprecated']) ? $_SESSION['deprecated_'.$settings['des_wkname']] : $_POST['deprecated_'.$settings['des_wkname']];
 $draft = empty($_POST['draft']) ? $_SESSION['draft_'.$settings['des_wkname']] : $_POST['draft_'.$settings['des_wkname']];
-$tid = empty($_REQUEST['tid']) ? "" : $_REQUEST['tid'];
-$vid = empty($_REQUEST['vid']) ? "" : $_REQUEST['vid'];
+$tid = empty(htmlspecialchars($_REQUEST['tid'], ENT_QUOTES)) ? "" : htmlspecialchars($_REQUEST['tid'], ENT_QUOTES);
+$vid = empty(htmlspecialchars($_REQUEST['vid'], ENT_QUOTES)) ? "" : htmlspecialchars($_REQUEST['vid'], ENT_QUOTES);
 
 if(!empty($_POST['deprecated'])){
     $_SESSION['deprecated_'.$settings['des_wkname']] = $_POST['deprecated_'.$settings['des_wkname']];
@@ -28,7 +28,7 @@ $dataTable = ProjectData::getProjectInfoArray($RecordSetDataModel);
 <script language="JavaScript">
     $(document).ready(function() {
         var path = "<?=$path?>";
-        var page = "<?=$_REQUEST['option']?>";
+        var page = "<?=htmlspecialchars($_REQUEST['option'], ENT_QUOTES)?>";
     } );
 </script>
 

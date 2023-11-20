@@ -1,7 +1,7 @@
 <div class="row">
     <script>
         var path = "<?=$path?>";
-        var page = "<?=$_REQUEST['option']?>";
+        var page = "<?=htmlspecialchars($_REQUEST['option'], ENT_QUOTES)?>";
         var changeStatus_url = <?=json_encode($module->getUrl('options/changeStatus.php'))?>;
         $(window).bind("pageshow", function() {
             var deprecated = <?=json_encode($_SESSION['deprecated_'.$settings['des_wkname']])?>;
