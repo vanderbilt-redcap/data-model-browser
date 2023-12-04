@@ -31,7 +31,7 @@ if(array_key_exists('page',$_REQUEST)){
                             $url = $module->getUrl($page."&pid=".$_GET['pid']."&tid=".$data['record_id']."&option=variables");
                             ?>
                             <span> > </span>
-                            <a href="<?=$url?>" <?=$active?>><?= $data['table_name'] ?></a>
+                            <a href="<?=$url?>" <?=$active?>><?= htmlentities($data['table_name'],ENT_QUOTES) ?></a>
                         <?php }
 
                         if ($_REQUEST['option'] === 'variableInfo') {
@@ -39,7 +39,7 @@ if(array_key_exists('page',$_REQUEST)){
                             $url = $module->getUrl($page."&pid=".$_GET['pid']."&tid=".$tid ."&vid=". $vid ."&option=variableInfo");
                             ?>
                             <span> > </span>
-                           <a href="<?=$url?>" <?=$active?>><?= $data['variable_name'][$vid] ?></a>
+                           <a href="<?=$url?>" <?=$active?>><?= htmlentities($data['variable_name'][$vid],ENT_QUOTES) ?></a>
                         <?php }
                     }
                 }

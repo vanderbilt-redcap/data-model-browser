@@ -56,7 +56,7 @@ function printFile($module,$edoc, $type){
         $q = $module->query("SELECT stored_name,doc_name,doc_size,mime_type FROM redcap_edocs_metadata WHERE doc_id=?",[$edoc]);
         while ($row = $q->fetch_assoc()) {
             $url = 'downloadFile.php?sname=' . $row['stored_name'] . '&file=' . urlencode($row['doc_name'])."&NOAUTH";
-            $base64 = base64_encode(file_get_contents(EDOC_PATH.$row['stored_name']));
+            $base64 = base64_encode(file_get_contents($module->framework->getSafePath($row['stored_name'], EDOC_PATH)));
             if($type == "img"){
                 $file = '<br/><div class="inside-panel-content"><img src="data:'.$row['mime_type'].';base64,' . $base64. '" style="display: block; margin: 0 auto;"></div>';
             }else if($type == "logo"){
@@ -314,10 +314,9 @@ function isUserExpiredOrSuspended($module,$username,$field){
  * @return array, the generated array with the data
  */
 function parseCSVtoArray($module,$DocID){
-    $sqlTableCSV = "SELECT * FROM `redcap_edocs_metadata` WHERE doc_id = '".$DocID."'";
-    $qTableCSV = db_query($sqlTableCSV);
+    $q = $module->query("SELECT * FROM `redcap_edocs_metadata` WHERE doc_id = ?",[$DocID]);
     $csv = array();
-    while ($rowTableCSV = db_fetch_assoc($qTableCSV)) {
+    while ($rowTableCSV = $q->fetch_assoc()) {
         $csv = \Vanderbilt\DataModelBrowserExternalModule\createArrayFromCSV($module->framework->getSafePath($rowTableCSV['stored_name'], EDOC_PATH));
     }
     return $csv;
@@ -345,11 +344,10 @@ function createArrayFromCSV($filepath, $addHeader = false){
  * @param $DocID, the id of the document
  * @return string, the parameters needed to create a link and download the file
  */
-function parseCSVtoLink($DocID){
-    $sqlTableCSV = "SELECT * FROM `redcap_edocs_metadata` WHERE doc_id = '".$DocID."'";
-    $qTableCSV = db_query($sqlTableCSV);
+function parseCSVtoLink($module,$DocID){
+    $q = $module->query("SELECT * FROM `redcap_edocs_metadata` WHERE doc_id = ?",[$DocID]);
     $link = "";
-    while ($rowTableCSV = db_fetch_assoc($qTableCSV)) {
+    while ($rowTableCSV = $q->fetch_assoc()) {
         $link = "sname=" . $rowTableCSV['stored_name'] . "&file=" . $rowTableCSV['doc_name'];
     }
     return $link;

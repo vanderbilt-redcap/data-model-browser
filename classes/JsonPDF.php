@@ -193,11 +193,10 @@ class JsonPDF
      * @return array, the generated array with the data
      */
     public static function parseCSVtoArray($module,$DocID){
-        $sqlTableCSV = "SELECT * FROM `redcap_edocs_metadata` WHERE doc_id = '".$DocID."'";
-        $qTableCSV = db_query($sqlTableCSV);
+        $q = $module->query("SELECT * FROM `redcap_edocs_metadata` WHERE doc_id = ?",[$DocID]);
         $csv = array();
-        while ($rowTableCSV = db_fetch_assoc($qTableCSV)) {
-            $csv = self::createArrayFromCSV($module->framework->getSafePath($rowTableCSV['stored_name'], EDOC_PATH));
+        while ($rowTableCSV = $q->fetch_assoc()) {
+            $csv = self::createArrayFromCSV($module->framework->getSafePath($rowTableCSV['stored_name'], EDOC_PATH),$rowTableCSV['stored_name']);
         }
         return $csv;
     }
@@ -209,8 +208,7 @@ class JsonPDF
      * @return array, the generated array with the CSV data
      */
     public static function createArrayFromCSV($filepath,$filename, $addHeader = false){
-        $file = $filepath.$filename;
-        $csv = array_map('str_getcsv', file($file));
+        $csv = array_map('str_getcsv', file($filepath));
         #Remove hidden characters in file
         $csv[0][0] = trim(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $csv[0][0]));
         $csv[0][1] = trim(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $csv[0][1]));
@@ -261,12 +259,12 @@ class JsonPDF
         $filename = "jsoncopy_file_".$type."_".date("YmdsH").".txt";
         $storedName = date("YmdsH")."_pid".$jsoncopyPID."_".self::getRandomIdentifier(6).".txt";
 
-        $file = fopen(EDOC_PATH.$storedName,"wb");
+        $file = fopen($module->framework->getSafePath($storedName, EDOC_PATH),"wb");
         fwrite($file,json_encode($jsonArray,JSON_FORCE_OBJECT));
         fclose($file);
 
-        $output = file_get_contents(EDOC_PATH.$storedName);
-        $filesize = file_put_contents(EDOC_PATH.$storedName, $output);
+        $output = file_get_contents($module->framework->getSafePath($storedName, EDOC_PATH));
+        $filesize = file_put_contents($module->framework->getSafePath($storedName, EDOC_PATH), $output);
 
         //Save document on DB
         $q = $module->query("INSERT INTO redcap_edocs_metadata (stored_name,doc_name,doc_size,file_extension,mime_type,gzipped,project_id,stored_date) VALUES(?,?,?,?,?,?,?,?)",
@@ -356,7 +354,6 @@ class JsonPDF
     public static function createProject0BJSON($module, $project_id){
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='CODELIST'");
         $codeListPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
-
         $RecordSetCodeList = \REDCap::getData($codeListPID, 'array', null);
         $dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList);
         foreach ($dataTable as $data) {
@@ -483,7 +480,7 @@ class JsonPDF
             $q = $module->query("SELECT stored_name,doc_name,doc_size,mime_type FROM redcap_edocs_metadata WHERE doc_id=?",[$edoc]);
             while ($row = $q->fetch_assoc()) {
                 $url = 'downloadFile.php?sname=' . $row['stored_name'] . '&file=' . urlencode($row['doc_name']);
-                $base64 = base64_encode(file_get_contents(EDOC_PATH.$row['stored_name']));
+                $base64 = base64_encode(file_get_contents($module->framework->getSafePath($row['stored_name'], EDOC_PATH)));
                 if($type == "img"){
                     $file = '<br/><div class="inside-panel-content"><img src="data:'.$row['mime_type'].';base64,' . $base64. '" style="display: block; margin: 0 auto;"></div>';
                 }else if($type == "logo"){
@@ -491,7 +488,7 @@ class JsonPDF
                 }else if($type == "src") {
                     $file = 'data:' . $row['mime_type'] . ';base64,' . $base64;
                 }else if($type == "pdf") {
-                    $file = EDOC_PATH.$row['stored_name'];
+                    $file = $module->framework->getSafePath($row['stored_name'], EDOC_PATH);
                 }else if($type == "imgpdf"){
                     $file = '<div style="max-width: 450px;height: 500px;"><img src="data:'.$row['mime_type'].';base64,' . $base64. '" style="display: block; margin: 0 auto;width:450px;height: 450px;"></div>';
                 }else if($type == "url") {

@@ -33,7 +33,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
             <?PHP foreach( $dataTable as $data ){
                    if(!empty($data['record_id']) && $data['table_status'] != "3") {?>
                     <div class="col-md-12">
-                        <span class="wiki_title"><?PHP echo $data['table_name'];?></span>
+                        <span class="wiki_title"><?PHP echo htmlspecialchars($data['table_name'],ENT_QUOTES);?></span>
                         <?php
                         if (array_key_exists('table_status', $data)) {
                             if ($data['table_status'] == "2") {
@@ -47,7 +47,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                     </div>
                     <div class="col-md-12 wiki_text wiki_text_size">
                         <span style="display:block;"><?PHP echo mb_convert_encoding($data['table_definition'],'UTF-8','HTML-ENTITIES'); ?></span>
-                        <span style="display:block;"><i><?PHP echo $data['text_top']; ?></i></span>
+                        <span style="display:block;"><i><?PHP echo htmlspecialchars($data['text_top'],ENT_QUOTES); ?></i></span>
                     </div>
 
                     <div class="col-md-12">
@@ -61,21 +61,21 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                                     if(array_key_exists('table_added_d', $data) && !empty($data['table_added_d'])){
                                         $date_d = "(created ".$data['table_added_d'].")";
                                     }
-                                    ?><span style="display:block;">Draft <?=$date_d?></span><?php
+                                    ?><span style="display:block;">Draft <?=htmlspecialchars($date_d,ENT_QUOTES)?></span><?php
                                 }
                                 if ($data['table_status'] == "1") {
                                     $date_d = "";
                                     if(array_key_exists('table_added_d', $data) && !empty($data['table_added_d'])){
                                         $date_d = "(as of ".$data['table_added_d'].")";
                                     }
-                                    ?><span style="display:block;">Active <?=$date_d?></span><?php
+                                    ?><span style="display:block;">Active <?=htmlspecialchars($date_d,ENT_QUOTES)?></span><?php
                                 }
                                 if ($data['table_status'] == "2") {
                                     $date_d = "";
                                     if(array_key_exists('table_deprecated_d', $data) && !empty($data['table_deprecated_d'])){
                                         $date_d = "(as of ".$data['table_deprecated_d'].")";
                                     }
-                                    ?><span style="display:block;">Deprecated <?=$date_d?></span><?php
+                                    ?><span style="display:block;">Deprecated <?=htmlspecialchars($date_d,ENT_QUOTES)?></span><?php
 
                                 }
                             }else if (empty($data['table_status'])) {
@@ -129,16 +129,16 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                                                         $variable_replacedby = explode("|", $data['variable_replacedby'][$id]);
                                                         $RecordSetTable = \REDCap::getData($pidsArray['DATAMODEL'], 'array', array('record_id' => $variable_replacedby[0]));
                                                         $table = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetTable)[0];
-                                                        $table_name = $table['table_name'];
-                                                        $var_name = $table['variable_name'][$variable_replacedby[1]];
+                                                        $table_name = htmlspecialchars($table['table_name'],ENT_QUOTES);
+                                                        $var_name = htmlspecialchars($table['variable_name'][$variable_replacedby[1]],ENT_QUOTES);
 
-                                                        $deprecated_text .= "<div><em>This variable was deprecated on " . date("d M Y", strtotime($data['variable_deprecated_d'][$id])) . " and replaced with " . $table_name . " | " . $var_name . ".</em></div>";
+                                                        $deprecated_text .= "<div><em>This variable was deprecated on " . htmlspecialchars(date("d M Y", strtotime($data['variable_deprecated_d'][$id])),ENT_QUOTES) . " and replaced with " . $table_name . " | " . $var_name . ".</em></div>";
                                                     } else if ($data['variable_replacedby'][$id] == "" && $data['variable_deprecated_d'][$id] != "") {
-                                                        $deprecated_text .= "<div><em>This variable was deprecated on " . date("d M Y", strtotime($data['variable_deprecated_d'][$id])) . ".</em></div>";
+                                                        $deprecated_text .= "<div><em>This variable was deprecated on " . htmlspecialchars(date("d M Y", strtotime($data['variable_deprecated_d'][$id])),ENT_QUOTES) . ".</em></div>";
                                                     } else if ($data['variable_replacedby'][$id] == "" && $data['variable_deprecated_d'][$id] == "") {
                                                         $deprecated_text .= "<div><em>This variable was deprecated.</div>";
                                                     }
-                                                    $deprecated_text .= "<div><em>" . $data['variable_deprecatedinfo'][$id] . "</em></div>";
+                                                    $deprecated_text .= "<div><em>" . htmlspecialchars($data['variable_deprecatedinfo'][$id],ENT_QUOTES) . "</em></div>";
                                                 }
                                             }
 
@@ -149,9 +149,9 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                                                 $required_text = "<div style='color:red'><em>*Required</em></div>";
                                             }
 
-                                            $record_var_aux = empty($id) ? '1' : $id;
+                                            $record_var_aux = htmlspecialchars(empty($id) ? '1' : $id,ENT_QUOTES);
                                             $record_var = $id;
-                                            $name = $data['variable_name'][$id];
+                                            $name = htmlspecialchars($data['variable_name'][$id],ENT_QUOTES);
                                             $url = $module->getUrl($page . "&pid=" . $_GET['pid'] . '&tid=' . $tid . '&vid=' . $record_var . '&option=variableInfo');
                                             echo '<tr class="' . $required_class . " " . $variable_class . '" style="' . $variable_display . '"" id="' . $record_var_aux . '_row">' .
                                                 '<td style="width:130px">' .
@@ -159,7 +159,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                                                 '</td>' .
                                                 '<td style="width:350px">';
 
-                                            $dataFormat = $dataformatChoices[$data['data_format'][$id]];
+                                            $dataFormat = htmlspecialchars($dataformatChoices[$data['data_format'][$id]],ENT_QUOTES);
                                             if ($data['has_codes'][$id] != '1') {
                                                 echo $dataFormat;
                                             } else if ($data['has_codes'][$id] == '1') {
@@ -173,7 +173,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                                                             $dataFormat .= "<div style='padding-left:15px'>";
                                                         }
                                                         foreach ($codeOptions as $option) {
-                                                            $dataFormat .= $option . "<br/>";
+                                                            $dataFormat .= htmlspecialchars($option,ENT_QUOTES) . "<br/>";
                                                         }
                                                         if (!empty($codeOptions[0])) {
                                                             $dataFormat .= "</div>";
@@ -184,10 +184,10 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                                                         echo $dataFormat . '<br/>';
 
                                                         if (array_key_exists('code_file', $codeformat) && $codeformat['code_file'] != "") {
-                                                            echo '<a href="#codesModal' . $codeformat['code_file'] . '_' . $name . '" id="btnViewCodes" type="button" class="btn_code_modal open-codesModal" data-toggle="modal" data-target="#codesModal' . $codeformat['code_file'] . '_' . $name . '">See Code List</a>';
+                                                            echo '<a href="#codesModal' . htmlspecialchars($codeformat['code_file'],ENT_QUOTES) . '_' . $name . '" id="btnViewCodes" type="button" class="btn_code_modal open-codesModal" data-toggle="modal" data-target="#codesModal' . htmlspecialchars($codeformat['code_file'],ENT_QUOTES) . '_' . $name . '">See Code List</a>';
 
                                                             #modal window with the updates
-                                                            echo '<div class="modal fade" id="codesModal' . $codeformat['code_file'] . '_' . $name . '" role="dialog" aria-labelledby="Codes">' .
+                                                            echo '<div class="modal fade" id="codesModal' . htmlspecialchars($codeformat['code_file'],ENT_QUOTES) . '_' . $name . '" role="dialog" aria-labelledby="Codes">' .
                                                                 '<div class="modal-dialog" role="document">' .
                                                                 '<div class="modal-content">' .
                                                                 '<div class="modal-header">' .
@@ -202,7 +202,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                                                                 '<table border="1" class="code_modal_table">';
                                                             $csv = \Vanderbilt\DataModelBrowserExternalModule\parseCSVtoArray($module,$codeformat['code_file']);
                                                             if (empty($csv)) {
-                                                                echo '<div style="text-align: center;color:red;">No Codes found for file:' . $codeformat['code_file'] . '</div>';
+                                                                echo '<div style="text-align: center;color:red;">No Codes found for file:' . htmlspecialchars($codeformat['code_file'],ENT_QUOTES) . '</div>';
                                                             }
                                                             foreach ($csv as $header => $content) {
                                                                 if ($header == 0) {
@@ -230,19 +230,19 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                                                                 '</div></div></div>';
                                                         }
                                                     } else if ($codeformat['code_format'] == '4') {
-                                                        echo "<a href='https://bioportal.bioontology.org/ontologies/" . $codeformat['code_ontology'] . "' target='_blank'>See Ontology Link</a><br/>";
+                                                        echo "<a href='https://bioportal.bioontology.org/ontologies/" . htmlspecialchars($codeformat['code_ontology'],ENT_QUOTES) . "' target='_blank'>See Ontology Link</a><br/>";
                                                     }
                                                 } else {
                                                     echo $dataFormat;
                                                 }
                                             }
                                             if (!empty($data['code_text'][$id])) {
-                                                echo "<div><i>" . htmlentities($data['code_text'][$id]) . "</i></div>";
+                                                echo "<div><i>" . htmlentities($data['code_text'][$id],ENT_QUOTES) . "</i></div>";
                                             }
-                                            echo '</td><td id="' . $record_var_aux . '_description"><div style="padding-bottom: 8px;padding-top: 8px">' . $required_text;
+                                            echo '</td><td id="' . $record_var_aux . '_description"><div style="padding-bottom: 8px;padding-top: 8px">' . htmlspecialchars($required_text,ENT_QUOTES);
                                             echo "<div>" . $variable_text . mb_convert_encoding($data['description'][$id], 'UTF-8', 'HTML-ENTITIES') . "</div>";
                                             if (!empty($data['description_extra'][$id])) {
-                                                echo "<div><i>" . htmlentities($data['description_extra'][$id]) . "</i></div>";
+                                                echo "<div><i>" . htmlentities($data['description_extra'][$id],ENT_QUOTES) . "</i></div>";
                                             }
                                             echo $deprecated_text;
                                             echo '</div></td>';

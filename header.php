@@ -21,7 +21,7 @@
                 }
                 ?>
                 <a href="<?=$module->getUrl("browser.php?NOAUTH")?>" style="text-decoration: none;float:left;<?=$style?>" class="hub_header_title">
-                    <span class=""><?=$settings['des_doc_title']?></span>
+                    <span class=""><?=htmlentities($settings['des_doc_title'],ENT_QUOTES)?></span>
                 </a>
             </div>
         </div>

@@ -41,7 +41,7 @@ $page = "main_private.php?";
     <meta name="author" content="">
     <link rel="icon" href="<?=\Vanderbilt\DataModelBrowserExternalModule\printFile($module,$settings['des_favicon'],'url')?>">
 
-    <title><?=$settings['des_doc_title']?></title>
+    <title><?=htmlentities($settings['des_doc_title'],ENT_QUOTES)?></title>
 
     <script type='text/javascript'>
         var app_path_webroot = '<?=APP_PATH_WEBROOT?>';
