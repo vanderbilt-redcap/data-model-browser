@@ -2,8 +2,8 @@
 namespace Vanderbilt\DataModelBrowserExternalModule;
 require_once "projects.php";
 
-$filename = htmlspecialchars($_REQUEST['file'], ENT_QUOTES);
-$sname = htmlspecialchars($_REQUEST['sname'], ENT_QUOTES);
+$filename = db_escape($_REQUEST['file']);
+$sname = db_escape($_REQUEST['sname']);
 
 header('Content-type: application/pdf');
 header('Content-Disposition: attachment; filename="'.$filename.'"');
