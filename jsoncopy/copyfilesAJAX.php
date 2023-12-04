@@ -3,7 +3,7 @@ namespace Vanderbilt\DataModelBrowserExternalModule;
 include_once(__DIR__ . "/../classes/JsonPDF.php");
 require_once __DIR__ ."/../projects.php";
 
-$option = $_POST['option'];
+$option = $_REQUEST['option'];
 $project_id = (int)$_REQUEST['pid'];
 
 $result = array();

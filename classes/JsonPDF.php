@@ -196,7 +196,7 @@ class JsonPDF
         $q = $module->query("SELECT * FROM `redcap_edocs_metadata` WHERE doc_id = ?",[$DocID]);
         $csv = array();
         while ($rowTableCSV = $q->fetch_assoc()) {
-            $csv = self::createArrayFromCSV($module->framework->getSafePath($rowTableCSV['stored_name'], EDOC_PATH));
+            $csv = self::createArrayFromCSV($module->framework->getSafePath($rowTableCSV['stored_name'], EDOC_PATH),$rowTableCSV['stored_name']);
         }
         return $csv;
     }
@@ -208,8 +208,7 @@ class JsonPDF
      * @return array, the generated array with the CSV data
      */
     public static function createArrayFromCSV($filepath,$filename, $addHeader = false){
-        $file = $filepath.$filename;
-        $csv = array_map('str_getcsv', file($file));
+        $csv = array_map('str_getcsv', file($filepath));
         #Remove hidden characters in file
         $csv[0][0] = trim(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $csv[0][0]));
         $csv[0][1] = trim(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $csv[0][1]));
@@ -355,7 +354,6 @@ class JsonPDF
     public static function createProject0BJSON($module, $project_id){
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='CODELIST'");
         $codeListPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
-
         $RecordSetCodeList = \REDCap::getData($codeListPID, 'array', null);
         $dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList);
         foreach ($dataTable as $data) {
