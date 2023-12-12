@@ -81,7 +81,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                 <div class="col-md-12">
                     <span class="wiki_title_small">Variable status</span>
                     <div class="wiki_text_inside wiki_text_size">
-                        <?php if($data['variable_required'][$vid][0] == '1'){
+                        <?php if($data['variable_required'][$vid][1] == '1'){
                             ?><span style='color:red'><em>*Required</em></span><?php
                         }
                         if (array_key_exists('variable_status', $data) && array_key_exists($vid, $data['variable_status'])) {

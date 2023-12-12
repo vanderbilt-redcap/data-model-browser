@@ -239,7 +239,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                                             if (!empty($data['code_text'][$id])) {
                                                 echo "<div><i>" . htmlentities($data['code_text'][$id],ENT_QUOTES) . "</i></div>";
                                             }
-                                            echo '</td><td id="' . $record_var_aux . '_description"><div style="padding-bottom: 8px;padding-top: 8px">' . htmlspecialchars($required_text,ENT_QUOTES);
+                                            echo '</td><td id="' . $record_var_aux . '_description"><div style="padding-bottom: 8px;padding-top: 8px">' . filter_tags($required_text);
                                             echo "<div>" . $variable_text . mb_convert_encoding($data['description'][$id], 'UTF-8', 'HTML-ENTITIES') . "</div>";
                                             if (!empty($data['description_extra'][$id])) {
                                                 echo "<div><i>" . htmlentities($data['description_extra'][$id],ENT_QUOTES) . "</i></div>";
