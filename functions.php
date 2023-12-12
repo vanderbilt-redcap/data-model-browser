@@ -111,7 +111,7 @@ function getDataRepeatingInstrumentsGroupByField($module,$project_id,$vars=""){
                                     if(!array_key_exists($data_ditionary['A'][$key],$array[$index]) || (array_key_exists($data_ditionary['A'][$key],$array[$index]) && !is_array($array[$index][$data_ditionary['A'][$key]]))){
                                         $array[$index][$data_ditionary['A'][$key]] = array();
                                     }
-                                    else if(is_array($array[$index][$data_ditionary['A'][$key]]) && !empty($array[$index][$data_ditionary['A'][$key]]) && count($instancedata[$data_ditionary['A'][$key]]) == 1 && $count==0){
+                                    else if(is_array($array[$index][$data_ditionary['A'][$key]]) && !empty($array[$index][$data_ditionary['A'][$key]]) && is_array($instancedata[$data_ditionary['A'][$key]]) && count($instancedata[$data_ditionary['A'][$key]]) == 1 && $count==0){
                                         $array[$index][$data_ditionary['A'][$key]] = array();
                                     }
                                     array_push($array[$index][$data_ditionary['A'][$key]],$instancedata[$data_ditionary['A'][$key]]);

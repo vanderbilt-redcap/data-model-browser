@@ -116,7 +116,7 @@ $dataTable = ProjectData::getProjectInfoArray($RecordSetDataModel);
                                     '<td class="'.$required_class.'">'.
                                     '<a href="'.$url.'" id="tables_link">'.htmlspecialchars($data['table_name'],ENT_QUOTES).'</a>'.
                                     '</td>'.
-                                    '<td id="'.$record_var_aux.'_description">'.htmlspecialchars($required_text.$variable_text.htmlentities($definition),ENT_QUOTES).'</td>'.
+                                    '<td id="'.$record_var_aux.'_description">'.filter_tags($required_text.$variable_text.$definition).'</td>'.
                                     '</tr>';
                             }
                         }
