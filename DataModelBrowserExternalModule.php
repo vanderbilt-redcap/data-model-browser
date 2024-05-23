@@ -188,7 +188,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             ."</div></div>"
             . "</body></html>";
 
-        $filename = $settings['des_wkname']."_DataModel_".date("Y-m-d_hi",time());
+        $filename = $settings['des_wkname']."_DataModel_".date("Y-m-d_hi",time()).".pdf";
         //SAVE JsonPDF ON DB
         $reportHash = $filename;
         $storedName = md5($reportHash);
