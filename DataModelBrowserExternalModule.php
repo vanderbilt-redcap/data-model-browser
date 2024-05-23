@@ -176,7 +176,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
         $page_num = '<style>.footer .page-number:after { content: counter(page); } .footer { position: fixed; bottom: 0px;color:grey }a{text-decoration: none;}</style>';
 
-        $img = JsonPDF::getFile($this, $settings['des_pdf_logo'],'pdf');
+        $img = JsonPDF::getFile($this, $settings['des_pdf_logo'],'src');
 
         $html_pdf = "<html><head><meta http-equiv='Content-Type' content='text/html' charset='UTF-8' /><style>* { font-family: DejaVu Sans, sans-serif; }</style></head><body style='font-family:\"Calibri\";font-size:10pt;'>".$page_num
             ."<div class='footer' style='left: 590px;'><span class='page-number'>Page </span></div>"
@@ -188,25 +188,28 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             ."</div></div>"
             . "</body></html>";
 
-        $filename = $settings['des_wkname']."_DataModel_".date("Y-m-d_hi",time());
+        $filename = $settings['des_wkname']."_DataModel_".date("Y-m-d_hi",time()).".pdf";
         //SAVE JsonPDF ON DB
         $reportHash = $filename;
         $storedName = md5($reportHash);
+        $filePath = APP_PATH_TEMP.$storedName;
 
         //DOMPDF
         $dompdf = new \Dompdf\Dompdf();
         $dompdf->loadHtml($html_pdf);
         $dompdf->setPaper('A4', 'portrait');
+        $options = $dompdf->getOptions();
+        $options->setChroot(APP_PATH_TEMP);
+        $dompdf->setOptions($options);
         ob_start();
         $dompdf->render();
-        #Download option
+        //#Download option
         $output = $dompdf->output();
-        $filesize = file_put_contents($this->framework->getSafePath($storedName, EDOC_PATH), $output);
+        $filesize = file_put_contents($this->framework->getSafePath($filePath, APP_PATH_TEMP), $output);
 
-        #Save document on DB
-        $q = $this->query("INSERT INTO redcap_edocs_metadata (stored_name,mime_type,doc_name,doc_size,file_extension,gzipped,project_id,stored_date) VALUES(?,?,?,?,?,?,?,?)",
-            [$storedName,'application/octet-stream',$reportHash.".pdf",$filesize,'.pdf','0',$settingsPID,date('Y-m-d h:i:s')]);
-        $docId = db_insert_id();
+        //Save document on DB
+        $docId = \REDCap::storeFile($filePath, $settingsPID, $filename);
+        unlink($filePath);
 
         #Add document DB ID to project
         $Proj = new \Project($settingsPID);
