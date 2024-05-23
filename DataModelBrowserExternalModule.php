@@ -195,19 +195,6 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         $filePath = APP_PATH_TEMP.$storedName;
 
         //DOMPDF
-//        $dompdf = new \Dompdf\Dompdf();
-//        $dompdf->loadHtml($html_pdf);
-//        $dompdf->setPaper('A4', 'portrait');
-//        ob_start();
-//        $dompdf->render();
-//        #Download option
-//        $output = $dompdf->output();
-//        $filesize = file_put_contents($this->framework->getSafePath($storedName, EDOC_PATH), $output);
-//        #Save document on DB
-//        $q = $this->query("INSERT INTO redcap_edocs_metadata (stored_name,mime_type,doc_name,doc_size,file_extension,gzipped,project_id,stored_date) VALUES(?,?,?,?,?,?,?,?)",
-//            [$storedName,'application/octet-stream',$reportHash.".pdf",$filesize,'.pdf','0',$settingsPID,date('Y-m-d h:i:s')]);
-//        $docId = db_insert_id();
-        //DOMPDF
         $dompdf = new \Dompdf\Dompdf();
         $dompdf->loadHtml($html_pdf);
         $dompdf->setPaper('A4', 'portrait');
