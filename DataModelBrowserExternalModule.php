@@ -219,7 +219,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         \Records::addRecordToRecordListCache($settingsPID, 1,$event_id);
 
         if($settings['des_pdf_notification_email'] != "") {
-            $link = $this->getUrl("downloadFile.php?sname=".$storedName."&file=". $filename.".pdf");
+            $link = $this->getUrl("downloadFile.php?pid=" . $project_id."&sname=".$storedName."&file=". $filename);
             $goto = APP_PATH_WEBROOT_ALL . "DataEntry/index.php?pid=".$settingsPID."&page=pdf&id=1";
 
             $q = $this->query("select app_title from redcap_projects where project_id = ? limit 1",[$settingsPID]);
