@@ -192,20 +192,20 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         //SAVE JsonPDF ON DB
         $reportHash = $filename;
         $storedName = md5($reportHash);
-        $filePath = APP_PATH_TEMP.$storedName;
+        $filePath = EDOC_PATH.$storedName;
 
         //DOMPDF
         $dompdf = new \Dompdf\Dompdf();
         $dompdf->loadHtml($html_pdf);
         $dompdf->setPaper('A4', 'portrait');
         $options = $dompdf->getOptions();
-        $options->setChroot(APP_PATH_TEMP);
+        $options->setChroot(EDOC_PATH);
         $dompdf->setOptions($options);
         ob_start();
         $dompdf->render();
         //#Download option
         $output = $dompdf->output();
-        $filesize = file_put_contents($this->framework->getSafePath($filePath, APP_PATH_TEMP), $output);
+        $filesize = file_put_contents($this->framework->getSafePath($filePath, EDOC_PATH), $output);
 
         //Save document on DB
         $docId = \REDCap::storeFile($filePath, $settingsPID, $filename);
