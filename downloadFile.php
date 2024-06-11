@@ -13,9 +13,8 @@ require_once "projects.php";
 
 $filename = db_escape($_REQUEST['file']);
 $sname = db_escape($_REQUEST['sname']);
-$extension = pathinfo($filename, PATHINFO_EXTENSION);
 
-header('Content-type: application/'.$extension);
+header('Content-type: application/pdf');
 header('Content-Disposition: attachment; filename="'.$filename.'"');
 header('Content-Transfer-Encoding: binary');
 header('Accept-Ranges: bytes');
