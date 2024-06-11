@@ -94,7 +94,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     function hasJsoncopyBeenUpdated($type,$settings, $project_id){
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='JSONCOPY'");
         $jsoncopyPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
-        if(ENVIRONMENT == "DEV"){
+        if(defined('ENVIRONMENT') && ENVIRONMENT == "DEV"){
             $qtype = $this->query("SELECT MAX(record) as record FROM ".$this->getDataTable($jsoncopyPID)." WHERE project_id=? AND field_name=? and value=? order by record",[$jsoncopyPID,'type',$type]);
         }else{
             $qtype = $this->query("SELECT MAX(CAST(record AS Int)) as record FROM ".$this->getDataTable($jsoncopyPID)." WHERE project_id=? AND field_name=? and value=? order by record",[$jsoncopyPID,'type',$type]);
