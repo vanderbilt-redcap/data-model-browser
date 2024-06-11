@@ -94,7 +94,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     function hasJsoncopyBeenUpdated($type,$settings, $project_id){
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='JSONCOPY'");
         $jsoncopyPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
-        if(ENVIRONMENT == "DEV"){
+        if(defined('ENVIRONMENT') && ENVIRONMENT == "DEV"){
             $qtype = $this->query("SELECT MAX(record) as record FROM ".$this->getDataTable($jsoncopyPID)." WHERE project_id=? AND field_name=? and value=? order by record",[$jsoncopyPID,'type',$type]);
         }else{
             $qtype = $this->query("SELECT MAX(CAST(record AS Int)) as record FROM ".$this->getDataTable($jsoncopyPID)." WHERE project_id=? AND field_name=? and value=? order by record",[$jsoncopyPID,'type',$type]);
@@ -192,20 +192,20 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         //SAVE JsonPDF ON DB
         $reportHash = $filename;
         $storedName = md5($reportHash);
-        $filePath = APP_PATH_TEMP.$storedName;
+        $filePath = EDOC_PATH.$storedName;
 
         //DOMPDF
         $dompdf = new \Dompdf\Dompdf();
         $dompdf->loadHtml($html_pdf);
         $dompdf->setPaper('A4', 'portrait');
         $options = $dompdf->getOptions();
-        $options->setChroot(APP_PATH_TEMP);
+        $options->setChroot(EDOC_PATH);
         $dompdf->setOptions($options);
         ob_start();
         $dompdf->render();
         //#Download option
         $output = $dompdf->output();
-        $filesize = file_put_contents($this->framework->getSafePath($filePath, APP_PATH_TEMP), $output);
+        $filesize = file_put_contents($this->framework->getSafePath($filePath, EDOC_PATH), $output);
 
         //Save document on DB
         $docId = \REDCap::storeFile($filePath, $settingsPID, $filename);
@@ -219,7 +219,12 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         \Records::addRecordToRecordListCache($settingsPID, 1,$event_id);
 
         if($settings['des_pdf_notification_email'] != "") {
-            $link = $this->getUrl("downloadFile.php?pid=" . $project_id."&sname=".$storedName."&file=". $filename);
+            $url = "";
+            $q_edoc = $this->query("SELECT stored_name,doc_name,doc_size,mime_type FROM redcap_edocs_metadata WHERE doc_id=?",[$docId]);
+            $row_edoc = $q_edoc->fetch_assoc();
+            $url = "downloadFile.php?NOATUH&pid=" . $project_id. "&sname=" . $row_edoc['stored_name'] . '&file=' . urlencode($row_edoc['doc_name']);
+            $link = $this->getUrl($url);
+
             $goto = APP_PATH_WEBROOT_ALL . "DataEntry/index.php?pid=".$settingsPID."&page=pdf&id=1";
 
             $q = $this->query("select app_title from redcap_projects where project_id = ? limit 1",[$settingsPID]);
