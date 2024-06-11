@@ -222,10 +222,9 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             $url = "";
             $q_edoc = $this->query("SELECT stored_name,doc_name,doc_size,mime_type FROM redcap_edocs_metadata WHERE doc_id=?",[$docId]);
             $row_edoc = $q_edoc->fetch_assoc();
-            $url = "downloadFile.php?NOATUH&pid=" . $project_id. "sname=" . $row_edoc['stored_name'] . '&file=' . urlencode($row_edoc['doc_name']);
+            $url = "downloadFile.php?NOATUH&pid=" . $project_id. "&sname=" . $row_edoc['stored_name'] . '&file=' . urlencode($row_edoc['doc_name']);
             $link = $this->getUrl($url);
 
-//            $link = $this->getUrl("downloadFile.php?pid=" . $project_id."&sname=".$storedName."&file=". $filename);
             $goto = APP_PATH_WEBROOT_ALL . "DataEntry/index.php?pid=".$settingsPID."&page=pdf&id=1";
 
             $q = $this->query("select app_title from redcap_projects where project_id = ? limit 1",[$settingsPID]);
