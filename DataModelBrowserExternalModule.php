@@ -354,7 +354,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
         if(!empty($record)){
             $environment = "";
-            if(ENVIRONMENT == 'DEV' || ENVIRONMENT == 'TEST'){
+            if(defined('ENVIRONMENT') && (ENVIRONMENT == 'DEV' || ENVIRONMENT == 'TEST')){
                 $environment = " ".ENVIRONMENT;
             }
 
