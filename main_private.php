@@ -1,7 +1,7 @@
 <?php use Vanderbilt\DataModelBrowserExternalModule\ProjectData; ?>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<script type="text/javascript" src="<?=$module->getUrl('js/jquery-3.3.1.min.js')?>"></script>
+<?php echo $module->loadREDCapJS(); ?>
 <script type="text/javascript" src="<?=$module->getUrl('js/bootstrap.min.js')?>"></script>
 <script type="text/javascript" src="<?=$module->getUrl('js/functions.js')?>"></script>
 <script type="text/javascript" src="<?=$module->getUrl('js/jquery-ui.min.js')?>"></script>
