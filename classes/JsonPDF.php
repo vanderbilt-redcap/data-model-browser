@@ -316,15 +316,15 @@ class JsonPDF
                         $variables_array  = array(
                             "data_format" => trim($dataFormat[$data['data_format'][$id]]),
                             "variable_status" => $data['variable_status'][$id],
-                            "description" => htmlentities($data['description'][$id]),
+                            "description" => $data['description'][$id],
                             "variable_required" => $data['variable_required'][$id][1],
                             "variable_key" => $data['variable_key'][$id][1],
                             "variable_deprecated_d" => $data['variable_deprecated_d'][$id],
-                            "variable_replacedby" => htmlentities($data['variable_replacedby'][$id]),
-                            "variable_splitdate_m" => htmlentities($data['variable_splitdate_m'][$id]),
-                            "variable_splitdate_d" => htmlentities($data['variable_splitdate_d'][$id]),
+                            "variable_replacedby" => $data['variable_replacedby'][$id],
+                            "variable_splitdate_m" => $data['variable_splitdate_m'][$id],
+                            "variable_splitdate_d" => $data['variable_splitdate_d'][$id],
                             "variable_splitdate_y" => $data['variable_splitdate_y'][$id][1],
-                            "variable_deprecatedinfo" => htmlentities($data['variable_deprecatedinfo'][$id]),
+                            "variable_deprecatedinfo" => $data['variable_deprecatedinfo'][$id],
                             "has_codes" => $has_codes,
                             "code_list_ref" => $code_list_ref,
                             "variable_order" => $data['variable_order'][$id],
@@ -362,8 +362,8 @@ class JsonPDF
                 $jsonVarContentArray  = array();
                 $codeOptions = explode(" | ", $data['code_list']);
                 foreach ($codeOptions as $option) {
-                    list($key, $val) = explode("=", htmlentities($option));
-                    $jsonVarContentArray[htmlentities(trim($key))] = htmlentities(trim($val));
+                    list($key, $val) = explode("=", $option);
+                    $jsonVarContentArray[trim($key)] = trim($val);
                 }
             }else if($data['code_format'] == '3'){
                 $jsonVarContentArray  = array();
@@ -371,13 +371,14 @@ class JsonPDF
                 foreach ($csv as $header=>$content){
                     if($header != 0){
                         //Convert to UTF-8 to avoid weird characters
-                        $value = mb_convert_encoding(htmlentities($content['Definition']), 'UTF-8','HTML-ENTITIES');
-                        $jsonVarContentArray[trim($content['Code'])] = htmlentities(trim($value));
+                        $value = mb_convert_encoding($content['Definition'], 'UTF-8','HTML-ENTITIES');
+                        $jsonVarContentArray[trim($content['Code'])] = trim($value);
                     }
                 }
             }
             $jsonArray[$data['record_id']] = $jsonVarContentArray;
         }
+
         #we save the new JSON
         if(!empty($jsonArray)){
             $record_id = self::saveJSONCopy('0b', $jsonArray, $module, $project_id);

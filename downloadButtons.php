@@ -1,3 +1,6 @@
+<?php
+namespace Vanderbilt\DataModelBrowserExternalModule;
+?>
 <div class="col-md-12 container-fluid wiki_container">
     <div class="col-md-12 wiki wiki_text wiki_text_size" style="padding-top: 0;">
         <div style="display: inline-block;float: left;">
@@ -11,7 +14,7 @@
             </form>
         </div>
         <div style="display: inline-block;float: right;padding-right: 10px">
-            <a href="<?=\Vanderbilt\DataModelBrowserExternalModule\printFile($module,$settings['des_pdf'],'url');?>" class="btn btn-default btn-md"><i class="fa fa-arrow-down"></i> Data Model</a>
+            <a href="<?=printFile($module,$settings['des_pdf'],'url');?>" class="btn btn-default btn-md"><i class="fa fa-arrow-down"></i> Data Model</a>
         </div>
         <?php
         #Only users that are admins or have Design rights
