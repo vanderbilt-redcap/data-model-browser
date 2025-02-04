@@ -236,7 +236,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 "<div>You can <a href='".$link."'>download the pdf</a> or <a href='".$goto."'>go to the settings project</a>.</div><br/>";
 
             $environment = "";
-            if(ENVIRONMENT == 'DEV' || ENVIRONMENT == 'TEST'){
+            if(defined('ENVIRONMENT') && (ENVIRONMENT == 'DEV' || ENVIRONMENT == 'TEST')){
                 $environment = " - ".ENVIRONMENT;
             }
             $sender = $settings['accesslink_sender_email'];
