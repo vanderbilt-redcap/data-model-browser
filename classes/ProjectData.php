@@ -155,15 +155,21 @@ class ProjectData
     }
 
     public static function getEnvironment(){
-        if(preg_match("/vanderbilt.edu/i", SERVER_NAME)){
-            #Other institutions
-            define("ENVIRONMENT", "PROD");
-        }else if (SERVER_NAME == "redcap.vanderbilt.edu") {
-            define("ENVIRONMENT", "PROD");
-        }else  if (SERVER_NAME == "redcaptest.vanderbilt.edu") {
-            define("ENVIRONMENT", "TEST");
-        }else {
-            define("ENVIRONMENT", "DEV");
+        if(!defined("ENVIRONMENT")) {
+            if (preg_match("/vumc.org/i", SERVER_NAME)) {
+                #Other institutions
+                define("ENVIRONMENT", "PROD");
+            } else {
+                if (SERVER_NAME == "redcap.vumc.org") {
+                    define("ENVIRONMENT", "PROD");
+                } else {
+                    if (SERVER_NAME == "redcaptest.vumc.org") {
+                        define("ENVIRONMENT", "TEST");
+                    } else {
+                        define("ENVIRONMENT", "DEV");
+                    }
+                }
+            }
         }
     }
 }
