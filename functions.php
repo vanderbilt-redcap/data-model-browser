@@ -21,7 +21,7 @@ function multi_array_diff($arr1, $arr2){
     foreach($arr1 as $key => $val) {
         if(isset($arr2[$key])){
             if(is_array($val)){
-                $arrDiff[$key] = \Vanderbilt\DataModelBrowserExternalModule\multi_array_diff($val, $arr2[$key]);
+                $arrDiff[$key] = multi_array_diff($val, $arr2[$key]);
             }else{
                 if(in_array($val, $arr2)!= 1){
                     $arrDiff[$key] = $val;
@@ -87,7 +87,7 @@ function getTablesInfo($module,$projectID, $tableID="", $tableOrderParam="table_
         $sqlTable = "SELECT * FROM `redcap_events_metadata` WHERE arm_id ='".db_escape($row['arm_id'])."'";
         $qTable = db_query($sqlTable);
         while ($rowTable = db_fetch_assoc($qTable)){
-            $dataTable = \Vanderbilt\DataModelBrowserExternalModule\generateTableArray($module,$rowTable['event_id'], $projectID,$dataTable,$tableID,$tableOrderParam);
+            $dataTable = generateTableArray($module,$rowTable['event_id'], $projectID,$dataTable,$tableID,$tableOrderParam);
         }
     }
     return $dataTable;
@@ -139,9 +139,9 @@ function getDataRepeatingInstrumentsGroupByField($module,$project_id,$vars=""){
  */
 function generateTableArray($module,$event_id, $project_id, $dataTable,$tableID,$tableOrderParam){
     if(empty($tableID)){
-        $recordsTable = \Vanderbilt\DataModelBrowserExternalModule\getDataRepeatingInstrumentsGroupByField($module,$project_id);
+        $recordsTable = getDataRepeatingInstrumentsGroupByField($module,$project_id);
     }else{
-        $recordsTable = \Vanderbilt\DataModelBrowserExternalModule\getDataRepeatingInstrumentsGroupByField($module,$project_id, array('record_id' => $tableID));
+        $recordsTable = getDataRepeatingInstrumentsGroupByField($module,$project_id, array('record_id' => $tableID));
     }
     $dataFormat = $module->getChoiceLabels('data_format', $project_id);
 
@@ -158,7 +158,7 @@ function generateTableArray($module,$event_id, $project_id, $dataTable,$tableID,
         }
     }
     #We order the tables
-    \Vanderbilt\DataModelBrowserExternalModule\array_sort_by_column($dataTable, $tableOrderParam);
+    array_sort_by_column($dataTable, $tableOrderParam);
     return $dataTable;
 }
 

@@ -1,4 +1,6 @@
 <?php
+namespace Vanderbilt\DataModelBrowserExternalModule;
+
 $style = '';
 if(array_key_exists('page',$_REQUEST)){
     $style = 'padding-bottom:10px;';
@@ -17,13 +19,14 @@ if(array_key_exists('page',$_REQUEST)){
                echo '<a href="'.$module->getUrl($page."&pid=".$_GET['pid']).'" '.$active.' style="padding-top: 40px;">Home</a>';
             }
             if( array_key_exists('option', $_REQUEST) && ($_REQUEST['option'] === 'variables' || $_REQUEST['option'] === 'variableInfo')){
-                $tid =htmlspecialchars($_REQUEST['tid'], ENT_QUOTES);
-                $vid = isset($_REQUEST['vid']) ? htmlspecialchars($_REQUEST['vid'], ENT_QUOTES):"";
-                $path = "&tid=".$tid."&vid=".$vid;
-                $dataTable = \Vanderbilt\DataModelBrowserExternalModule\getTablesInfo($module,$pidsArray['DATAMODEL'],$tid);
+                $tid = (int)$_REQUEST['tid'];
+                $vid = isset($_REQUEST['vid']) ? (int)$_REQUEST['vid']:"";
+                $dataTable = getTablesInfo($module,$pidsArray['DATAMODEL'],$tid);
                 $active = "";
                 foreach( $dataTable as $data ) {
                     if (!empty($data['record_id'])) {
+                        #rearrange the array to start at 1 to match the variables
+                        $data['variable_name'] = array_combine(range(1, count($data['variable_name'])), $data['variable_name']);
                         if ($_REQUEST['option'] === 'variables' || $_REQUEST['option'] === 'variableInfo') {
                             if($_REQUEST['option'] === 'variables') {
                                 $active = "class='wiki_active'";
@@ -33,7 +36,6 @@ if(array_key_exists('page',$_REQUEST)){
                             <span> > </span>
                             <a href="<?=$url?>" <?=$active?>><?= htmlentities($data['table_name'],ENT_QUOTES) ?></a>
                         <?php }
-
                         if ($_REQUEST['option'] === 'variableInfo') {
                             $active = "class='wiki_active'";
                             $url = $module->getUrl($page."&pid=".$_GET['pid']."&tid=".$tid ."&vid=". $vid ."&option=variableInfo");
