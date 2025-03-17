@@ -372,7 +372,8 @@ class JsonPDF
                     if($header != 0){
                         //Convert to UTF-8 to avoid weird characters
                         $value = mb_convert_encoding($content['Definition'], 'UTF-8','HTML-ENTITIES');
-                        $jsonVarContentArray[trim($content['Code'])] = trim($value);
+                        $code = trim(mb_convert_encoding($content['Code'], 'UTF-8','HTML-ENTITIES'));
+                        $jsonVarContentArray[$code] = trim($value);
                     }
                 }
             }
@@ -383,7 +384,6 @@ class JsonPDF
         if(!empty($jsonArray)){
             $record_id = self::saveJSONCopy('0b', $jsonArray, $module, $project_id);
         }
-
         return array('jsonArray' => json_encode($jsonArray,JSON_FORCE_OBJECT),'record_id' =>$record_id);
     }
 

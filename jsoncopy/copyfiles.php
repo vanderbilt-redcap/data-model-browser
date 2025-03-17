@@ -1,4 +1,6 @@
-
+<?php
+namespace Vanderbilt\DataModelBrowserExternalModule;
+?>
 <div class="alert alert-success fade in" style="display: none;" id="succMsgContainer"></div>
 <br/>
 <div class="col-md-12 wiki_text wiki_text_size" style="padding-top: 0;padding-bottom: 30px;">
