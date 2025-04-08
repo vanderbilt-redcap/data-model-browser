@@ -337,9 +337,19 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 $last_array = json_decode($strJsonFileContents, true);
                 $array_data = call_user_func_array(array($jsonPdf, "createProject".strtoupper($type)."JSON"),array($this, $project_id));
                 $new_array = json_decode($array_data['jsonArray'],true);
-                $result_prev = array_filter_empty(multi_array_diff($last_array,$new_array));
-                $result = array_filter_empty(multi_array_diff($new_array,$last_array));
+//                $result_prev = array_filter_empty(multi_array_diff($last_array,$new_array));
+//                $result = array_filter_empty(multi_array_diff($new_array,$last_array));
                 $record = $array_data['record_id'];
+                $result_prev = [];
+                $result = [];
+                foreach ($last_array as $oldkey => $old){
+                    $changes = array_filter_empty(multi_array_diff($last_array[$oldkey],$new_array[$oldkey]));
+                    if(!empty($changes)){
+                        array_push($result_prev,$changes);
+                        array_push($result,array_filter_empty(multi_array_diff($new_array[$oldkey],$last_array[$oldkey])));
+                    }
+
+                }
             }
         }else{
             $array_data = call_user_func_array(array($jsonPdf, "createProject".strtoupper($type)."JSON"),array($this, $project_id));
