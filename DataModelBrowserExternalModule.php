@@ -30,18 +30,34 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     }
 
     function createpdf(){
-        if(APP_PATH_WEBROOT[0] == '/'){
+        //Only perform actions between 12am and 6am for crons that update at night
+        $hourRange = 6;
+        if (date('G') > $hourRange) {
+            // Only perform actions between 12am and 6am.
+            return;
+        }
+        $lastRunSettingName = 'last-cron-run-time-createpdf';
+        $lastRun = empty($this->getSystemSetting($lastRunSettingName)) ? $this->getSystemSetting(
+            $lastRunSettingName
+        ) : 0;
+        $hoursSinceLastRun = (time() - $lastRun) / 60 / 60;
+        if ($hoursSinceLastRun < $hourRange) {
+            // We're already run recently
+            return;
+        }
+
+        //Perform cron actions here
+        if (APP_PATH_WEBROOT[0] == '/') {
             $APP_PATH_WEBROOT_ALL = substr(APP_PATH_WEBROOT, 1);
         }
-        define('APP_PATH_WEBROOT_ALL',APP_PATH_WEBROOT_FULL.$APP_PATH_WEBROOT_ALL);
-
-        foreach ($this->getProjectsWithModuleEnabled() as $project_id){
+        if(!defined('APP_PATH_WEBROOT_ALL')) {
+            define('APP_PATH_WEBROOT_ALL', APP_PATH_WEBROOT_FULL . $APP_PATH_WEBROOT_ALL);
+        }
+        foreach ($this->getProjectsWithModuleEnabled() as $project_id) {
             if($project_id != "") {
                 $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
                 $settingsPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
                 if($settingsPID != "") {
-                    error_log("createpdf - project_id:" . $project_id);
-
                     $RecordSetSettings = \REDCap::getData($settingsPID, 'array');
                     $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
 
@@ -57,6 +73,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 }
             }
         }
+        $this->setSystemSetting($lastRunSettingName, time());
     }
 
     function regeneratepdf(){
@@ -256,7 +273,6 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     }
 
     function createAndSaveJSONCron($project_id){
-        error_log("createpdf - createAndSaveJSONCron");
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='DATAMODEL'");
         $dataModelPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
