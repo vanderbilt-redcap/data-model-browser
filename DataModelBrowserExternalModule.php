@@ -8,7 +8,7 @@ use ExternalModules\ExternalModules;
 
 include_once(__DIR__ . "/classes/ProjectData.php");
 include_once(__DIR__ . "/classes/JsonPDF.php");
-include_once(__DIR__ . "functions.php");
+include_once(__DIR__ . "/functions.php");
 
 require_once(dirname(__FILE__)."/vendor/autoload.php");
 
@@ -165,8 +165,6 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     }
 
     function createAndSavePDFCron($settings, $project_id){
-        error_log("cron - createAndSavePDFCron ".$project_id);
-
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='DATAMODEL'");
         $dataModelPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
@@ -312,7 +310,6 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     }
 
     function saveJSONCopyVarSearch($jsonArray, $project_id){
-        error_log("createpdf - saveJSONCopyVarSearch");
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
         $settingsPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
@@ -353,18 +350,25 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 $last_array = json_decode($strJsonFileContents, true);
                 $array_data = call_user_func_array(array($jsonPdf, "createProject".strtoupper($type)."JSON"),array($this, $project_id));
                 $new_array = json_decode($array_data['jsonArray'],true);
-//                $result_prev = array_filter_empty(multi_array_diff($last_array,$new_array));
-//                $result = array_filter_empty(multi_array_diff($new_array,$last_array));
                 $record = $array_data['record_id'];
-                $result_prev = [];
-                $result = [];
-                foreach ($last_array as $oldkey => $old){
-                    $changes = array_filter_empty(multi_array_diff($last_array[$oldkey],$new_array[$oldkey]));
-                    if(!empty($changes)){
-                        array_push($result_prev,$changes);
-                        array_push($result,array_filter_empty(multi_array_diff($new_array[$oldkey],$last_array[$oldkey])));
-                    }
 
+                if($type == "0c"){
+                    $result_prev = array_filter_empty(array_diff_assoc($last_array,$new_array));
+                    $result = array_filter_empty(array_diff_assoc($new_array,$last_array));
+                }else if($type == "a"){
+                    $result_prev = array_filter_empty(multi_array_diff($last_array,$new_array));
+                    $result = array_filter_empty(multi_array_diff($new_array,$last_array));
+                }else{
+                    $result_prev = [];
+                    $result = [];
+                    foreach ($last_array as $oldkey => $old){
+                        $changes = array_filter_empty(multi_array_diff($last_array[$oldkey],$new_array[$oldkey]));
+                        if(!empty($changes)){
+                            array_push($result_prev,$changes);
+                            array_push($result,array_filter_empty(multi_array_diff($new_array[$oldkey],$last_array[$oldkey])));
+                        }
+
+                    }
                 }
             }
         }else{
@@ -378,7 +382,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             $last_record = "<i>None</i>";
         }
 
-        if(!empty($record)){
+        if(!empty($record) && $result_prev != $result){
             $environment = "";
             if(defined('ENVIRONMENT') && (ENVIRONMENT == 'DEV' || ENVIRONMENT == 'TEST')){
                 $environment = " ".ENVIRONMENT;
