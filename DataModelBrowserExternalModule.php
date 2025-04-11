@@ -92,28 +92,8 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                     $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
 
                     if ($settings['des_pdf_regenerate'][1] == '1') {
-//                        $this->createAndSavePDFCron($settings, $project_id);
-//                        $this->createAndSaveJSONCron($project_id);
-//
-//                        #Uncheck variable
-//                        $Proj = new \Project($settingsPID);
-//                        $event_id = $Proj->firstEventId;
-//                        $arrayRM = array();
-//                        $arrayRM[1][$event_id]['des_pdf_regenerate'] = array(1 => "");//checkbox
-//                        $results = \Records::saveData($settingsPID, 'array', $arrayRM, 'overwrite', 'YMD', 'flat', '', true, true, true, false, true, array(), true, false);
-//                        \Records::addRecordToRecordListCache($settingsPID, 1, $event_id);
-
-                        $hasJsoncopyBeenUpdated0a = $this->hasJsoncopyBeenUpdated('0a', $settings, $project_id);
-                        $hasJsoncopyBeenUpdated0b = $this->hasJsoncopyBeenUpdated('0b', $settings, $project_id);
-                        $hasJsoncopyBeenUpdated0c = $this->hasJsoncopyBeenUpdated('0c', $settings, $project_id);
-
-                        \REDCap::email("eva.bascompte.moragas@vumc.org", "eva.bascompte.moragas@vumc.org", "TEST createpdf 0C", "0A: ".$hasJsoncopyBeenUpdated0a."\n 0B: ".$hasJsoncopyBeenUpdated0b."\n 0C: ".$hasJsoncopyBeenUpdated0c,"","",$settings['accesslink_sender_name']);
-                        if ($hasJsoncopyBeenUpdated0a || $hasJsoncopyBeenUpdated0b || $hasJsoncopyBeenUpdated0c) {
-                            $this->createAndSavePDFCron($settings, $project_id);
-                            $this->createAndSaveJSONCron($project_id);
-                        } else {
-                            $this->checkIfJsonOrPDFBlank($settings, $project_id);
-                        }
+                        $this->createAndSavePDFCron($settings, $project_id);
+                        $this->createAndSaveJSONCron($project_id);
 
                         #Uncheck variable
                         $Proj = new \Project($settingsPID);
@@ -142,7 +122,6 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             $RecordSetJsonCopy = \REDCap::getData($jsoncopyPID, 'array', array('record_id' => $rowtype['record']));
             $jsoncopy = ProjectData::getProjectInfoArray($RecordSetJsonCopy)[0];
             $today = date("Y-m-d");
-            \REDCap::email("eva.bascompte.moragas@vumc.org", "eva.bascompte.moragas@vumc.org", "TEST createpdf hasJsoncopyBeenUpdated ".$type." json_copy_update_d", strtotime(date("Y-m-d", strtotime($jsoncopy['json_copy_update_d'])))." == ".strtotime($today),"","",$settings['accesslink_sender_name']);
 
             if ($jsoncopy["jsoncopy_file"] != "" && strtotime(date("Y-m-d", strtotime($jsoncopy['json_copy_update_d']))) == strtotime($today)) {
                 return true;
