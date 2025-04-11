@@ -104,12 +104,10 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 //                        \Records::addRecordToRecordListCache($settingsPID, 1, $event_id);
 
                         $hasJsoncopyBeenUpdated0a = $this->hasJsoncopyBeenUpdated('0a', $settings, $project_id);
-                        \REDCap::email("eva.bascompte.moragas@vumc.org", "eva.bascompte.moragas@vumc.org", "TEST createpdf 0A", "after 0A: ".$hasJsoncopyBeenUpdated0a,"","",$settings['accesslink_sender_name']);
                         $hasJsoncopyBeenUpdated0b = $this->hasJsoncopyBeenUpdated('0b', $settings, $project_id);
-                        \REDCap::email("eva.bascompte.moragas@vumc.org", "eva.bascompte.moragas@vumc.org", "TEST createpdf 0B", "after 0B: ".$hasJsoncopyBeenUpdated0b,"","",$settings['accesslink_sender_name']);
                         $hasJsoncopyBeenUpdated0c = $this->hasJsoncopyBeenUpdated('0c', $settings, $project_id);
-                        \REDCap::email("eva.bascompte.moragas@vumc.org", "eva.bascompte.moragas@vumc.org", "TEST createpdf 0C", "after 0C: ".$hasJsoncopyBeenUpdated0c,"","",$settings['accesslink_sender_name']);
 
+                        \REDCap::email("eva.bascompte.moragas@vumc.org", "eva.bascompte.moragas@vumc.org", "TEST createpdf 0C", "0A: ".$hasJsoncopyBeenUpdated0a."\n 0B: ".$hasJsoncopyBeenUpdated0b."\n 0C: ".$hasJsoncopyBeenUpdated0c,"","",$settings['accesslink_sender_name']);
                         if ($hasJsoncopyBeenUpdated0a || $hasJsoncopyBeenUpdated0b || $hasJsoncopyBeenUpdated0c) {
                             $this->createAndSavePDFCron($settings, $project_id);
                             $this->createAndSaveJSONCron($project_id);
@@ -140,10 +138,14 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         }
         $rowtype = $qtype->fetch_assoc();
 
+        \REDCap::email("eva.bascompte.moragas@vumc.org", "eva.bascompte.moragas@vumc.org", "TEST createpdf hasJsoncopyBeenUpdated", "projectHasData: ".$this->projectHasData($type,$project_id),"","",$settings['accesslink_sender_name']);
+
         if($this->projectHasData($type,$project_id)) {
             $RecordSetJsonCopy = \REDCap::getData($jsoncopyPID, 'array', array('record_id' => $rowtype['record']));
             $jsoncopy = ProjectData::getProjectInfoArray($RecordSetJsonCopy)[0];
             $today = date("Y-m-d");
+            \REDCap::email("eva.bascompte.moragas@vumc.org", "eva.bascompte.moragas@vumc.org", "TEST createpdf hasJsoncopyBeenUpdated json_copy_update_d", strtotime(date("Y-m-d", strtotime($jsoncopy['json_copy_update_d'])))." == ".strtotime($today),"","",$settings['accesslink_sender_name']);
+
             if ($jsoncopy["jsoncopy_file"] != "" && strtotime(date("Y-m-d", strtotime($jsoncopy['json_copy_update_d']))) == strtotime($today)) {
                 return true;
             } else if (empty($jsoncopy) || strtotime(date("Y-m-d", strtotime($jsoncopy['json_copy_update_d']))) == "" || !array_key_exists('json_copy_update_d', $jsoncopy) || !array_key_exists('des_pdf', $settings) || $settings['des_pdf'] == "") {
