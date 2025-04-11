@@ -146,7 +146,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
             if ($jsoncopy["jsoncopy_file"] != "" && strtotime(date("Y-m-d", strtotime($jsoncopy['json_copy_update_d']))) == strtotime($today)) {
                 return true;
-            } else if (empty($jsoncopy) || strtotime(date("Y-m-d", strtotime($jsoncopy['json_copy_update_d']))) == strtotime($today) || strtotime(date("Y-m-d", strtotime($jsoncopy['json_copy_update_d']))) == "" || !array_key_exists('json_copy_update_d', $jsoncopy) || !array_key_exists('des_pdf', $settings) || $settings['des_pdf'] == "") {
+            } else if (empty($jsoncopy) || strtotime(date("Y-m-d", strtotime($jsoncopy['json_copy_update_d']))) != strtotime($today) || strtotime(date("Y-m-d", strtotime($jsoncopy['json_copy_update_d']))) == "" || !array_key_exists('json_copy_update_d', $jsoncopy) || !array_key_exists('des_pdf', $settings) || $settings['des_pdf'] == "") {
                 return $this->checkAndUpdateJSONCopyProject($type, $rowtype['record'], $jsoncopy, $settings, $project_id);
             }
         }
