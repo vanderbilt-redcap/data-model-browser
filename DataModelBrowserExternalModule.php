@@ -112,6 +112,14 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                         } else {
                             $this->checkIfJsonOrPDFBlank($settings, $project_id);
                         }
+
+                        #Uncheck variable
+                        $Proj = new \Project($settingsPID);
+                        $event_id = $Proj->firstEventId;
+                        $arrayRM = array();
+                        $arrayRM[1][$event_id]['des_pdf_regenerate'] = array(1 => "");//checkbox
+                        $results = \Records::saveData($settingsPID, 'array', $arrayRM, 'overwrite', 'YMD', 'flat', '', true, true, true, false, true, array(), true, false);
+                        \Records::addRecordToRecordListCache($settingsPID, 1, $event_id);
                     }
                 }
             }
