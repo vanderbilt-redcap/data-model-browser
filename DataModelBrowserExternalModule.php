@@ -138,19 +138,16 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         }
         $rowtype = $qtype->fetch_assoc();
 
-        \REDCap::email("eva.bascompte.moragas@vumc.org", "eva.bascompte.moragas@vumc.org", "TEST createpdf hasJsoncopyBeenUpdated", "projectHasData: ".$this->projectHasData($type,$project_id),"","",$settings['accesslink_sender_name']);
-
         if($this->projectHasData($type,$project_id)) {
             $RecordSetJsonCopy = \REDCap::getData($jsoncopyPID, 'array', array('record_id' => $rowtype['record']));
             $jsoncopy = ProjectData::getProjectInfoArray($RecordSetJsonCopy)[0];
             $today = date("Y-m-d");
-            \REDCap::email("eva.bascompte.moragas@vumc.org", "eva.bascompte.moragas@vumc.org", "TEST createpdf hasJsoncopyBeenUpdated json_copy_update_d", strtotime(date("Y-m-d", strtotime($jsoncopy['json_copy_update_d'])))." == ".strtotime($today),"","",$settings['accesslink_sender_name']);
+            \REDCap::email("eva.bascompte.moragas@vumc.org", "eva.bascompte.moragas@vumc.org", "TEST createpdf hasJsoncopyBeenUpdated ".$type." json_copy_update_d", strtotime(date("Y-m-d", strtotime($jsoncopy['json_copy_update_d'])))." == ".strtotime($today),"","",$settings['accesslink_sender_name']);
 
             if ($jsoncopy["jsoncopy_file"] != "" && strtotime(date("Y-m-d", strtotime($jsoncopy['json_copy_update_d']))) == strtotime($today)) {
                 return true;
-            } else if (empty($jsoncopy) || strtotime(date("Y-m-d", strtotime($jsoncopy['json_copy_update_d']))) == "" || !array_key_exists('json_copy_update_d', $jsoncopy) || !array_key_exists('des_pdf', $settings) || $settings['des_pdf'] == "") {
-                $this->checkAndUpdateJSONCopyProject($type, $rowtype['record'], $jsoncopy, $settings, $project_id);
-                return true;
+            } else if (empty($jsoncopy) || strtotime(date("Y-m-d", strtotime($jsoncopy['json_copy_update_d']))) == strtotime($today) || strtotime(date("Y-m-d", strtotime($jsoncopy['json_copy_update_d']))) == "" || !array_key_exists('json_copy_update_d', $jsoncopy) || !array_key_exists('des_pdf', $settings) || $settings['des_pdf'] == "") {
+                return $this->checkAndUpdateJSONCopyProject($type, $rowtype['record'], $jsoncopy, $settings, $project_id);
             }
         }
         return false;
@@ -431,8 +428,9 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                     \REDCap::email($email, $sender, $subject.$environment, $message,"","",$settings['accesslink_sender_name']);
                 }
             }
+            return true;
         }
-        return null;
+        return false;
     }
 
     function loadImg($imgEdoc,$default,$option=""){
