@@ -355,7 +355,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 if($type == "0c"){
                     $result_prev = array_filter_empty(array_diff_assoc($last_array,$new_array));
                     $result = array_filter_empty(array_diff_assoc($new_array,$last_array));
-                }else if($type == "a"){
+                }else if($type == "0a"){
                     $result_prev = array_filter_empty(multi_array_diff($last_array,$new_array));
                     $result = array_filter_empty(multi_array_diff($new_array,$last_array));
                 }else{
