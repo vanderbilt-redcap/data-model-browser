@@ -8,7 +8,7 @@ use ExternalModules\ExternalModules;
 
 include_once(__DIR__ . "/classes/ProjectData.php");
 include_once(__DIR__ . "/classes/JsonPDF.php");
-include_once(__DIR__ . "functions.php");
+include_once(__DIR__ . "/functions.php");
 
 require_once(dirname(__FILE__)."/vendor/autoload.php");
 
@@ -30,18 +30,34 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     }
 
     function createpdf(){
-        if(APP_PATH_WEBROOT[0] == '/'){
+        //Only perform actions between 12am and 6am for crons that update at night
+        $hourRange = 6;
+        if (date('G') > $hourRange) {
+            // Only perform actions between 12am and 6am.
+            return;
+        }
+        $lastRunSettingName = 'last-cron-run-time-createpdf';
+        $lastRun = empty($this->getSystemSetting($lastRunSettingName)) ? $this->getSystemSetting(
+            $lastRunSettingName
+        ) : 0;
+        $hoursSinceLastRun = (time() - $lastRun) / 60 / 60;
+        if ($hoursSinceLastRun < $hourRange) {
+            // We're already run recently
+            return;
+        }
+
+        //Perform cron actions here
+        if (APP_PATH_WEBROOT[0] == '/') {
             $APP_PATH_WEBROOT_ALL = substr(APP_PATH_WEBROOT, 1);
         }
-        define('APP_PATH_WEBROOT_ALL',APP_PATH_WEBROOT_FULL.$APP_PATH_WEBROOT_ALL);
-
-        foreach ($this->getProjectsWithModuleEnabled() as $project_id){
+        if(!defined('APP_PATH_WEBROOT_ALL')) {
+            define('APP_PATH_WEBROOT_ALL', APP_PATH_WEBROOT_FULL . $APP_PATH_WEBROOT_ALL);
+        }
+        foreach ($this->getProjectsWithModuleEnabled() as $project_id) {
             if($project_id != "") {
                 $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
                 $settingsPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
                 if($settingsPID != "") {
-                    error_log("createpdf - project_id:" . $project_id);
-
                     $RecordSetSettings = \REDCap::getData($settingsPID, 'array');
                     $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
 
@@ -57,6 +73,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 }
             }
         }
+        $this->setSystemSetting($lastRunSettingName, time());
     }
 
     function regeneratepdf(){
@@ -105,11 +122,11 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             $RecordSetJsonCopy = \REDCap::getData($jsoncopyPID, 'array', array('record_id' => $rowtype['record']));
             $jsoncopy = ProjectData::getProjectInfoArray($RecordSetJsonCopy)[0];
             $today = date("Y-m-d");
+
             if ($jsoncopy["jsoncopy_file"] != "" && strtotime(date("Y-m-d", strtotime($jsoncopy['json_copy_update_d']))) == strtotime($today)) {
                 return true;
-            } else if (empty($jsoncopy) || strtotime(date("Y-m-d", strtotime($jsoncopy['json_copy_update_d']))) == "" || !array_key_exists('json_copy_update_d', $jsoncopy) || !array_key_exists('des_pdf', $settings) || $settings['des_pdf'] == "") {
-                $this->checkAndUpdateJSONCopyProject($type, $rowtype['record'], $jsoncopy, $settings, $project_id);
-                return true;
+            } else if (empty($jsoncopy) || strtotime(date("Y-m-d", strtotime($jsoncopy['json_copy_update_d']))) != strtotime($today) || strtotime(date("Y-m-d", strtotime($jsoncopy['json_copy_update_d']))) == "" || !array_key_exists('json_copy_update_d', $jsoncopy) || !array_key_exists('des_pdf', $settings) || $settings['des_pdf'] == "") {
+                return $this->checkAndUpdateJSONCopyProject($type, $rowtype['record'], $jsoncopy, $settings, $project_id);
             }
         }
         return false;
@@ -148,8 +165,6 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     }
 
     function createAndSavePDFCron($settings, $project_id){
-        error_log("cron - createAndSavePDFCron ".$project_id);
-
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='DATAMODEL'");
         $dataModelPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
@@ -256,7 +271,6 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     }
 
     function createAndSaveJSONCron($project_id){
-        error_log("createpdf - createAndSaveJSONCron");
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='DATAMODEL'");
         $dataModelPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
@@ -296,7 +310,6 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     }
 
     function saveJSONCopyVarSearch($jsonArray, $project_id){
-        error_log("createpdf - saveJSONCopyVarSearch");
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
         $settingsPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
@@ -337,9 +350,26 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 $last_array = json_decode($strJsonFileContents, true);
                 $array_data = call_user_func_array(array($jsonPdf, "createProject".strtoupper($type)."JSON"),array($this, $project_id));
                 $new_array = json_decode($array_data['jsonArray'],true);
-                $result_prev = array_filter_empty(multi_array_diff($last_array,$new_array));
-                $result = array_filter_empty(multi_array_diff($new_array,$last_array));
                 $record = $array_data['record_id'];
+
+                if($type == "0c"){
+                    $result_prev = array_filter_empty(array_diff_assoc($last_array,$new_array));
+                    $result = array_filter_empty(array_diff_assoc($new_array,$last_array));
+                }else if($type == "0a"){
+                    $result_prev = array_filter_empty(multi_array_diff($last_array,$new_array));
+                    $result = array_filter_empty(multi_array_diff($new_array,$last_array));
+                }else{
+                    $result_prev = [];
+                    $result = [];
+                    foreach ($last_array as $oldkey => $old){
+                        $changes = array_filter_empty(multi_array_diff($last_array[$oldkey],$new_array[$oldkey]));
+                        if(!empty($changes)){
+                            array_push($result_prev,$changes);
+                            array_push($result,array_filter_empty(multi_array_diff($new_array[$oldkey],$last_array[$oldkey])));
+                        }
+
+                    }
+                }
             }
         }else{
             $array_data = call_user_func_array(array($jsonPdf, "createProject".strtoupper($type)."JSON"),array($this, $project_id));
@@ -352,7 +382,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             $last_record = "<i>None</i>";
         }
 
-        if(!empty($record)){
+        if(!empty($record) && $result_prev != $result){
             $environment = "";
             if(defined('ENVIRONMENT') && (ENVIRONMENT == 'DEV' || ENVIRONMENT == 'TEST')){
                 $environment = " ".ENVIRONMENT;
@@ -377,8 +407,9 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                     \REDCap::email($email, $sender, $subject.$environment, $message,"","",$settings['accesslink_sender_name']);
                 }
             }
+            return true;
         }
-        return null;
+        return false;
     }
 
     function loadImg($imgEdoc,$default,$option=""){
