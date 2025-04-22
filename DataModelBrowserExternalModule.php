@@ -90,18 +90,35 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 if($settingsPID != "") {
                     $RecordSetSettings = \REDCap::getData($settingsPID, 'array');
                     $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
+                    if(!empty($settings)) {
+                        if (array_key_exists('des_pdf_regenerate', $settings) && array_key_exists(1, $settings['des_pdf_regenerate']) && $settings['des_pdf_regenerate'][1] == '1') {
+                            $this->createAndSavePDFCron($settings, $project_id);
+                            $this->createAndSaveJSONCron($project_id);
 
-                    if ($settings['des_pdf_regenerate'][1] == '1') {
-                        $this->createAndSavePDFCron($settings, $project_id);
-                        $this->createAndSaveJSONCron($project_id);
-
-                        #Uncheck variable
-                        $Proj = new \Project($settingsPID);
-                        $event_id = $Proj->firstEventId;
-                        $arrayRM = array();
-                        $arrayRM[1][$event_id]['des_pdf_regenerate'] = array(1 => "");//checkbox
-                        $results = \Records::saveData($settingsPID, 'array', $arrayRM, 'overwrite', 'YMD', 'flat', '', true, true, true, false, true, array(), true, false);
-                        \Records::addRecordToRecordListCache($settingsPID, 1, $event_id);
+                            #Uncheck variable
+                            $Proj = new \Project($settingsPID);
+                            $event_id = $Proj->firstEventId;
+                            $arrayRM = array();
+                            $arrayRM[1][$event_id]['des_pdf_regenerate'] = array(1 => "");//checkbox
+                            $results = \Records::saveData(
+                                $settingsPID,
+                                'array',
+                                $arrayRM,
+                                'overwrite',
+                                'YMD',
+                                'flat',
+                                '',
+                                true,
+                                true,
+                                true,
+                                false,
+                                true,
+                                array(),
+                                true,
+                                false
+                            );
+                            \Records::addRecordToRecordListCache($settingsPID, 1, $event_id);
+                        }
                     }
                 }
             }
