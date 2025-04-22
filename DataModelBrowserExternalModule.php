@@ -85,23 +85,36 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         foreach ($this->getProjectsWithModuleEnabled() as $project_id){
             if($project_id != "") {
                 $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
-                $settingsPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
+                $settingsData = ProjectData::getProjectInfoArray($RecordSetConstants);
+                $settingsPID = "";
+                if(!empty($settingsData) && array_key_exists(0, $settingsData) && array_key_exists("project_id",$settingsData[0])){
+                    $settingsPID = $settingsData[0]['project_id'];
+                }
 
                 if($settingsPID != "") {
                     $RecordSetSettings = \REDCap::getData($settingsPID, 'array');
                     $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
+                    if(!empty($settings)) {
+                        if (array_key_exists('des_pdf_regenerate', $settings) && array_key_exists(1, $settings['des_pdf_regenerate']) && $settings['des_pdf_regenerate'][1] == '1') {
+                            $this->createAndSavePDFCron($settings, $project_id);
+                            $this->createAndSaveJSONCron($project_id);
 
-                    if ($settings['des_pdf_regenerate'][1] == '1') {
-                        $this->createAndSavePDFCron($settings, $project_id);
-                        $this->createAndSaveJSONCron($project_id);
-
-                        #Uncheck variable
-                        $Proj = new \Project($settingsPID);
-                        $event_id = $Proj->firstEventId;
-                        $arrayRM = array();
-                        $arrayRM[1][$event_id]['des_pdf_regenerate'] = array(1 => "");//checkbox
-                        $results = \Records::saveData($settingsPID, 'array', $arrayRM, 'overwrite', 'YMD', 'flat', '', true, true, true, false, true, array(), true, false);
-                        \Records::addRecordToRecordListCache($settingsPID, 1, $event_id);
+                            #Uncheck variable
+                            $Proj = new \Project($settingsPID);
+                            $event_id = $Proj->firstEventId;
+                            $arrayRM = [];
+                            $arrayRM[1][$event_id]['des_pdf_regenerate'] = [1 => ""];//checkbox
+                            $params = [
+                                'project_id' => $settingsPID,
+                                'dataFormat' => 'array',
+                                'data' => $arrayRM,
+                                'overwriteBehavior' => "overwrite",
+                                'dateFormat' => "YMD",
+                                'type' => "flat"
+                            ];
+                            $results = \REDCap::saveData($params);
+                            \Records::addRecordToRecordListCache($settingsPID, 1, $event_id);
+                        }
                     }
                 }
             }
