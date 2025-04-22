@@ -102,25 +102,17 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                             #Uncheck variable
                             $Proj = new \Project($settingsPID);
                             $event_id = $Proj->firstEventId;
-                            $arrayRM = array();
-                            $arrayRM[1][$event_id]['des_pdf_regenerate'] = array(1 => "");//checkbox
-                            $results = \Records::saveData(
-                                $settingsPID,
-                                'array',
-                                $arrayRM,
-                                'overwrite',
-                                'YMD',
-                                'flat',
-                                '',
-                                true,
-                                true,
-                                true,
-                                false,
-                                true,
-                                array(),
-                                true,
-                                false
-                            );
+                            $arrayRM = [];
+                            $arrayRM[1][$event_id]['des_pdf_regenerate'] = [1 => ""];//checkbox
+                            $params = [
+                                'project_id' => $settingsPID,
+                                'dataFormat' => 'array',
+                                'data' => $arrayRM,
+                                'overwriteBehavior' => "overwrite",
+                                'dateFormat' => "YMD",
+                                'type' => "flat"
+                            ];
+                            $results = \REDCap::saveData($params);
                             \Records::addRecordToRecordListCache($settingsPID, 1, $event_id);
                         }
                     }
