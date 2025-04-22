@@ -42,8 +42,10 @@ class ProjectData
         $array = array();
         $found = array();
         $index=0;
-        foreach ($filterLogic as $filterkey => $filtervalue){
-            array_push($found, false);
+        if(is_array($filterLogic)) {
+            foreach ($filterLogic as $filterkey => $filtervalue) {
+                array_push($found, false);
+            }
         }
         if(is_array($records) && !empty($records)) {
             foreach ($records as $record => $record_array) {

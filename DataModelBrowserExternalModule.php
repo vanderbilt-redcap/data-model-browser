@@ -85,7 +85,11 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         foreach ($this->getProjectsWithModuleEnabled() as $project_id){
             if($project_id != "") {
                 $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
-                $settingsPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
+                $settingsData = ProjectData::getProjectInfoArray($RecordSetConstants);
+                $settingsPID = "";
+                if(!empty($settingsData) && array_key_exists(0, $settingsData) && array_key_exists("project_id",$settingsData[0])){
+                    $settingsPID = $settingsData[0]['project_id'];
+                }
 
                 if($settingsPID != "") {
                     $RecordSetSettings = \REDCap::getData($settingsPID, 'array');
