@@ -319,15 +319,15 @@ class JsonPDF
                             "description" => $data['description'][$id],
                             "variable_required" => $data['variable_required'][$id][1],
                             "variable_key" => $data['variable_key'][$id][1],
-                            "variable_deprecated_d" => self::arrayKeyExistsReturnValue($data,'variable_deprecated_d',$id),
-                            "variable_replacedby" => self::arrayKeyExistsReturnValue($data,'variable_replacedby',$id),
-                            "variable_splitdate_m" => self::arrayKeyExistsReturnValue($data,'variable_splitdate_m',$id),
-                            "variable_splitdate_d" => self::arrayKeyExistsReturnValue($data,'variable_splitdate_d',$id),
+                            "variable_deprecated_d" => $module->arrayKeyExistsReturnValue($data,'variable_deprecated_d',$id),
+                            "variable_replacedby" => $module->arrayKeyExistsReturnValue($data,'variable_replacedby',$id),
+                            "variable_splitdate_m" => $module->arrayKeyExistsReturnValue($data,'variable_splitdate_m',$id),
+                            "variable_splitdate_d" => $module->arrayKeyExistsReturnValue($data,'variable_splitdate_d',$id),
                             "variable_splitdate_y" => $data['variable_splitdate_y'][$id][1],
-                            "variable_deprecatedinfo" => self::arrayKeyExistsReturnValue($data,'variable_deprecatedinfo',$id),
+                            "variable_deprecatedinfo" => $module->arrayKeyExistsReturnValue($data,'variable_deprecatedinfo',$id),
                             "has_codes" => $has_codes,
                             "code_list_ref" => $code_list_ref,
-                            "variable_order" => $data['variable_order'][$id],
+                            "variable_order" => $module->arrayKeyExistsReturnValue($data,'variable_order',$id),
                             "variable_missingaction" => $data['variable_missingaction'][$id][1],
                             "variable_reportcomplete" => $data['variable_reportcomplete'][$id][1],
                             "variable_indexid" => $data['variable_indexid'][$id][1]
@@ -554,21 +554,6 @@ class JsonPDF
         }
 
         return $output;
-    }
-
-    public static function arrayKeyExistsReturnValue($array, $key, $key2=null) {
-        if(array_key_exists($key, $array)) {
-            if($key2 != null) {
-                if(is_array($array[$key]) && array_key_exists($key2, $array[$key])) {
-                    return $array[$key][$key2];
-                }else{
-                    return "";
-                }
-            }else{
-                return $array[$key];
-            }
-        }
-        return "";
     }
 }
 ?>
