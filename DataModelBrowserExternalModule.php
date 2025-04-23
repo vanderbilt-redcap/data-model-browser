@@ -80,7 +80,9 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         if(APP_PATH_WEBROOT[0] == '/'){
             $APP_PATH_WEBROOT_ALL = substr(APP_PATH_WEBROOT, 1);
         }
-        define('APP_PATH_WEBROOT_ALL',APP_PATH_WEBROOT_FULL.$APP_PATH_WEBROOT_ALL);
+        if(!defined('APP_PATH_WEBROOT_ALL')){
+            define('APP_PATH_WEBROOT_ALL', APP_PATH_WEBROOT_FULL.$APP_PATH_WEBROOT_ALL);
+        }
 
         foreach ($this->getProjectsWithModuleEnabled() as $project_id){
             if($project_id != "") {
@@ -300,11 +302,11 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                         $jsonVarArrayAux[trim($data['variable_name'][$id])] = array();
                         $variables_array = array(
                             "instance" => $id,
-                            "description" => $data['description'][$id],
-                            "description_extra" => $data['description_extra'][$id],
-                            "code_list_ref" => $data['code_list_ref'][$id],
-                            "data_format" => trim($dataFormat[$data['data_format'][$id]]),
-                            "code_text" => $data['code_text'][$id],
+                            "description" => $this->arrayKeyExistsReturnValue($data,'description',$id),
+                            "description_extra" => $this->arrayKeyExistsReturnValue($data,'description_extra',$id),
+                            "code_list_ref" => $this->arrayKeyExistsReturnValue($data,'code_list_ref',$id),
+                            "data_format" => trim($dataFormat[$this->arrayKeyExistsReturnValue($data,'data_format',$id)]),
+                            "code_text" => $this->arrayKeyExistsReturnValue($data,'code_text',$id),
                             "variable_link" => $url
                         );
                         $jsonVarArrayAux[$data['variable_name'][$id]] = $variables_array;
@@ -844,5 +846,20 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             <script src='<?=APP_PATH_WEBROOT?>Resources/webpack/js/bundle.js'></script>
             <?php
         }
+    }
+
+    public function arrayKeyExistsReturnValue($array, $key, $key2=null) {
+        if(array_key_exists($key, $array)) {
+            if($key2 != null) {
+                if(is_array($array[$key]) && array_key_exists($key2, $array[$key])) {
+                    return $array[$key][$key2];
+                }else{
+                    return "";
+                }
+            }else{
+                return $array[$key];
+            }
+        }
+        return "";
     }
 }
