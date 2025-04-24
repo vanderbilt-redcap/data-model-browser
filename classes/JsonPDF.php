@@ -302,21 +302,21 @@ class JsonPDF
             if($data['table_name'] != "") {
                 $jsonVarArray['variables'] = array();
                 foreach ($data['variable_order'] as $id => $value) {
-                    if ($data['variable_name'][$id] != '') {
+                    if ($module->arrayKeyExistsReturnValue($data,'variable_name',$id) != '') {
                         $has_codes = 'N';
-                        if ($data['has_codes'][$id] == '1')
+                        if ($module->arrayKeyExistsReturnValue($data,'has_codes',$id) == '1')
                             $has_codes = 'Y';
 
                         $code_list_ref = $data['code_list_ref'][$id];
-                        if ($data['code_list_ref'][$id] == '') {
+                        if ($module->arrayKeyExistsReturnValue($data,'code_list_ref',$id) == '') {
                             $code_list_ref = 'NULL';
                         }
 
                         $jsonVarArray['variables'][trim($data['variable_name'][$id])] = array();
                         $variables_array  = array(
                             "data_format" => trim($dataFormat[$data['data_format'][$id]]),
-                            "variable_status" => $data['variable_status'][$id],
-                            "description" => $data['description'][$id],
+                            "variable_status" => $module->arrayKeyExistsReturnValue($data,'variable_status',$id),
+                            "description" => $module->arrayKeyExistsReturnValue($data,'description',$id),
                             "variable_required" => $data['variable_required'][$id][1],
                             "variable_key" => $data['variable_key'][$id][1],
                             "variable_deprecated_d" => $module->arrayKeyExistsReturnValue($data,'variable_deprecated_d',$id),
