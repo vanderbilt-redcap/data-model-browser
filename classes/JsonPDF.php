@@ -371,8 +371,8 @@ class JsonPDF
                 foreach ($csv as $header=>$content){
                     if($header != 0){
                         //Convert to UTF-8 to avoid weird characters
-                        $value = mb_convert_encoding($content['Definition'], 'UTF-8','HTML-ENTITIES');
-                        $code = trim(mb_convert_encoding($content['Code'], 'UTF-8','HTML-ENTITIES'));
+                        $value = mb_convert_encoding($module->arrayKeyExistsReturnValue($content, 'Definition'), 'UTF-8','HTML-ENTITIES');
+                        $code = trim(mb_convert_encoding($module->arrayKeyExistsReturnValue($content, 'Code'), 'UTF-8','HTML-ENTITIES'));
                         $jsonVarContentArray[$code] = trim($value);
                     }
                 }
