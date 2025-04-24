@@ -290,7 +290,7 @@ class JsonPDF
      * Function that creates a JSON copy of the Harmonist 0A: Data Model
      * @return string , the JSON
      */
-    public static function createProject0AJSON($module, $project_id, $save=""){
+    public static function createProject0AJSON($module, $project_id, $save=true){
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='DATAMODEL'");
         $dataModelPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
@@ -342,7 +342,7 @@ class JsonPDF
             }
         }
         #we save the new JSON
-        if(!empty($jsonArray) && $save == ""){
+        if(!empty($jsonArray) && $save){
             $record_id = self::saveJSONCopy('0a', $jsonArray, $module, $project_id);
         }
         return array('jsonArray' => json_encode($jsonArray,JSON_FORCE_OBJECT),'record_id' =>$record_id);
@@ -351,7 +351,7 @@ class JsonPDF
      * Function that creates a JSON copy of the Harmonist 0A: Data Model
      * @return string, the JSON
      */
-    public static function createProject0BJSON($module, $project_id, $save=""){
+    public static function createProject0BJSON($module, $project_id, $save=true){
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='CODELIST'");
         $codeListPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
         $RecordSetCodeList = \REDCap::getData($codeListPID, 'array', null);
@@ -381,7 +381,7 @@ class JsonPDF
         }
 
         #we save the new JSON
-        if(!empty($jsonArray) && $save == ""){
+        if(!empty($jsonArray) && $save){
             $record_id = self::saveJSONCopy('0b', $jsonArray, $module, $project_id);
         }
         return array('jsonArray' => json_encode($jsonArray,JSON_FORCE_OBJECT),'record_id' =>$record_id);
@@ -391,7 +391,7 @@ class JsonPDF
      * Function that creates a JSON copy of the Harmonist 0C: Data Model Metadata
      * @return string, the JSON
      */
-    public static function createProject0CJSON($module, $project_id, $save=""){
+    public static function createProject0CJSON($module, $project_id, $save=true){
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='DATAMODELMETADATA'");
         $dataModelMetadataPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
@@ -448,7 +448,7 @@ class JsonPDF
             $jsonArray['sample_dataset'] = base64_encode(file_get_contents(self::getFile($module, $dataTable['sample_dataset'], 'pdf')));
 
             #we save the new JSON
-            if (!empty($jsonArray) && $save == "") {
+            if (!empty($jsonArray) && $save) {
                 $record_id = self::saveJSONCopy('0c', $jsonArray, $module, $project_id);
             }
         }

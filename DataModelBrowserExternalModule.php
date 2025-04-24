@@ -364,7 +364,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 $path = $this->framework->getSafePath($row['stored_name'], EDOC_PATH);
                 $strJsonFileContents = file_get_contents($path);
                 $last_array = json_decode($strJsonFileContents, true);
-                $array_data = call_user_func_array(array($jsonPdf, "createProject".strtoupper($type)."JSON"),array($this, $project_id, "not"));
+                $array_data = call_user_func_array(array($jsonPdf, "createProject".strtoupper($type)."JSON"),array($this, $project_id, false));
                 $new_array = json_decode($array_data['jsonArray'],true);
 
                 if($type == "0c"){
@@ -381,7 +381,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 }
             }
         }else{
-            $array_data = call_user_func_array(array($jsonPdf, "createProject".strtoupper($type)."JSON"),array($this, $project_id, ""));
+            $array_data = call_user_func_array(array($jsonPdf, "createProject".strtoupper($type)."JSON"),array($this, $project_id, true));
             $result = json_decode($array_data['jsonArray'],true);
             $result_prev = "";
             $record = $array_data['record_id'];
