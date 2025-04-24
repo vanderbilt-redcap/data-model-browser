@@ -357,37 +357,31 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         $jsoncopyPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
         $jsonPdf = new JsonPDF;
+        $record = "";
         if($jsoncocpy["jsoncopy_file"] != ""){
             $q = $this->query("SELECT stored_name,doc_name,doc_size,mime_type FROM redcap_edocs_metadata WHERE doc_id=?",[$jsoncocpy["jsoncopy_file"]]);
             while ($row = $q->fetch_assoc()) {
                 $path = $this->framework->getSafePath($row['stored_name'], EDOC_PATH);
                 $strJsonFileContents = file_get_contents($path);
                 $last_array = json_decode($strJsonFileContents, true);
-                $array_data = call_user_func_array(array($jsonPdf, "createProject".strtoupper($type)."JSON"),array($this, $project_id));
+                $array_data = call_user_func_array(array($jsonPdf, "createProject".strtoupper($type)."JSON"),array($this, $project_id, false));
                 $new_array = json_decode($array_data['jsonArray'],true);
-                $record = $array_data['record_id'];
 
                 if($type == "0c"){
                     $result_prev = array_filter_empty(array_diff_assoc($last_array,$new_array));
                     $result = array_filter_empty(array_diff_assoc($new_array,$last_array));
-                }else if($type == "0a"){
+                }else{
+                    //multidimensional projects
                     $result_prev = array_filter_empty(multi_array_diff($last_array,$new_array));
                     $result = array_filter_empty(multi_array_diff($new_array,$last_array));
-                }else{
-                    $result_prev = [];
-                    $result = [];
-                    foreach ($last_array as $oldkey => $old){
-                        $changes = array_filter_empty(multi_array_diff($last_array[$oldkey],$new_array[$oldkey]));
-                        if(!empty($changes)){
-                            array_push($result_prev,$changes);
-                            array_push($result,array_filter_empty(multi_array_diff($new_array[$oldkey],$last_array[$oldkey])));
-                        }
+                }
 
-                    }
+                if($result_prev != $result){
+                    $record = $jsonPdf->saveJSONCopy($type, $array_data['jsonArray'], $this, $project_id);
                 }
             }
         }else{
-            $array_data = call_user_func_array(array($jsonPdf, "createProject".strtoupper($type)."JSON"),array($this, $project_id));
+            $array_data = call_user_func_array(array($jsonPdf, "createProject".strtoupper($type)."JSON"),array($this, $project_id, true));
             $result = json_decode($array_data['jsonArray'],true);
             $result_prev = "";
             $record = $array_data['record_id'];
@@ -397,7 +391,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             $last_record = "<i>None</i>";
         }
 
-        if(!empty($record) && $result_prev != $result){
+        if(!empty($record)){
             $environment = "";
             if(defined('ENVIRONMENT') && (ENVIRONMENT == 'DEV' || ENVIRONMENT == 'TEST')){
                 $environment = " ".ENVIRONMENT;
