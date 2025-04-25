@@ -23,7 +23,7 @@ function multi_array_diff($arr1, $arr2){
             if(is_array($val)){
                 $arrDiff[$key] = multi_array_diff($val, $arr2[$key]);
             }else{
-                if(in_array($val, $arr2)!= 1){
+                if(is_array($arr2) && in_array($val, $arr2)!= 1){
                     $arrDiff[$key] = $val;
                 }
             }

@@ -84,8 +84,8 @@ class JsonPDF
                             $found = true;
                             $tableHtml .= $htmlHeader;
                         }
-
-                        if ($data['variable_status'][$id] == "1" || ($data['variable_status'][$id] == "2" && $deprecated == "true") || ($data['variable_status'][$id] == "0" && $draft == "true")) {
+                        $dataVariableStatus = $module->arrayKeyExistsReturnValue($data,'variable_status',$id);
+                        if ($dataVariableStatus == "1" || ($dataVariableStatus == "2" && $deprecated == "true") || ($dataVariableStatus == "0" && $draft == "true")) {
                             $variable_status = "";
                             $variable_text = "";
                             if (array_key_exists('variable_status', $data) && array_key_exists($id, $data['variable_status'])) {
@@ -105,10 +105,11 @@ class JsonPDF
                                 <td style="width:160px;padding: 5px">';
 
                             $dataFormat = $dataformatChoices[$data['data_format'][$id]];
-                            if ($data['has_codes'][$id] != '1') {
+                            $hasCodes = $module->arrayKeyExistsReturnValue($data,'has_codes',$id);
+                            if ($hasCodes != '1') {
                                 #do nothing
-                            } else if ($data['has_codes'][$id] == '1') {
-                                if (!empty($data['code_list_ref'][$id])) {
+                            } else if ($hasCodes == '1') {
+                                if (!empty($module->arrayKeyExistsReturnValue($data,'code_list_ref',$id))) {
                                     $RecordSetCodeList = \REDCap::getData($codeListPID, 'array', array('record_id' => $data['code_list_ref'][$id]));
                                     $codeformat = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList)[0];
                                     if ($codeformat['code_format'] == '1') {
@@ -342,6 +343,7 @@ class JsonPDF
             }
         }
         #we save the new JSON
+        $record_id = "";
         if(!empty($jsonArray) && $save){
             $record_id = self::saveJSONCopy('0a', $jsonArray, $module, $project_id);
         }
@@ -381,6 +383,7 @@ class JsonPDF
         }
 
         #we save the new JSON
+        $record_id = "";
         if(!empty($jsonArray) && $save){
             $record_id = self::saveJSONCopy('0b', $jsonArray, $module, $project_id);
         }
