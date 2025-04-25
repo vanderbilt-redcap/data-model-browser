@@ -206,7 +206,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
         $page_num = '<style>.footer .page-number:after { content: counter(page); } .footer { position: fixed; bottom: 0px;color:grey }a{text-decoration: none;}</style>';
 
-        $img = JsonPDF::getFile($this, $settings['des_pdf_logo'],'src');
+        $img = JsonPDF::getFile($this,  $this->arrayKeyExistsReturnValue($settings,'des_pdf_logo'),'src');
 
         $html_pdf = "<html><head><meta http-equiv='Content-Type' content='text/html' charset='UTF-8' /><style>* { font-family: DejaVu Sans, sans-serif; }</style></head><body style='font-family:\"Calibri\";font-size:10pt;'>".$page_num
             ."<div class='footer' style='left: 590px;'><span class='page-number'>Page </span></div>"
