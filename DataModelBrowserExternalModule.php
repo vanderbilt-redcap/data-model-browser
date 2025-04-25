@@ -269,8 +269,8 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             if(defined('ENVIRONMENT') && (ENVIRONMENT == 'DEV' || ENVIRONMENT == 'TEST')){
                 $environment = " - ".ENVIRONMENT;
             }
-            $sender = $settings['accesslink_sender_email'];
-            if($settings['accesslink_sender_email'] == ""){
+            $sender = $this->arrayKeyExistsReturnValue($settings,'accesslink_sender_email');
+            if($sender == ""){
                 $sender = "noreply@vumc.org";
             }
 
@@ -280,7 +280,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
             $emails = explode(';', $settings['des_pdf_notification_email']);
             foreach ($emails as $email) {
-                \REDCap::email($email, $sender, $subject.$environment, $message,"","",$settings['accesslink_sender_name'],$attachments);
+                \REDCap::email($email, $sender, $subject.$environment, $message,"","",$this->arrayKeyExistsReturnValue($settings,'accesslink_sender_name'),$attachments);
             }
         }
     }
@@ -397,8 +397,8 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 $environment = " ".ENVIRONMENT;
             }
 
-            $sender = $settings['accesslink_sender_email'];
-            if($settings['accesslink_sender_email'] == ""){
+            $sender = $this->arrayKeyExistsReturnValue($settings,'accesslink_sender_email');
+            if($sender == ""){
                 $sender = "noreply@vumc.org";
             }
 
@@ -413,7 +413,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             if($settings['des_0a0b_email'] != "") {
                 $emails = explode(';', $settings['des_0a0b_email']);
                 foreach ($emails as $email) {
-                    \REDCap::email($email, $sender, $subject.$environment, $message,"","",$settings['accesslink_sender_name']);
+                    \REDCap::email($email, $sender, $subject.$environment, $message,"","",$this->arrayKeyExistsReturnValue($settings,'accesslink_sender_name'));
                 }
             }
             return true;
