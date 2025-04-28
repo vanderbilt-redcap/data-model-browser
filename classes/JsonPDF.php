@@ -104,7 +104,7 @@ class JsonPDF
                                 <td style="padding: 5px"><a href="' .$url .'" target="_blank" style="text-decoration:none">' . $record_varname . '</a></td>
                                 <td style="width:160px;padding: 5px">';
 
-                            $dataFormat = $dataformatChoices[$data['data_format'][$id]];
+                            $dataFormat = $module->arrayKeyExistsReturnValue($data,'data_format',$id);
                             $hasCodes = $module->arrayKeyExistsReturnValue($data,'has_codes',$id);
                             if ($hasCodes != '1') {
                                 #do nothing
@@ -308,14 +308,14 @@ class JsonPDF
                         if ($module->arrayKeyExistsReturnValue($data,'has_codes',$id) == '1')
                             $has_codes = 'Y';
 
-                        $code_list_ref = $data['code_list_ref'][$id];
+                        $code_list_ref = $module->arrayKeyExistsReturnValue($data,'code_list_ref',$id);
                         if ($module->arrayKeyExistsReturnValue($data,'code_list_ref',$id) == '') {
                             $code_list_ref = 'NULL';
                         }
 
                         $jsonVarArray['variables'][trim($data['variable_name'][$id])] = array();
                         $variables_array  = array(
-                            "data_format" => trim($dataFormat[$data['data_format'][$id]]),
+                            "data_format" => trim($module->arrayKeyExistsReturnValue($data,'data_format',$id)),
                             "variable_status" => $module->arrayKeyExistsReturnValue($data,'variable_status',$id),
                             "description" => $module->arrayKeyExistsReturnValue($data,'description',$id),
                             "variable_required" => $data['variable_required'][$id][1],
