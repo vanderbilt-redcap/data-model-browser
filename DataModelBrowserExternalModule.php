@@ -846,7 +846,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
     public function arrayKeyExistsReturnValue($array, $key, $key2=null) {
         if(array_key_exists($key, $array)) {
-            if($key2 != null) {
+            if($key2 != null && $key2 != "") {
                 if(is_array($array[$key]) && array_key_exists($key2, $array[$key])) {
                     return $array[$key][$key2];
                 }else{
