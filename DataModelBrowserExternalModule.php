@@ -45,7 +45,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             // We're already run recently
             return;
         }
-
+        /*
         //Perform cron actions here
         if (APP_PATH_WEBROOT[0] == '/') {
             $APP_PATH_WEBROOT_ALL = substr(APP_PATH_WEBROOT, 1);
@@ -73,6 +73,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 }
             }
         }
+        */
         $this->setSystemSetting($lastRunSettingName, time());
     }
 
@@ -83,7 +84,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         if(!defined('APP_PATH_WEBROOT_ALL')){
             define('APP_PATH_WEBROOT_ALL', APP_PATH_WEBROOT_FULL.$APP_PATH_WEBROOT_ALL);
         }
-
+        /*
         foreach ($this->getProjectsWithModuleEnabled() as $project_id){
             if($project_id != "") {
                 $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
@@ -121,6 +122,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 }
             }
         }
+        */
     }
 
     function hasJsoncopyBeenUpdated($type,$settings, $project_id){
