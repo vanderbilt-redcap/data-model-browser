@@ -308,7 +308,7 @@ class JsonPDF
                         if ($module->arrayKeyExistsReturnValue($data,'has_codes',$id) == '1')
                             $has_codes = 'Y';
 
-                        $code_list_ref = $data['code_list_ref'][$id];
+                        $code_list_ref = $module->arrayKeyExistsReturnValue($data,'code_list_ref',$id);
                         if ($module->arrayKeyExistsReturnValue($data,'code_list_ref',$id) == '') {
                             $code_list_ref = 'NULL';
                         }
