@@ -45,35 +45,35 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             // We're already run recently
             return;
         }
-//
-//        //Perform cron actions here
-//        if (APP_PATH_WEBROOT[0] == '/') {
-//            $APP_PATH_WEBROOT_ALL = substr(APP_PATH_WEBROOT, 1);
-//        }
-//        if(!defined('APP_PATH_WEBROOT_ALL')) {
-//            define('APP_PATH_WEBROOT_ALL', APP_PATH_WEBROOT_FULL . $APP_PATH_WEBROOT_ALL);
-//        }
-//        foreach ($this->getProjectsWithModuleEnabled() as $project_id) {
-//            if($project_id != "") {
-//                $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
-//                $settingsPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
-//                if($settingsPID != "") {
-//                    $RecordSetSettings = \REDCap::getData($settingsPID, 'array');
-//                    $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
-//
-//                    $hasJsoncopyBeenUpdated0a = $this->hasJsoncopyBeenUpdated('0a', $settings, $project_id);
-//                    $hasJsoncopyBeenUpdated0b = $this->hasJsoncopyBeenUpdated('0b', $settings, $project_id);
-//                    $hasJsoncopyBeenUpdated0c = $this->hasJsoncopyBeenUpdated('0c', $settings, $project_id);
-//                    if ($hasJsoncopyBeenUpdated0a || $hasJsoncopyBeenUpdated0b || $hasJsoncopyBeenUpdated0c) {
-//                        $this->createAndSavePDFCron($settings, $project_id);
-//                        $this->createAndSaveJSONCron($project_id);
-//                    } else {
-//                        $this->checkIfJsonOrPDFBlank($settings, $project_id);
-//                    }
-//                }
-//            }
-//        }
-//
+
+        //Perform cron actions here
+        if (APP_PATH_WEBROOT[0] == '/') {
+            $APP_PATH_WEBROOT_ALL = substr(APP_PATH_WEBROOT, 1);
+        }
+        if(!defined('APP_PATH_WEBROOT_ALL')) {
+            define('APP_PATH_WEBROOT_ALL', APP_PATH_WEBROOT_FULL . $APP_PATH_WEBROOT_ALL);
+        }
+        foreach ($this->getProjectsWithModuleEnabled() as $project_id) {
+            if($project_id != "") {
+                $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
+                $settingsPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
+                if($settingsPID != "") {
+                    $RecordSetSettings = \REDCap::getData($settingsPID, 'array');
+                    $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
+
+                    $hasJsoncopyBeenUpdated0a = $this->hasJsoncopyBeenUpdated('0a', $settings, $project_id);
+                    $hasJsoncopyBeenUpdated0b = $this->hasJsoncopyBeenUpdated('0b', $settings, $project_id);
+                    $hasJsoncopyBeenUpdated0c = $this->hasJsoncopyBeenUpdated('0c', $settings, $project_id);
+                    if ($hasJsoncopyBeenUpdated0a || $hasJsoncopyBeenUpdated0b || $hasJsoncopyBeenUpdated0c) {
+                        $this->createAndSavePDFCron($settings, $project_id);
+                        $this->createAndSaveJSONCron($project_id);
+                    } else {
+                        $this->checkIfJsonOrPDFBlank($settings, $project_id);
+                    }
+                }
+            }
+        }
+
         $this->setSystemSetting($lastRunSettingName, time());
     }
 
@@ -379,7 +379,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 }
 
                 if($result_prev != $result){
-                    $record = $jsonPdf->saveJSONCopy($type, $array_data['jsonArray'], $this, $project_id);
+                    $record = $jsonPdf->saveJSONCopy($type, $new_array, $this, $project_id);
                 }
             }
         }else{
