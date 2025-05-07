@@ -45,35 +45,35 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             // We're already run recently
             return;
         }
-//
-//        //Perform cron actions here
-//        if (APP_PATH_WEBROOT[0] == '/') {
-//            $APP_PATH_WEBROOT_ALL = substr(APP_PATH_WEBROOT, 1);
-//        }
-//        if(!defined('APP_PATH_WEBROOT_ALL')) {
-//            define('APP_PATH_WEBROOT_ALL', APP_PATH_WEBROOT_FULL . $APP_PATH_WEBROOT_ALL);
-//        }
-//        foreach ($this->getProjectsWithModuleEnabled() as $project_id) {
-//            if($project_id != "") {
-//                $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
-//                $settingsPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
-//                if($settingsPID != "") {
-//                    $RecordSetSettings = \REDCap::getData($settingsPID, 'array');
-//                    $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
-//
-//                    $hasJsoncopyBeenUpdated0a = $this->hasJsoncopyBeenUpdated('0a', $settings, $project_id);
-//                    $hasJsoncopyBeenUpdated0b = $this->hasJsoncopyBeenUpdated('0b', $settings, $project_id);
-//                    $hasJsoncopyBeenUpdated0c = $this->hasJsoncopyBeenUpdated('0c', $settings, $project_id);
-//                    if ($hasJsoncopyBeenUpdated0a || $hasJsoncopyBeenUpdated0b || $hasJsoncopyBeenUpdated0c) {
-//                        $this->createAndSavePDFCron($settings, $project_id);
-//                        $this->createAndSaveJSONCron($project_id);
-//                    } else {
-//                        $this->checkIfJsonOrPDFBlank($settings, $project_id);
-//                    }
-//                }
-//            }
-//        }
-//
+
+        //Perform cron actions here
+        if (APP_PATH_WEBROOT[0] == '/') {
+            $APP_PATH_WEBROOT_ALL = substr(APP_PATH_WEBROOT, 1);
+        }
+        if(!defined('APP_PATH_WEBROOT_ALL')) {
+            define('APP_PATH_WEBROOT_ALL', APP_PATH_WEBROOT_FULL . $APP_PATH_WEBROOT_ALL);
+        }
+        foreach ($this->getProjectsWithModuleEnabled() as $project_id) {
+            if($project_id != "") {
+                $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
+                $settingsPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
+                if($settingsPID != "") {
+                    $RecordSetSettings = \REDCap::getData($settingsPID, 'array');
+                    $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
+
+                    $hasJsoncopyBeenUpdated0a = $this->hasJsoncopyBeenUpdated('0a', $settings, $project_id);
+                    $hasJsoncopyBeenUpdated0b = $this->hasJsoncopyBeenUpdated('0b', $settings, $project_id);
+                    $hasJsoncopyBeenUpdated0c = $this->hasJsoncopyBeenUpdated('0c', $settings, $project_id);
+                    if ($hasJsoncopyBeenUpdated0a || $hasJsoncopyBeenUpdated0b || $hasJsoncopyBeenUpdated0c) {
+                        $this->createAndSavePDFCron($settings, $project_id);
+                        $this->createAndSaveJSONCron($project_id);
+                    } else {
+                        $this->checkIfJsonOrPDFBlank($settings, $project_id);
+                    }
+                }
+            }
+        }
+
         $this->setSystemSetting($lastRunSettingName, time());
     }
 
@@ -85,44 +85,43 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             define('APP_PATH_WEBROOT_ALL', APP_PATH_WEBROOT_FULL.$APP_PATH_WEBROOT_ALL);
         }
 
-//        foreach ($this->getProjectsWithModuleEnabled() as $project_id){
-//            if($project_id != "") {
-//                $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
-//                $settingsData = ProjectData::getProjectInfoArray($RecordSetConstants);
-//                $settingsPID = "";
-//                if(!empty($settingsData) && array_key_exists(0, $settingsData) && array_key_exists("project_id",$settingsData[0])){
-//                    $settingsPID = $settingsData[0]['project_id'];
-//                }
-//
-//                if($settingsPID != "") {
-//                    $RecordSetSettings = \REDCap::getData($settingsPID, 'array');
-//                    $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
-//                    if(!empty($settings)) {
-//                        if (array_key_exists('des_pdf_regenerate', $settings) && array_key_exists(1, $settings['des_pdf_regenerate']) && $settings['des_pdf_regenerate'][1] == '1') {
-//                            $this->createAndSavePDFCron($settings, $project_id);
-//                            $this->createAndSaveJSONCron($project_id);
-//
-//                            #Uncheck variable
-//                            $Proj = new \Project($settingsPID);
-//                            $event_id = $Proj->firstEventId;
-//                            $arrayRM = [];
-//                            $arrayRM[1][$event_id]['des_pdf_regenerate'] = [1 => ""];//checkbox
-//                            $params = [
-//                                'project_id' => $settingsPID,
-//                                'dataFormat' => 'array',
-//                                'data' => $arrayRM,
-//                                'overwriteBehavior' => "overwrite",
-//                                'dateFormat' => "YMD",
-//                                'type' => "flat"
-//                            ];
-//                            $results = \REDCap::saveData($params);
-//                            \Records::addRecordToRecordListCache($settingsPID, 1, $event_id);
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
+        foreach ($this->getProjectsWithModuleEnabled() as $project_id){
+            if($project_id != "") {
+                $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
+                $settingsData = ProjectData::getProjectInfoArray($RecordSetConstants);
+                $settingsPID = "";
+                if(!empty($settingsData) && array_key_exists(0, $settingsData) && array_key_exists("project_id",$settingsData[0])){
+                    $settingsPID = $settingsData[0]['project_id'];
+                }
+
+                if($settingsPID != "") {
+                    $RecordSetSettings = \REDCap::getData($settingsPID, 'array');
+                    $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
+                    if(!empty($settings)) {
+                        if (array_key_exists('des_pdf_regenerate', $settings) && array_key_exists(1, $settings['des_pdf_regenerate']) && $settings['des_pdf_regenerate'][1] == '1') {
+                            $this->createAndSavePDFCron($settings, $project_id);
+                            $this->createAndSaveJSONCron($project_id);
+
+                            #Uncheck variable
+                            $Proj = new \Project($settingsPID);
+                            $event_id = $Proj->firstEventId;
+                            $arrayRM = [];
+                            $arrayRM[1][$event_id]['des_pdf_regenerate'] = [1 => ""];//checkbox
+                            $params = [
+                                'project_id' => $settingsPID,
+                                'dataFormat' => 'array',
+                                'data' => $arrayRM,
+                                'overwriteBehavior' => "overwrite",
+                                'dateFormat' => "YMD",
+                                'type' => "flat"
+                            ];
+                            $results = \REDCap::saveData($params);
+                            \Records::addRecordToRecordListCache($settingsPID, 1, $event_id);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     function hasJsoncopyBeenUpdated($type,$settings, $project_id){
@@ -379,7 +378,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 }
 
                 if($result_prev != $result){
-                    $record = $jsonPdf->saveJSONCopy($type, $array_data['jsonArray'], $this, $project_id);
+                    $record = $jsonPdf->saveJSONCopy($type, $new_array, $this, $project_id);
                 }
             }
         }else{
