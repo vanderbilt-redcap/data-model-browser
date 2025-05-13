@@ -315,7 +315,7 @@ class JsonPDF
 
                         $jsonVarArray['variables'][trim($data['variable_name'][$id])] = array();
                         $variables_array  = array(
-                            "data_format" => trim($module->arrayKeyExistsReturnValue($data,'data_format',$id)),
+                            "data_format" => trim($dataFormat[$module->arrayKeyExistsReturnValue($data,'data_format',$id)]),
                             "variable_status" => $module->arrayKeyExistsReturnValue($data,'variable_status',$id),
                             "description" => $module->arrayKeyExistsReturnValue($data,'description',$id),
                             "variable_required" => $data['variable_required'][$id][1],
