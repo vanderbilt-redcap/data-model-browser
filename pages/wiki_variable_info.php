@@ -6,7 +6,7 @@ $tid = $_REQUEST['tid'];
 $vid = $_REQUEST['vid'];
 
 $RecordSetDataModel = \REDCap::getData($pidsArray['DATAMODEL'], 'array', array('record_id' => $tid));
-$dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
+$dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetDataModel,$pidsArray['DATAMODEL']);
 $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMODEL']);
 ?>
 
@@ -40,7 +40,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                         } else if ($data['has_codes'][$vid] == '1') {
                             if(!empty($data['code_list_ref'][$vid])){
                                 $RecordSetCodeList = \REDCap::getData($pidsArray['CODELIST'], 'array', array('record_id' => $data['code_list_ref'][$vid]));
-                                $codeformat = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList)[0];
+                                $codeformat = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList,$pidsArray['CODELIST'])[0];
                                 if ($codeformat['code_format'] == '1') {
                                     $dataFormat .= " <span><i>(coded)</i></span><br/><br/>";
 

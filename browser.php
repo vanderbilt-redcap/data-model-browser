@@ -74,7 +74,7 @@ if($des_projectname == "" || $des_privacy == ""){
 }else{
     include_once("projects.php");
     $RecordSetSettings = \REDCap::getData($pidsArray['SETTINGS'], 'array');
-    $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
+    $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings,$pidsArray['SETTINGS'])[0];
 
     include_once("functions.php");
 

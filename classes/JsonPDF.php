@@ -111,7 +111,7 @@ class JsonPDF
                             } else if ($hasCodes == '1') {
                                 if (!empty($module->arrayKeyExistsReturnValue($data,'code_list_ref',$id))) {
                                     $RecordSetCodeList = \REDCap::getData($codeListPID, 'array', array('record_id' => $data['code_list_ref'][$id]));
-                                    $codeformat = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList)[0];
+                                    $codeformat = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList,$codeListPID)[0];
                                     if ($codeformat['code_format'] == '1') {
                                         $codeOptions = empty($codeformat['code_list']) ? $data['code_text'][$id] : explode(" | ", $codeformat['code_list']);
                                         if (!empty($codeOptions[0])) {
@@ -297,8 +297,13 @@ class JsonPDF
 
         $dataFormat = $module->getChoiceLabels('data_format', $dataModelPID);
 
-        $RecordSetDataModel = \REDCap::getData($dataModelPID, 'array', null);
-        $dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
+        $params = [
+            'project_id' => $dataModelPID,
+            'return_format' => 'array',
+            'filterType' => "RECORD"
+        ];
+        $RecordSetDataModel = \REDCap::getData($params);
+        $dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetDataModel,$dataModelPID);
         foreach ($dataTable as $data) {
             if($data['table_name'] != "") {
                 $jsonVarArray['variables'] = array();
@@ -357,7 +362,7 @@ class JsonPDF
         $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='CODELIST'");
         $codeListPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
         $RecordSetCodeList = \REDCap::getData($codeListPID, 'array', null);
-        $dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList);
+        $dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList,$codeListPID);
         foreach ($dataTable as $data) {
             $jsonArray[$data['record_id']] = array();
             if ($data['code_format'] == '1') {
@@ -463,7 +468,7 @@ class JsonPDF
         if($data != ""){
             $variable = explode(":",$data);
             $dataTableDataModelRecords = \REDCap::getData($project_id, 'array',array('record_id' => $variable[0]));
-            $tableData = ProjectData::getProjectInfoArrayRepeatingInstruments($dataTableDataModelRecords);
+            $tableData = ProjectData::getProjectInfoArrayRepeatingInstruments($dataTableDataModelRecords,$project_id);
             $jsonArray[$varName] = $tableData[0]['table_name'].":".$tableData[0]['variable_name'][$variable[1]];
         }
         return $jsonArray;
