@@ -59,7 +59,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 $settingsPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
                 if($settingsPID != "") {
                     $RecordSetSettings = \REDCap::getData($settingsPID, 'array');
-                    $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
+                    $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings,$project_id)[0];
 
                     $hasJsoncopyBeenUpdated0a = $this->hasJsoncopyBeenUpdated('0a', $settings, $project_id);
                     $hasJsoncopyBeenUpdated0b = $this->hasJsoncopyBeenUpdated('0b', $settings, $project_id);
@@ -96,7 +96,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
 
                 if($settingsPID != "") {
                     $RecordSetSettings = \REDCap::getData($settingsPID, 'array');
-                    $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
+                    $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings,$settingsPID)[0];
                     if(!empty($settings)) {
                         if (array_key_exists('des_pdf_regenerate', $settings) && array_key_exists(1, $settings['des_pdf_regenerate']) && $settings['des_pdf_regenerate'][1] == '1') {
                             $this->createAndSavePDFCron($settings, $project_id);
@@ -161,7 +161,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         $pid = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
         if($pid != ""){
             $RecordSetProject= \REDCap::getData($pid, 'array');
-            $projectData = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetProject);
+            $projectData = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetProject,$pid);
             if(!empty($projectData)){
                 return true;
             }
@@ -188,7 +188,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         $settingsPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
         $RecordSetDataModel = \REDCap::getData($dataModelPID, 'array');
-        $dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
+        $dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetDataModel,$dataModelPID);
         if(!empty($dataTable)) {
             $tableHtml = JsonPDF::generateTablesHTML_pdf($this, $dataTable,false,false, $project_id, $dataModelPID);
         }
@@ -291,7 +291,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
         $dataModelPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
 
         $RecordSetDataModel = \REDCap::getData($dataModelPID, 'array');
-        $dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
+        $dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetDataModel,$dataModelPID);
         $dataFormat = $this->getChoiceLabels('data_format', $dataModelPID);
 
         foreach ($dataTable as $data) {
