@@ -4,6 +4,10 @@
 if($_REQUEST['option'] !== 'search' && $_REQUEST['option'] !== 'variableInfo' && $_REQUEST['option'] !== 'json') {
     include('downloadButtons.php');
 }
+//$data = JsonPDF::createProject0AJSON($module, $_GET['pid'], false);
+print_array(json_decode(JsonPDF::createProject0AJSON($module, $_GET['pid'], false)['jsonArray']));
+//print_array(json_decode(JsonPDF::createProject0BJSON($module, $_GET['pid'], false)['jsonArray']));
+//print_array(json_decode(JsonPDF::createProject0CJSON($module, $_GET['pid'], false)['jsonArray']));
 ?>
 <div class="container-fluid wiki_container">
     <?PHP
