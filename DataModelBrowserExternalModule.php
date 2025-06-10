@@ -849,12 +849,12 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                 if(is_array($array[$key]) && array_key_exists($key2, $array[$key])) {
                     return $array[$key][$key2];
                 }else{
-                    return "";
+                    return null;
                 }
             }else{
                 return $array[$key];
             }
         }
-        return "";
+        return null;
     }
 }
