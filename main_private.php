@@ -25,7 +25,7 @@
 <?php
 include_once("projects.php");
 $RecordSetSettings = \REDCap::getData($pidsArray['SETTINGS'], 'array');
-$settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
+$settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings,$pidsArray['SETTINGS'])[0];
 include_once("functions.php");
 $des_privacy = $module->getProjectSetting('des-privacy');
 $has_permission = false;

@@ -1,6 +1,8 @@
 <?php
 namespace Vanderbilt\DataModelBrowserExternalModule;
 
+use Project;
+use REDCap;
 
 class ProjectData
 {
@@ -38,91 +40,125 @@ class ProjectData
         return $array;
     }
 
-    public static function getProjectInfoArrayRepeatingInstruments($records,$filterLogic=null){
+    public static function getProjectInfoArrayRepeatingInstruments(
+        $records,
+        $project_id,
+        $filterLogic = null,
+        $option = null
+    ) {
         $array = array();
         $found = array();
-        $index=0;
-        if(is_array($filterLogic)) {
+        $index = 0;
+        if (is_array($filterLogic) && $filterLogic != null) {
             foreach ($filterLogic as $filterkey => $filtervalue) {
                 array_push($found, false);
             }
         }
-        if(is_array($records) && !empty($records)) {
-            foreach ($records as $record => $record_array) {
-                $count = 0;
-                if (is_array($filterLogic) && !empty($filterLogic)) {
-                    foreach ($filterLogic as $filterkey => $filtervalue) {
-                        $found[$count] = false;
-                        $count++;
-                    }
+        foreach ($records as $record => $record_array) {
+            $count = 0;
+            if(is_array($filterLogic) && !empty($filterLogic)) {
+                foreach ($filterLogic as $filterkey => $filtervalue) {
+                    $found[$count] = false;
+                    $count++;
                 }
-                foreach ($record_array as $event => $data) {
-                    if ($event == 'repeat_instances') {
-                        foreach ($data as $eventarray) {
-                            $datarepeat = array();
-                            foreach ($eventarray as $instrument => $instrumentdata) {
-                                $count = 0;
-                                foreach ($instrumentdata as $instance => $instancedata) {
-                                    foreach ($instancedata as $field_name => $value) {
-                                        if (!array_key_exists($field_name, $array[$index])) {
-                                            $array[$index][$field_name] = array();
-                                        }
-
-                                        if ($value != "" && (!is_array($value) || (is_array($value) && !empty($value)))) {
-                                            $datarepeat[$field_name][$instance] = $value;
-                                            $count = 0;
-                                            if (is_array($filterLogic) && !empty($filterLogic)) {
-                                                foreach ($filterLogic as $filterkey => $filtervalue) {
-                                                    if ($value == $filtervalue && $field_name == $filterkey) {
-                                                        $found[$count] = true;
-                                                    }
-                                                    $count++;
+            }
+            foreach ($record_array as $event => $data) {
+                if ($event == 'repeat_instances') {
+                    foreach ($data as $eventarray) {
+                        $datarepeat = array();
+                        foreach ($eventarray as $instrument => $instrumentdata) {
+                            $count = 0;
+                            foreach ($instrumentdata as $instance => $instancedata) {
+                                foreach ($instancedata as $field_name => $value) {
+                                    if (!empty($array[$index]) && !array_key_exists($field_name, $array[$index])) {
+                                        $array[$index][$field_name] = array();
+                                    }
+                                    if ($value != "" && (!is_array($value) || (is_array($value) && !empty($value)))) {
+                                        $datarepeat[$field_name][$instance] = $value;
+                                        $count = 0;
+                                        if(is_array($filterLogic) && !empty($filterLogic)) {
+                                            foreach ($filterLogic as $filterkey => $filtervalue) {
+                                                if ($value == $filtervalue && $field_name == $filterkey) {
+                                                    $found[$count] = true;
                                                 }
+                                                $count++;
                                             }
                                         }
-
                                     }
-                                    $count++;
+                                    if (array_key_exists($index, $array) && array_key_exists($field_name, $array[$index]) && is_array($array[$index][$field_name]) &&
+                                        ProjectData::isCheckbox($field_name, $project_id) && is_array($value) && array_key_exists(1,$value) && !empty($value[1])) {
+                                        $array[$index][$field_name][$instance] = $value[1];
+                                    }
                                 }
+                                $count++;
                             }
-                            foreach ($datarepeat as $field => $datai) {
-                                #check if non repeatable value is empty and add repeatable value
-                                #empty value or checkboxes
-                                if ($array[$index][$field] == "" || (is_array($array[$index][$field]) && empty($array[$index][$field][1]))) {
+                        }
+                        foreach ($datarepeat as $field => $datai) {
+                            #check if non repeatable value is empty and add repeatable value
+                            #empty value or checkboxes
+                            if ($array[$index][$field] == "" || (is_array(
+                                        $array[$index][$field]
+                                    ) && empty($array[$index][$field]))) {
+                                $array[$index][$field] = $datarepeat[$field];
+                            } else {
+                                if (is_array($datai) && $option == "json") {
+                                    #only for the JSON format
                                     $array[$index][$field] = $datarepeat[$field];
                                 }
                             }
                         }
-                    } else {
-                        $array[$index] = $data;
-                        foreach ($data as $fname => $fvalue) {
-                            $count = 0;
-                            if (is_array($filterLogic) && !empty($filterLogic)) {
-                                foreach ($filterLogic as $filterkey => $filtervalue) {
-                                    if ($fvalue == $filtervalue && $fname == $filterkey) {
-                                        $found[$count] = true;
-                                    }
-                                    $count++;
+                    }
+                } else {
+                    $array[$index] = $data;
+                    foreach ($data as $fname => $fvalue) {
+                        $count = 0;
+                        if(is_array($filterLogic) && !empty($filterLogic)) {
+                            foreach ($filterLogic as $filterkey => $filtervalue) {
+                                if ($fvalue == $filtervalue && $fname == $filterkey) {
+                                    $found[$count] = true;
                                 }
+                                $count++;
                             }
                         }
                     }
                 }
-                $found_total = true;
-                foreach ($found as $fname => $fvalue) {
-                    if ($fvalue == false) {
-                        $found_total = false;
-                        break;
-                    }
-                }
-                if (!$found_total && $filterLogic != null) {
-                    unset($array[$index]);
-                }
-
-                $index++;
             }
+            $found_total = true;
+            foreach ($found as $fname => $fvalue) {
+                if ($fvalue == false) {
+                    $found_total = false;
+                    break;
+                }
+            }
+            if (!$found_total && $filterLogic != null) {
+                unset($array[$index]);
+            }
+
+            $index++;
         }
         return $array;
+    }
+
+    public static function isCheckbox($field_name, $project_id)
+    {
+        $Proj = new Project($project_id);
+        // If field is invalid, return false
+        if (!isset($Proj->metadata[$field_name])) {
+            return false;
+        }
+        // Array to translate back-end field type to front-end (some are different, e.g. "textarea"=>"notes")
+        $fieldTypeTranslator = array('textarea' => 'notes', 'select' => 'dropdown');
+        // Get field type
+        $fieldType = $Proj->metadata[$field_name]['element_type'];
+        // Translate field type, if needed
+        if (isset($fieldTypeTranslator[$fieldType])) {
+            $fieldType = $fieldTypeTranslator[$fieldType];
+        }
+        unset ($Proj);
+        if ($fieldType == "checkbox") {
+            return true;
+        }
+        return false;
     }
 
     public function setDefaultValues($project_id){

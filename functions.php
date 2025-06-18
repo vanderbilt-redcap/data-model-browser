@@ -188,7 +188,7 @@ function getHtmlTableCodesTableArrayExcel($module,$dataTable,$pidsArray){
                     if ($data['has_codes'][$id] == '1') {
                         if (!empty($data['code_list_ref'][$id])) {
                             $RecordSetCodeList = \REDCap::getData($pidsArray['CODELIST'], 'array', array('record_id' => $data['code_list_ref'][$id]));
-                            $codeformat = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList)[0];
+                            $codeformat = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList,$pidsArray['CODELIST'])[0];
                             if ($codeformat['code_format'] == '1') {
                                 $codeOptions = empty($codeformat['code_list']) ? $data['code_text'][$id] : explode(" | ", $codeformat['code_list']);
                                 foreach ($codeOptions as $option) {

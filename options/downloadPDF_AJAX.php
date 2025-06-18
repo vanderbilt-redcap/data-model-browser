@@ -9,14 +9,14 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 $RecordSetSettings = \REDCap::getData($pidsArray['SETTINGS'], 'array');
-$settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings)[0];
+$settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings,$pidsArray['SETTINGS'])[0];
 
 $option = $_REQUEST['option'];
 $deprecated = $_REQUEST['deprecated'];
 $draft = $_REQUEST['draft'];
 
 $RecordSetDataModel = \REDCap::getData($pidsArray['DATAMODEL'], 'array');
-$dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
+$dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetDataModel,$pidsArray['DATAMODEL']);
 $requested_tables = getHtmlTableCodesTableArrayExcel($module,$dataTable,$pidsArray);
 
 #EXEL SHEET

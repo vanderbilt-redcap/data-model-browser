@@ -23,7 +23,7 @@ if(empty($deprecated)){
 
 #We get the Tables and Variables information
 $RecordSetDataModel = \REDCap::getData($pidsArray['DATAMODEL'], 'array', array('record_id' => $tid));
-$dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetDataModel);
+$dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetDataModel,$pidsArray['DATAMODEL']);
 $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMODEL']);
 ?>
 <br/>
@@ -129,7 +129,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                                                     if ($data['variable_replacedby'][$id] != "") {
                                                         $variable_replacedby = explode("|", $data['variable_replacedby'][$id]);
                                                         $RecordSetTable = \REDCap::getData($pidsArray['DATAMODEL'], 'array', array('record_id' => $variable_replacedby[0]));
-                                                        $table = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetTable)[0];
+                                                        $table = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetTable,$pidsArray['DATAMODEL'])[0];
                                                         $table_name = htmlspecialchars($table['table_name'],ENT_QUOTES);
                                                         $var_name = htmlspecialchars($table['variable_name'][$variable_replacedby[1]],ENT_QUOTES);
 
@@ -166,7 +166,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                                             } else if ($data['has_codes'][$id] == '1') {
                                                 if (!empty($data['code_list_ref'][$id])) {
                                                     $RecordSetCodeList = \REDCap::getData($pidsArray['CODELIST'], 'array', array('record_id' => $data['code_list_ref'][$id]));
-                                                    $codeformat = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList)[0];
+                                                    $codeformat = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList,$pidsArray['CODELIST'])[0];
 
                                                     if ($codeformat['code_format'] == '1') {
                                                         $codeOptions = empty($codeformat['code_list']) ? $data['code_text'][$id] : explode(" | ", $codeformat['code_list']);
