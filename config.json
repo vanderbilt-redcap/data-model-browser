@@ -30,6 +30,11 @@
 
 	"project-settings": [
 		{
+			"key": "des-disable-crons",
+			"name": "<div>Disable Crons</div><font style='color:red;font-style:italic'>*This will stop all crons from running and will not generate JSON files overnight</font>",
+			"type": "checkbox"
+		},
+		{
 			"key": "des-projectname",
 			"name": "Enter the Project name",
 			"required": true,
