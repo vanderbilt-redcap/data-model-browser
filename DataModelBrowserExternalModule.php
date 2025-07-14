@@ -54,21 +54,27 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             define('APP_PATH_WEBROOT_ALL', APP_PATH_WEBROOT_FULL . $APP_PATH_WEBROOT_ALL);
         }
         foreach ($this->getProjectsWithModuleEnabled() as $project_id) {
-            if($project_id != "") {
-                $RecordSetConstants = \REDCap::getData($project_id, 'array', null,null,null,null,false,false,false,"[project_constant]='SETTINGS'");
-                $settingsPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
-                if($settingsPID != "") {
-                    $RecordSetSettings = \REDCap::getData($settingsPID, 'array');
-                    $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings,$project_id)[0];
+            if(is_numeric($project_id)) {
+                $disable_crons = $this->getProjectSetting('des-disable-crons', $project_id);
+                if (!$disable_crons) {
+                    $RecordSetConstants = \REDCap::getData($project_id, 'array', null, null, null, null, false, false, false, "[project_constant]='SETTINGS'");
+                    $settingsPID = ProjectData::getProjectInfoArray($RecordSetConstants)[0]['project_id'];
+                    if ($settingsPID != "") {
+                        $RecordSetSettings = \REDCap::getData($settingsPID, 'array');
+                        $settings = ProjectData::getProjectInfoArrayRepeatingInstruments(
+                            $RecordSetSettings,
+                            $project_id
+                        )[0];
 
-                    $hasJsoncopyBeenUpdated0a = $this->hasJsoncopyBeenUpdated('0a', $settings, $project_id);
-                    $hasJsoncopyBeenUpdated0b = $this->hasJsoncopyBeenUpdated('0b', $settings, $project_id);
-                    $hasJsoncopyBeenUpdated0c = $this->hasJsoncopyBeenUpdated('0c', $settings, $project_id);
-                    if ($hasJsoncopyBeenUpdated0a || $hasJsoncopyBeenUpdated0b || $hasJsoncopyBeenUpdated0c) {
-                        $this->createAndSavePDFCron($settings, $project_id);
-                        $this->createAndSaveJSONCron($project_id);
-                    } else {
-                        $this->checkIfJsonOrPDFBlank($settings, $project_id);
+                        $hasJsoncopyBeenUpdated0a = $this->hasJsoncopyBeenUpdated('0a', $settings, $project_id);
+                        $hasJsoncopyBeenUpdated0b = $this->hasJsoncopyBeenUpdated('0b', $settings, $project_id);
+                        $hasJsoncopyBeenUpdated0c = $this->hasJsoncopyBeenUpdated('0c', $settings, $project_id);
+                        if ($hasJsoncopyBeenUpdated0a || $hasJsoncopyBeenUpdated0b || $hasJsoncopyBeenUpdated0c) {
+                            $this->createAndSavePDFCron($settings, $project_id);
+                            $this->createAndSaveJSONCron($project_id);
+                        } else {
+                            $this->checkIfJsonOrPDFBlank($settings, $project_id);
+                        }
                     }
                 }
             }
