@@ -153,7 +153,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                                             $record_var_aux = htmlspecialchars(empty($id) ? '1' : $id,ENT_QUOTES);
                                             $record_var = $id;
                                             $name = htmlspecialchars($data['variable_name'][$id],ENT_QUOTES);
-                                            $url = $module->getUrl($page . "&pid=" . $_GET['pid'] . '&tid=' . $tid . '&vid=' . $record_var . '&option=variableInfo');
+                                            $url = $module->getUrl($page).'&NOAUTH&tid=' . $data['record_id'] . '&vid=' . $record_var . '&option=variableInfo';
                                             echo '<tr class="' . $required_class . " " . $variable_class . '" style="' . $variable_display . '"" id="' . $record_var_aux . '_row">' .
                                                 '<td style="width:130px">' .
                                                 '<a href="' . $url . '">' . $name . '</a>' .
