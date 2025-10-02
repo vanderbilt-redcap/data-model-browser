@@ -320,7 +320,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                     }
                 }
                 $jsonVarArray = $jsonVarArrayAux;
-                $urltid = $this->getUrl("browser.php?pid=" . $project_id . '&tid=' . $data['record_id'] . '&option=variables');
+                $urltid = $this->getUrl('browser.php').'&NOAUTH&tid=' . $data['record_id'] . '&option=variables';
                 $jsonVarArray['table_link'] = $urltid;
                 $jsonArray[trim($data['table_name'])] = $jsonVarArray;
             }

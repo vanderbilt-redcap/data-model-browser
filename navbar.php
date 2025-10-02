@@ -31,7 +31,7 @@ if(array_key_exists('page',$_REQUEST)){
                             if($_REQUEST['option'] === 'variables') {
                                 $active = "class='wiki_active'";
                             }
-                            $url = $module->getUrl($page."&pid=".$_GET['pid']."&tid=".$data['record_id']."&option=variables");
+                            $url = $module->getUrl($page).'&NOAUTH&tid=' . $data['record_id'] . '&option=variables';
                             ?>
                             <span> > </span>
                             <a href="<?=$url?>" <?=$active?>><?= htmlentities($data['table_name'],ENT_QUOTES) ?></a>
