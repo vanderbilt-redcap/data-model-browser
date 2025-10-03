@@ -76,11 +76,11 @@ class JsonPDF
                                 $htmlHeader .= '<div  style="border-color: white;font-style: italic">' . htmlspecialchars($data["text_top"]) . '</div>';
                             }
                             $htmlHeader .= '<table border ="1px" style="border-collapse: collapse;width: 100%;">
-                        <tr style="' . $table_draft_tdcolor . '">
-                            <td style="padding: 5px;width:30%">Field</td>
-                            <td style="padding: 5px">Format</td>
-                            <td style="padding: 5px">Description</td>
-                        </tr>';
+                            <tr style="' . $table_draft_tdcolor . '">
+                                <td style="padding: 5px;width:30%">Field</td>
+                                <td style="padding: 5px">Format</td>
+                                <td style="padding: 5px">Description</td>
+                            </tr>';
                             $found = true;
                             $tableHtml .= $htmlHeader;
                         }
@@ -104,7 +104,7 @@ class JsonPDF
                                 <td style="padding: 5px"><a href="' .$url .'" target="_blank" style="text-decoration:none">' . $record_varname . '</a></td>
                                 <td style="width:160px;padding: 5px">';
 
-                            $dataFormat = $module->arrayKeyExistsReturnValue($data,'data_format',$id);
+                            $dataFormat = $module->arrayKeyExistsReturnValue($dataformatChoices,$module->arrayKeyExistsReturnValue($data,'data_format',$id));
                             $hasCodes = $module->arrayKeyExistsReturnValue($data,'has_codes',$id);
                             if ($hasCodes != '1') {
                                 #do nothing
