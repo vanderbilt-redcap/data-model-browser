@@ -24,7 +24,7 @@ if(array_key_exists('page',$_REQUEST)){
                 $dataTable = getTablesInfo($module,$pidsArray['DATAMODEL'],$tid);
                 $active = "";
                 foreach( $dataTable as $data ) {
-                    if (!empty($data['record_id'])) {
+                    if (!empty($data['record_id']) && !empty($data['variable_name'])) {
                         #rearrange the array to start at 1 to match the variables
                         $data['variable_name'] = array_combine(range(1, count($data['variable_name'])), $data['variable_name']);
                         if ($_REQUEST['option'] === 'variables' || $_REQUEST['option'] === 'variableInfo') {
