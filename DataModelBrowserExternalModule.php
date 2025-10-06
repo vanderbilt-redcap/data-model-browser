@@ -305,7 +305,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
             if($data['table_name'] != "") {
                 foreach ($data['variable_order'] as $id => $value) {
                     if ($data['variable_name'][$id] != '') {
-                        $url = $this->getUrl('browser.php').'&NOAUTH&tid=' . $data['record_id'] . '&vid=' . $id . '&option=variableInfo';
+                        $url = $this->getUrl('browser.php').'&pid='.$project_id.'&NOAUTH&tid=' . $data['record_id'] . '&vid=' . $id . '&option=variableInfo';
                         $jsonVarArrayAux[trim($data['variable_name'][$id])] = array();
                         $variables_array = array(
                             "instance" => $id,
@@ -320,7 +320,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
                     }
                 }
                 $jsonVarArray = $jsonVarArrayAux;
-                $urltid = $this->getUrl('browser.php').'&NOAUTH&tid=' . $data['record_id'] . '&option=variables';
+                $urltid = $this->getUrl('browser.php').'&pid='.$project_id.'&NOAUTH&tid=' . $data['record_id'] . '&option=variables';
                 $jsonVarArray['table_link'] = $urltid;
                 $jsonArray[trim($data['table_name'])] = $jsonVarArray;
             }
