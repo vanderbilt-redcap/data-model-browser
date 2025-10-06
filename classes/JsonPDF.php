@@ -70,7 +70,7 @@ class JsonPDF
                             }
                             $table_counter++;
 
-                            $url = $module->getUrl("browser.php?&pid=".$project_id.'&tid=' . $data['record_id'] . '&option=variables');
+                            $url = $module->getUrl('browser.php').'&NOAUTH&tid=' . $data['record_id'] . '&option=variables';
                             $htmlHeader = $breakLine . '<p style="' . $table_draft . '"><span style="font-size:16px"><strong><a href="' . $url . '" name="anchor_' . $data['record_id'] . '" target="_blank" style="text-decoration:none">' . $data["table_name"] . '</a></span> ' . $table_draft_text . '</strong> - ' . $data['table_definition'] . '</p>';
                             if (array_key_exists('text_top', $data) && !empty($data['text_top']) && $data['text_top'] != "") {
                                 $htmlHeader .= '<div  style="border-color: white;font-style: italic">' . htmlspecialchars($data["text_top"]) . '</div>';
@@ -99,7 +99,7 @@ class JsonPDF
                             }
 
                             #We add the Content rows
-                            $url = $module->getUrl("browser.php?&pid=".$project_id.'&tid=' . $data['record_id'] . '&vid=' . $id . '&option=variableInfo');
+                            $url = $module->getUrl('browser.php').'&NOAUTH&tid=' . $data['record_id'] . '&vid=' . $id . '&option=variableInfo';
                             $tableHtml .= '<tr record_id="' . $record_varname_id . '" ' . $variable_status . '>
                                 <td style="padding: 5px"><a href="' .$url .'" target="_blank" style="text-decoration:none">' . $record_varname . '</a></td>
                                 <td style="width:160px;padding: 5px">';
