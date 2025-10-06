@@ -1,5 +1,8 @@
 <?php
+namespace Vanderbilt\DataModelBrowserExternalModule;
+
 require_once __DIR__ ."/../projects.php";
+
 session_start();
 $RecordSetSettings = \REDCap::getData($pidsArray['SETTINGS'], 'array');
 $settings = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetSettings,$pidsArray['SETTINGS'])[0];
