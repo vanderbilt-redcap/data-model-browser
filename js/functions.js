@@ -33,6 +33,7 @@ function startDDProjects(){
  * @param option, if its loading option or button click
  */
 function loadStatus(url, status,statvalue,option) {
+
     if(option == ''){
         if (statvalue != "" && statvalue != null && $('.'+status).length > 0){
             statvalue = "false";
@@ -55,7 +56,6 @@ function loadStatus(url, status,statvalue,option) {
         } else{
             statvalue = loadStatusButton(status,"false");
         }
-
         $.ajax({
             type: "POST",
             url: url,
@@ -63,9 +63,6 @@ function loadStatus(url, status,statvalue,option) {
             ,
             error: function (xhr, status, error) {
                 alert(xhr.responseText);
-            },
-            success: function (result) {
-                console.log(result)
             }
         });
     }else if(option == "0"){
