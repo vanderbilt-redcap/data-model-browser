@@ -46,9 +46,9 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                         ?>
                     </div>
                     <div class="col-md-12 wiki_text wiki_text_size">
+                        <span style="display:block;"><i><?PHP echo filter_tags($data['text_top']); ?></i></span>
                         <span style="display:block;"><?PHP echo mb_convert_encoding($data['table_definition'],'UTF-8','HTML-ENTITIES'); ?></span>
-                        <span style="display:block;"><i><?PHP echo htmlspecialchars($data['text_top'],ENT_QUOTES); ?></i></span>
-                        <span style="display:block;"><i><?PHP echo htmlspecialchars($data['text_bottom'],ENT_QUOTES); ?></i></span>
+                        <span style="display:block;"><i><?PHP echo filter_tags($data['text_bottom']); ?></i></span>
                     </div>
 
                     <div class="col-md-12">
