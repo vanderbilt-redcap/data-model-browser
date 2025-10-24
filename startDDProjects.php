@@ -46,7 +46,8 @@ foreach ($projects_array as $index=>$name){
         $module->addProjectToList($project_id_new, $rowtype['event_id'], 1, 'des_update_d', date("Y-m-d H:i:s"));
         \Records::addRecordToRecordListCache($project_id_new, $record,1);
 
-
+        // Enable module on settings so the cron can run to regenerate the PDF/JSON file.
+        $module->enableModule($project_id_new, "data-model-browser");
     }
 
     #Add Repeatable projects
