@@ -25,6 +25,7 @@ if(empty($deprecated)){
 $RecordSetDataModel = \REDCap::getData($pidsArray['DATAMODEL'], 'array', array('record_id' => $tid));
 $dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetDataModel,$pidsArray['DATAMODEL']);
 $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMODEL']);
+asort($dataTable[0]['variable_order']);
 ?>
 <br/>
 <br/>
