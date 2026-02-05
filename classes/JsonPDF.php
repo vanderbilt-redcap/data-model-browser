@@ -364,27 +364,41 @@ class JsonPDF
         $RecordSetCodeList = \REDCap::getData($codeListPID, 'array', null);
         $dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList,$codeListPID);
         foreach ($dataTable as $data) {
-            $jsonArray[$data['record_id']] = array();
-            if ($data['code_format'] == '1') {
-                $jsonVarContentArray  = array();
-                $codeOptions = explode(" | ", $data['code_list']);
-                foreach ($codeOptions as $option) {
-                    list($key, $val) = explode("=", $option);
-                    $jsonVarContentArray[trim($key)] = trim($val);
-                }
-            }else if($data['code_format'] == '3'){
-                $jsonVarContentArray  = array();
-                $csv = self::parseCSVtoArray($module, $data['code_file']);
-                foreach ($csv as $header=>$content){
-                    if($header != 0){
-                        //Convert to UTF-8 to avoid weird characters
-                        $value = mb_convert_encoding($module->arrayKeyExistsReturnValue($content, 'Definition'), 'UTF-8','HTML-ENTITIES');
-                        $code = trim(mb_convert_encoding($module->arrayKeyExistsReturnValue($content, 'Code'), 'UTF-8','HTML-ENTITIES'));
-                        $jsonVarContentArray[$code] = trim($value);
-                    }
-                }
-            }
-            $jsonArray[$data['record_id']] = $jsonVarContentArray;
+           if(array_key_exists('record_id',$data) && !empty($data['record_id'])) {
+               $jsonArray[$data['record_id']] = [];
+               if ($data['code_format'] == '1') {
+                   $jsonVarContentArray = [];
+                   $codeOptions = explode(" | ", $data['code_list']);
+                   foreach ($codeOptions as $option) {
+                       list($key, $val) = explode("=", $option);
+                       $jsonVarContentArray[trim($key)] = trim($val);
+                   }
+               } else {
+                   if ($data['code_format'] == '3') {
+                       $jsonVarContentArray = [];
+                       $csv = self::parseCSVtoArray($module, $data['code_file']);
+                       foreach ($csv as $header => $content) {
+                           if ($header != 0) {
+                               //Convert to UTF-8 to avoid weird characters
+                               $value = mb_convert_encoding(
+                                   $module->arrayKeyExistsReturnValue($content, 'Definition'),
+                                   'UTF-8',
+                                   'HTML-ENTITIES'
+                               );
+                               $code = trim(
+                                   mb_convert_encoding(
+                                       $module->arrayKeyExistsReturnValue($content, 'Code'),
+                                       'UTF-8',
+                                       'HTML-ENTITIES'
+                                   )
+                               );
+                               $jsonVarContentArray[$code] = trim($value);
+                           }
+                       }
+                   }
+               }
+               $jsonArray[$data['record_id']] = $jsonVarContentArray;
+           }
         }
 
         #we save the new JSON
