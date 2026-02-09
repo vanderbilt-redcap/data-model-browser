@@ -364,7 +364,7 @@ class JsonPDF
         $RecordSetCodeList = \REDCap::getData($codeListPID, 'array', null);
         $dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList,$codeListPID);
         foreach ($dataTable as $data) {
-           if(array_key_exists('record_id',$data) && !empty($data['record_id'])) {
+           if(is_array($data) && array_key_exists('record_id',$data) && !empty($data['record_id'])) {
                $jsonArray[$data['record_id']] = [];
                if ($data['code_format'] == '1') {
                    $jsonVarContentArray = [];
