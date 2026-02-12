@@ -365,7 +365,10 @@ class JsonPDF
         $dataTable = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList,$codeListPID);
         $jsonArray = [];
         foreach ($dataTable as $data) {
-           if(is_array($data) && array_key_exists('record_id',$data) && !empty($data['record_id'])) {
+            error_log("IEDEADES - record: " . $data['record_id'] .", type: ". gettype($data['record_id']));
+        }
+        foreach ($dataTable as $data) {
+           if(is_array($data) && array_key_exists('record_id',$data) && !empty($data['record_id']) && is_numeric($data['record_id'])) {
                $jsonArray[$data['record_id']] = [];
                if ($data['code_format'] == '1') {
                    $jsonVarContentArray = [];
