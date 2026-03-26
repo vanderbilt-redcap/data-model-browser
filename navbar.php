@@ -21,7 +21,7 @@ if(array_key_exists('page',$_REQUEST)){
             if( array_key_exists('option', $_REQUEST) && ($_REQUEST['option'] === 'variables' || $_REQUEST['option'] === 'variableInfo')){
                 $tid = (int)$_REQUEST['tid'];
                 $vid = isset($_REQUEST['vid']) ? (int)$_REQUEST['vid']:"";
-                $dataTable = getTablesInfo($module,$pidsArray['DATAMODEL'],$tid);
+                $dataTable = generateTableArray($module, $pidsArray['DATAMODEL'],$tid);
                 $active = "";
                 foreach( $dataTable as $data ) {
                     if (!empty($data['record_id']) && !empty($data['variable_name'])) {

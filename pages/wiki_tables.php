@@ -21,9 +21,7 @@ if(empty($deprecated)){
     $deprecated = 'false';
 }
 
-$RecordSetDataModel = \REDCap::getData($pidsArray['DATAMODEL'], 'array');
-$dataTable = ProjectData::getProjectInfoArray($RecordSetDataModel);
-
+$dataTable = generateTableArray($module, $pidsArray['DATAMODEL']);
 ?>
 <script language="JavaScript">
     $(document).ready(function() {

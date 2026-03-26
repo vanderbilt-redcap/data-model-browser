@@ -73,26 +73,6 @@ function printFile($module,$edoc, $type){
     return $file;
 }
 
-/**
- * Function that searches the armID from a project and returns the data
- * @param $projectID
- * @return array|mixed
- */
-function getTablesInfo($module,$projectID, $tableID="", $tableOrderParam="table_order"){
-    $sql = "SELECT * FROM `redcap_events_arms` WHERE project_id ='".db_escape($projectID)."'";
-    $q = db_query($sql);
-
-    $dataTable = array();
-    while ($row = db_fetch_assoc($q)){
-        $sqlTable = "SELECT * FROM `redcap_events_metadata` WHERE arm_id ='".db_escape($row['arm_id'])."'";
-        $qTable = db_query($sqlTable);
-        while ($rowTable = db_fetch_assoc($qTable)){
-            $dataTable = generateTableArray($module,$rowTable['event_id'], $projectID,$dataTable,$tableID,$tableOrderParam);
-        }
-    }
-    return $dataTable;
-}
-
 function getDataRepeatingInstrumentsGroupByField($module,$project_id,$vars=""){
     $data_ditionary = $module->framework->dataDictionaryCSVToMetadataArray($module->framework->getModulePath()."csv/DATAMODEL_data_dictionary.csv");
 
@@ -132,12 +112,11 @@ function getDataRepeatingInstrumentsGroupByField($module,$project_id,$vars=""){
 
 /**
  * Function that generates an array with the table name and event information
- * @param $event_id, the event identificator
  * @param $projectID, the project we want to search in
  * @param $dataTable, the array we are going to fill up
  * @return mixed, the array $dataTable we are going to fill up
  */
-function generateTableArray($module,$event_id, $project_id, $dataTable,$tableID,$tableOrderParam){
+function generateTableArray($module, $project_id, $tableID=null, $tableOrderParam="table_order"){
     if(empty($tableID)){
         $recordsTable = getDataRepeatingInstrumentsGroupByField($module,$project_id);
     }else{
@@ -145,6 +124,7 @@ function generateTableArray($module,$event_id, $project_id, $dataTable,$tableID,
     }
     $dataFormat = $module->getChoiceLabels('data_format', $project_id);
 
+    $dataTable = [];
     $dataTable['data_format_label'] = $dataFormat;
     foreach($recordsTable as $record ){
 
