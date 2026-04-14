@@ -25,6 +25,9 @@
     text-decoration:underline;
     font-size: 13px;
 }
+.ui-dialog-titlebar-close {
+    display: none !important;
+}
 
 /***JsonPDF***/
 .mainPDF{
