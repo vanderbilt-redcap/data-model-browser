@@ -29,6 +29,27 @@ if(array_key_exists(0, $dataTable) && array_key_exists('variable_order', $dataTa
     asort($dataTable[0]['variable_order']);
 }
 ?>
+<script>
+    $(document).ready(function() {
+        // Initialize all dialogs with the class `.dialog`
+        $(".dialog").dialog({
+            autoOpen: false,
+            closeOnEscape: false,
+            show: false, // Ensure the dialog UI is visible
+            width: 700,
+            modal: true,
+            enableRemoteModule: true,
+            buttons: [
+                {
+                    text: "Close",
+                    click: function() {
+                        $(this).dialog("close");
+                    }
+                }
+            ]
+        });
+    });
+</script>
 <br/>
 <br/>
 <div class="wiki_main">
@@ -188,23 +209,12 @@ if(array_key_exists(0, $dataTable) && array_key_exists('variable_order', $dataTa
                                                         echo $dataFormat . '<br/>';
 
                                                         if (array_key_exists('code_file', $codeformat) && $codeformat['code_file'] != "") {
-                                                            echo '<a href="#codesModal' . htmlspecialchars($codeformat['code_file'],ENT_QUOTES) . '_' . $name . '" id="btnViewCodes" type="button" class="btn_code_modal open-codesModal" data-toggle="modal" data-target="#codesModal' . htmlspecialchars($codeformat['code_file'],ENT_QUOTES) . '_' . $name . '">See Code List</a>';
-
-                                                            #modal window with the updates
-                                                            echo '<div class="modal fade" id="codesModal' . htmlspecialchars($codeformat['code_file'],ENT_QUOTES) . '_' . $name . '" role="dialog" aria-labelledby="Codes">' .
-                                                                '<div class="modal-dialog" role="document">' .
-                                                                '<div class="modal-content">' .
-                                                                '<div class="modal-header">' .
-                                                                '<button type="button" class="close closeCustomModal" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>' .
-                                                                '<h4 class="modal-title">Codes</h4>' .
-                                                                '</div>' .
-                                                                '<div class="modal-body">' .
-                                                                '<div class="row" style="padding:30px;">' .
-                                                                '<div class="panel panel-default">' .
-                                                                '<div class="panel-heading">' . $name . '</div>' .
-                                                                '<div class="table-responsive panel-collapse collapse in">' .
+                                                            $dialogName = htmlspecialchars($codeformat['code_file'],ENT_QUOTES) . '_' . $name;
+                                                            echo '<a onclick="$(\'#'.$dialogName.'\').dialog(\'open\');" style="cursor: pointer">See Code List</a>';
+                                                            echo '<div id="'.$dialogName.'" title="Codes '.$name.'" class="dialog" style="display:none;">' .
                                                                 '<table border="1" class="code_modal_table">';
                                                             $csv = \Vanderbilt\DataModelBrowserExternalModule\parseCSVtoArray($module,$codeformat['code_file']);
+
                                                             if (empty($csv)) {
                                                                 echo '<div style="text-align: center;color:red;">No Codes found for file:' . htmlspecialchars($codeformat['code_file'],ENT_QUOTES) . '</div>';
                                                             }
@@ -225,13 +235,7 @@ if(array_key_exists(0, $dataTable) && array_key_exists('variable_order', $dataTa
                                                                 }
                                                                 echo '</tr>';
                                                             }
-                                                            echo '</table></div></div>' .
-                                                                '</div>' .
-                                                                '</div>' .
-                                                                '<div class="modal-footer">' .
-                                                                '<button type="button" class="btn btn-default" id="btnCloseCodesModal" data-dismiss="modal">CLOSE</button>' .
-                                                                '</div>' .
-                                                                '</div></div></div>';
+                                                            echo '</table></div>';
                                                         }
                                                     } else if ($codeformat['code_format'] == '4') {
                                                         echo "<a href='https://bioportal.bioontology.org/ontologies/" . htmlspecialchars($codeformat['code_ontology'],ENT_QUOTES) . "' target='_blank'>See Ontology Link</a><br/>";
