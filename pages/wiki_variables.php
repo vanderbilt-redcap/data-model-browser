@@ -55,6 +55,9 @@ if(array_key_exists(0, $dataTable) && array_key_exists('variable_order', $dataTa
                     "transform": "translate(-50%, -50%)", // Adjust for proper centering
                     "position": "fixed"              // Ensure it stays fixed in the viewport
                 });
+
+                // Scroll the dialog content to the top when it opens
+                $(".ui-dialog").scrollTop(0);
             },
             close: function(event, ui) {
                 $("body").css("overflow", "auto"); // Re-enable scrolling on the background
