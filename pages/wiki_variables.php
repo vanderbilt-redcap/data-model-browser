@@ -33,10 +33,12 @@ if(array_key_exists(0, $dataTable) && array_key_exists('variable_order', $dataTa
     $(document).ready(function() {
         // Initialize all dialogs with the class `.dialog`
         $(".dialog").dialog({
-            autoOpen: false,
-            closeOnEscape: false,
-            width: 700,
-            modal: true,
+            autoOpen: false,          // Keep modal closed by default
+            closeOnEscape: true,      // Allow closing with the Escape key
+            width: 700,               // Set the modal width
+            modal: true,              // Block interaction with the page
+            draggable: false,         // Prevent dragging to keep it centered
+            resizable: false,         // Prevent resizing to maintain consistent dimensions
             buttons: [
                 {
                     text: "Close",
@@ -46,11 +48,16 @@ if(array_key_exists(0, $dataTable) && array_key_exists('variable_order', $dataTa
                 }
             ],
             open: function(event, ui) {
-                $("body").css("overflow", "hidden"); // Disable background scrolling
-                $(this).scrollTop(0); // Ensure modal content scrolls to the top
+                $("body").css("overflow", "hidden"); // Disable scrolling on the background
+                $(".ui-dialog").css({
+                    "top": "50%",                     // Center the modal vertically
+                    "left": "50%",                    // Center the modal horizontally
+                    "transform": "translate(-50%, -50%)", // Adjust for proper centering
+                    "position": "fixed"              // Ensure it stays fixed in the viewport
+                });
             },
             close: function(event, ui) {
-                $("body").css("overflow", "auto"); // Re-enable background scrolling
+                $("body").css("overflow", "auto"); // Re-enable scrolling on the background
             }
         });
     });
