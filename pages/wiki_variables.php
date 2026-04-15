@@ -33,12 +33,12 @@ if(array_key_exists(0, $dataTable) && array_key_exists('variable_order', $dataTa
     $(document).ready(function() {
         // Initialize all dialogs with the class `.dialog`
         $(".dialog").dialog({
-            autoOpen: false,
-            closeOnEscape: false,
-            show: false, // Ensure the dialog UI is visible
-            width: 700,
-            modal: true,
-            enableRemoteModule: true,
+            autoOpen: false,          // Keep modal closed by default
+            closeOnEscape: true,      // Allow closing with the Escape key
+            width: 700,               // Set the modal width
+            modal: true,              // Block interaction with the page
+            draggable: false,         // Prevent dragging to keep it centered
+            resizable: false,         // Prevent resizing to maintain consistent dimensions
             buttons: [
                 {
                     text: "Close",
@@ -46,10 +46,51 @@ if(array_key_exists(0, $dataTable) && array_key_exists('variable_order', $dataTa
                         $(this).dialog("close");
                     }
                 }
-            ]
+            ],
+            open: function(event, ui) {
+                $("body").css("overflow", "hidden"); // Disable scrolling on the background
+                $(".ui-dialog").css({
+                    "top": "50%",                     // Center the modal vertically
+                    "left": "50%",                    // Center the modal horizontally
+                    "transform": "translate(-50%, -50%)", // Adjust for proper centering
+                    "position": "fixed"              // Ensure it stays fixed in the viewport
+                });
+
+                // Scroll the dialog content to the top when it opens
+                $(this).closest(".ui-dialog").scrollTop(0);
+
+                // Add click listener to the overlay (background) to close the dialog
+                $(".ui-widget-overlay").on("click", function() {
+                    $(".dialog").dialog("close"); // Close the dialog
+                });
+            },
+            close: function(event, ui) {
+                $("body").css("overflow", "auto"); // Re-enable scrolling on the background
+
+                // Remove the click listener from the overlay
+                $(".ui-widget-overlay").off("click");
+            }
         });
     });
 </script>
+<style>
+    .dialog,
+    .ui-dialog {
+        display: none; /* Keep it hidden by default */
+        position: fixed; /* Ensure it is positioned relative to the viewport */
+        z-index: 1100; /* Set a high z-index to ensure it appears above other elements */
+        top: 10%; /* Vertically center the modal */
+        left: 50%; /* Horizontally center the modal */
+        transform: translate(-50%, 0); /* Centering adjustment */
+        background-color: white; /* Ensure modal has a background */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for better visibility */
+        padding: 20px; /* Add padding for content */
+        border-radius: 8px; /* Optional: rounded corners */
+        overflow-y: auto; /* Enable vertical scrolling for modal content */
+        max-height: 80vh; /* Limit modal height to 80% of the viewport */
+        width: 700px; /* Set modal width */
+    }
+</style>
 <br/>
 <br/>
 <div class="wiki_main">
@@ -210,7 +251,7 @@ if(array_key_exists(0, $dataTable) && array_key_exists('variable_order', $dataTa
 
                                                         if (array_key_exists('code_file', $codeformat) && $codeformat['code_file'] != "") {
                                                             $dialogName = htmlspecialchars($codeformat['code_file'],ENT_QUOTES) . '_' . $name;
-                                                            echo '<a onclick="$(\'#'.$dialogName.'\').dialog(\'open\');" style="cursor: pointer">See Code List</a>';
+                                                            echo '<a onclick="$(\'#'.$dialogName.'\').dialog(\'open\').scrollTop(0);" style="cursor: pointer">See Code List</a>';
                                                             echo '<div id="'.$dialogName.'" title="Codes '.$name.'" class="dialog" style="display:none;">' .
                                                                 '<table border="1" class="code_modal_table">';
                                                             $csv = \Vanderbilt\DataModelBrowserExternalModule\parseCSVtoArray($module,$codeformat['code_file']);
