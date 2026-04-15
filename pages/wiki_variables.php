@@ -57,10 +57,18 @@ if(array_key_exists(0, $dataTable) && array_key_exists('variable_order', $dataTa
                 });
 
                 // Scroll the dialog content to the top when it opens
-                $(".ui-dialog").scrollTop(0);
+                $(this).closest(".ui-dialog").scrollTop(0);
+
+                // Add click listener to the overlay (background) to close the dialog
+                $(".ui-widget-overlay").on("click", function() {
+                    $(".dialog").dialog("close"); // Close the dialog
+                });
             },
             close: function(event, ui) {
                 $("body").css("overflow", "auto"); // Re-enable scrolling on the background
+
+                // Remove the click listener from the overlay
+                $(".ui-widget-overlay").off("click");
             }
         });
     });
