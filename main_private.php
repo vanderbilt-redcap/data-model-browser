@@ -4,8 +4,7 @@
 <?php echo $module->loadREDCapJS(); ?>
 <script type="text/javascript" src="<?=$module->getUrl('js/functions.js')?>"></script>
 <script type="text/javascript" src="<?=$module->getUrl('js/jquery-ui.min.js')?>"></script>
-<script type="text/javascript" src="<?=$module->getUrl('js/jquery.tablesorter.min.js')?>"></script>
-<script type="text/javascript" src="<?=$module->getUrl('js/jquery.dataTables.min.js')?>"></script>
+<script type="text/javascript" src="<?=$module->getUrl('js/jquery.tablesorter.min.js')?>"></script>\
 <script type="text/javascript" src="<?=$module->getUrl('js/dataTables.select.js')?>"></script>
 <script type="text/javascript" src="<?=$module->getUrl('js/dataTables.buttons.min.js')?>"></script>
 
