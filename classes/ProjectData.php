@@ -210,5 +210,54 @@ class ProjectData
             }
         }
     }
+
+    public static function renderCodeOptions($codeList, $fallbackText)
+    {
+        $codeOptions = empty($codeList) ? $fallbackText : explode(" | ", $codeList);
+        if (!empty($codeOptions[0])) {
+            echo "<div style='padding-left:15px'>";
+            foreach ($codeOptions as $option) {
+                echo htmlspecialchars($option, ENT_QUOTES) . "<br/>";
+            }
+            echo "</div>";
+        }
+    }
+
+    public static function renderCodeFile($codeFile, $name, $module)
+    {
+        if (empty($codeFile)) {
+            return;
+        }
+
+        $dialogName = htmlspecialchars($codeFile, ENT_QUOTES) . '_' . $name;
+        echo '<a onclick="$(\'#' . $dialogName . '\').dialog(\'open\').scrollTop(0);" style="cursor: pointer">See Code List</a>';
+        echo '<div id="' . $dialogName . '" title="Codes ' . $name . '" class="dialog" style="display:none;">';
+        echo '<table border="1" class="code_modal_table">';
+
+        $csv = parseCSVtoArray($module, $codeFile);
+
+        if (empty($csv)) {
+            echo '<div style="text-align: center;color:red;">No Codes found for file: ' . htmlspecialchars($codeFile, ENT_QUOTES) . '</div>';
+        } else {
+            foreach ($csv as $header => $content) {
+                echo '<tr>';
+                foreach ($content as $col => $value) {
+                    $value = mb_convert_encoding($value, 'UTF-8', 'HTML-ENTITIES'); // Handle encoding
+                    echo '<td class="code_modal_td">' . htmlspecialchars($value, ENT_QUOTES) . '</td>';
+                }
+                echo '</tr>';
+            }
+        }
+
+        echo '</table></div>';
+    }
+
+    public static function renderOntologyLink($codeOntology)
+    {
+        if (!empty($codeOntology)) {
+            $ontologyUrl = "https://bioportal.bioontology.org/ontologies/" . htmlspecialchars($codeOntology, ENT_QUOTES);
+            echo "<a href='{$ontologyUrl}' target='_blank'>See Ontology Link</a><br/>";
+        }
+    }
 }
 ?>

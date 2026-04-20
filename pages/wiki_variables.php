@@ -1,4 +1,5 @@
 <?php
+namespace Vanderbilt\DataModelBrowserExternalModule;
 use Vanderbilt\DataModelBrowserExternalModule\ProjectData;
 
 $deprecated = empty($_REQUEST['deprecated_'.$settings['des_wkname']]) ? $_SESSION['draft_'.$settings['des_wkname']] : $_REQUEST['deprecated_'.$settings['des_wkname']];
@@ -236,66 +237,31 @@ if(array_key_exists(0, $dataTable) && array_key_exists('variable_order', $dataTa
                                                                                          'records' => $data['code_list_ref'][$id],
                                                                                          'filterType' => "RECORD"
                                                                                      ]);
-                                                    $codeformat = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList,$pidsArray['CODELIST'])[0];
+                                                    $codeFormatData = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList,$pidsArray['CODELIST'])[0];
 
-                                                    if((is_array($codeformat['code_format']) && $codeformat['code_format'][1] !== "")){
-                                                        $codeFormat = $codeformat['code_format'][1];
-                                                        $codeList = $codeformat['code_list'][1];
-                                                        $codeFile= $codeformat['code_file'][1];
-                                                        $codeOntology= $codeformat['code_ontology'][1];
-                                                    }else{
-                                                        $codeFormat = $codeformat['code_format'];
-                                                        $codeList = $codeformat['code_list'];
-                                                        $codeFile = $codeformat['code_file'];
-                                                        $codeOntology = $codeformat['code_ontology'];
-                                                    }
-                                                    if ($codeFormat == '1') {
-                                                        $codeOptions = empty($codeList) ? $data['code_text'][$id] : explode(" | ", $codeList);
-                                                        if (!empty($codeOptions[0])) {
-                                                            $dataFormat .= "<div style='padding-left:15px'>";
-                                                        }
-                                                        foreach ($codeOptions as $option) {
-                                                            $dataFormat .= htmlspecialchars($option,ENT_QUOTES) . "<br/>";
-                                                        }
-                                                        if (!empty($codeOptions[0])) {
-                                                            $dataFormat .= "</div>";
-                                                        }
-                                                        echo $dataFormat;
+                                                    // Normalize code format fields (handle both array and non-array cases for old REDCap data)
+                                                    $codeFormat = is_array($codeFormatData['code_format']) ? $codeFormatData['code_format'][1] : $codeFormatData['code_format'];
+                                                    $codeList = is_array($codeFormatData['code_list']) ? $codeFormatData['code_list'][1] : $codeFormatData['code_list'];
+                                                    $codeFile = is_array($codeFormatData['code_file']) ? $codeFormatData['code_file'][1] : $codeFormatData['code_file'];
+                                                    $codeOntology = is_array($codeFormatData['code_ontology']) ? $codeFormatData['code_ontology'][1] : $codeFormatData['code_ontology'];
 
-                                                    } else if ($codeFormat == '3') {
-                                                        echo $dataFormat . '<br/>';
+                                                    // Handle different code format types
+                                                    switch ($codeFormat) {
+                                                        case '1': // Code format 1: List of codes separated by pipe character
+                                                            ProjectData::renderCodeOptions($codeList, $data['code_text'][$id]);
+                                                            break;
 
-                                                        if (array_key_exists('code_file', $codeformat) && $codeFile != "") {
-                                                            $dialogName = htmlspecialchars($codeFile,ENT_QUOTES) . '_' . $name;
-                                                            echo '<a onclick="$(\'#'.$dialogName.'\').dialog(\'open\').scrollTop(0);" style="cursor: pointer">See Code List</a>';
-                                                            echo '<div id="'.$dialogName.'" title="Codes '.$name.'" class="dialog" style="display:none;">' .
-                                                                '<table border="1" class="code_modal_table">';
-                                                            $csv = \Vanderbilt\DataModelBrowserExternalModule\parseCSVtoArray($module,$codeFile);
+                                                        case '3': // Code format 3: CSV file upload with codes in column 1 and labels in column
+                                                            ProjectData::renderCodeFile($codeFile, $name, $module);
+                                                            break;
 
-                                                            if (empty($csv)) {
-                                                                echo '<div style="text-align: center;color:red;">No Codes found for file:' . htmlspecialchars($codeFile,ENT_QUOTES) . '</div>';
-                                                            }
-                                                            foreach ($csv as $header => $content) {
-                                                                if ($header == 0) {
-                                                                    echo '<tr>';
-                                                                } else {
-                                                                    echo '<tr>';
-                                                                }
-                                                                foreach ($content as $col => $value) {
-                                                                    //Convert to UTF-8 to avoid weird characters
-                                                                    $value = mb_convert_encoding($value, 'UTF-8', 'HTML-ENTITIES');
-                                                                    if ($header == 0) {
-                                                                        echo '<td class="code_modal_td">' . $col . '</td>';
-                                                                    } else {
-                                                                        echo '<td class="code_modal_td">' . $value . '</td>';
-                                                                    }
-                                                                }
-                                                                echo '</tr>';
-                                                            }
-                                                            echo '</table></div>';
-                                                        }
-                                                    } else if ($codeFormat == '4') {
-                                                        echo "<a href='https://bioportal.bioontology.org/ontologies/" . htmlspecialchars($codeOntology,ENT_QUOTES) . "' target='_blank'>See Ontology Link</a><br/>";
+                                                        case '4': // Code format 4: Ontology (using BioPortal Ontology Service)
+                                                            ProjectData::renderOntologyLink($codeOntology);
+                                                            break;
+
+                                                        default:
+                                                            echo "Invalid code format.";
+                                                            break;
                                                     }
                                                 } else {
                                                     echo $dataFormat;
