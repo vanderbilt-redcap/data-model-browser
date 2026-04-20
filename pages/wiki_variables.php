@@ -230,11 +230,27 @@ if(array_key_exists(0, $dataTable) && array_key_exists('variable_order', $dataTa
                                                 echo $dataFormat;
                                             } else if ($data['has_codes'][$id] == '1') {
                                                 if (!empty($data['code_list_ref'][$id])) {
-                                                    $RecordSetCodeList = \REDCap::getData($pidsArray['CODELIST'], 'array', array('record_id' => $data['code_list_ref'][$id]));
+                                                    $RecordSetCodeList = \REDCap::getData([
+                                                                                         'project_id' => $pidsArray['CODELIST'],
+                                                                                         'return_format' => 'array',
+                                                                                         'records' => $data['code_list_ref'][$id],
+                                                                                         'filterType' => "RECORD"
+                                                                                     ]);
                                                     $codeformat = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList,$pidsArray['CODELIST'])[0];
 
-                                                    if ($codeformat['code_format'] == '1') {
-                                                        $codeOptions = empty($codeformat['code_list']) ? $data['code_text'][$id] : explode(" | ", $codeformat['code_list']);
+                                                    if((is_array($codeformat['code_format']) && $codeformat['code_format'][1] !== "")){
+                                                        $codeFormat = $codeformat['code_format'][1];
+                                                        $codeList = $codeformat['code_list'][1];
+                                                        $codeFile= $codeformat['code_file'][1];
+                                                        $codeOntology= $codeformat['code_ontology'][1];
+                                                    }else{
+                                                        $codeFormat = $codeformat['code_format'];
+                                                        $codeList = $codeformat['code_list'];
+                                                        $codeFile = $codeformat['code_file'];
+                                                        $codeOntology = $codeformat['code_ontology'];
+                                                    }
+                                                    if ($codeFormat == '1') {
+                                                        $codeOptions = empty($codeList) ? $data['code_text'][$id] : explode(" | ", $codeList);
                                                         if (!empty($codeOptions[0])) {
                                                             $dataFormat .= "<div style='padding-left:15px'>";
                                                         }
@@ -246,18 +262,18 @@ if(array_key_exists(0, $dataTable) && array_key_exists('variable_order', $dataTa
                                                         }
                                                         echo $dataFormat;
 
-                                                    } else if ($codeformat['code_format'] == '3') {
+                                                    } else if ($codeFormat == '3') {
                                                         echo $dataFormat . '<br/>';
 
-                                                        if (array_key_exists('code_file', $codeformat) && $codeformat['code_file'] != "") {
-                                                            $dialogName = htmlspecialchars($codeformat['code_file'],ENT_QUOTES) . '_' . $name;
+                                                        if (array_key_exists('code_file', $codeformat) && $codeFile != "") {
+                                                            $dialogName = htmlspecialchars($codeFile,ENT_QUOTES) . '_' . $name;
                                                             echo '<a onclick="$(\'#'.$dialogName.'\').dialog(\'open\').scrollTop(0);" style="cursor: pointer">See Code List</a>';
                                                             echo '<div id="'.$dialogName.'" title="Codes '.$name.'" class="dialog" style="display:none;">' .
                                                                 '<table border="1" class="code_modal_table">';
-                                                            $csv = \Vanderbilt\DataModelBrowserExternalModule\parseCSVtoArray($module,$codeformat['code_file']);
+                                                            $csv = \Vanderbilt\DataModelBrowserExternalModule\parseCSVtoArray($module,$codeFile);
 
                                                             if (empty($csv)) {
-                                                                echo '<div style="text-align: center;color:red;">No Codes found for file:' . htmlspecialchars($codeformat['code_file'],ENT_QUOTES) . '</div>';
+                                                                echo '<div style="text-align: center;color:red;">No Codes found for file:' . htmlspecialchars($codeFile,ENT_QUOTES) . '</div>';
                                                             }
                                                             foreach ($csv as $header => $content) {
                                                                 if ($header == 0) {
@@ -278,8 +294,8 @@ if(array_key_exists(0, $dataTable) && array_key_exists('variable_order', $dataTa
                                                             }
                                                             echo '</table></div>';
                                                         }
-                                                    } else if ($codeformat['code_format'] == '4') {
-                                                        echo "<a href='https://bioportal.bioontology.org/ontologies/" . htmlspecialchars($codeformat['code_ontology'],ENT_QUOTES) . "' target='_blank'>See Ontology Link</a><br/>";
+                                                    } else if ($codeFormat == '4') {
+                                                        echo "<a href='https://bioportal.bioontology.org/ontologies/" . htmlspecialchars($codeOntology,ENT_QUOTES) . "' target='_blank'>See Ontology Link</a><br/>";
                                                     }
                                                 } else {
                                                     echo $dataFormat;
