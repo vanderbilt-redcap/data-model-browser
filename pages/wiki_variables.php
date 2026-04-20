@@ -252,7 +252,7 @@ if(array_key_exists(0, $dataTable) && array_key_exists('variable_order', $dataTa
                                                             break;
 
                                                         case '3': // Code format 3: CSV file upload with codes in column 1 and labels in column
-                                                            ProjectData::renderCodeFile($codeFile, $name, $module);
+                                                            ProjectData::renderCodeFileDialog($codeFile, $name, $module);
                                                             break;
 
                                                         case '4': // Code format 4: Ontology (using BioPortal Ontology Service)
