@@ -47,7 +47,7 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                                                                       ]);
                                 $codeFormatData = ProjectData::getProjectInfoArrayRepeatingInstruments($recordSetCodeList,$pidsArray['CODELIST'])[0];
 
-                                // Normalize code format fields (handle both array and non-array cases for old REDCap data)
+                                // Normalize code format fields (handle both array and non-array cases for old and new REDCap data formats)
                                 $codeFormat = is_array($codeFormatData['code_format']) ? $codeFormatData['code_format'][1] : $codeFormatData['code_format'];
                                 $codeList = is_array($codeFormatData['code_list']) ? $codeFormatData['code_list'][1] : $codeFormatData['code_list'];
                                 $codeFile = is_array($codeFormatData['code_file']) ? $codeFormatData['code_file'][1] : $codeFormatData['code_file'];
