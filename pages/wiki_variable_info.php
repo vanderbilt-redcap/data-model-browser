@@ -57,7 +57,6 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                                     case '1': // Code format 1: List of codes separated by pipe character
                                         echo "<span><i>(coded)</i></span><br/><br/>";
 
-                                        // Call the unified renderCodeOptions function with 'table' output format
                                         ProjectData::renderCodeOptions($codeList, $data['code_text'][$vid], 'table');
 
                                         break;
