@@ -39,38 +39,38 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                             }
                         } else if ($data['has_codes'][$vid] == '1') {
                             if(!empty($data['code_list_ref'][$vid])){
-                                $RecordSetCodeList = \REDCap::getData($pidsArray['CODELIST'], 'array', array('record_id' => $data['code_list_ref'][$vid]));
-                                $codeformat = ProjectData::getProjectInfoArrayRepeatingInstruments($RecordSetCodeList,$pidsArray['CODELIST'])[0];
-                                if ($codeformat['code_format'] == '1') {
-                                    $dataFormat .= " <span><i>(coded)</i></span><br/><br/>";
+                                $recordSetCodeList = \REDCap::getData([
+                                                                          'project_id' => $pidsArray['CODELIST'],
+                                                                          'return_format' => 'array',
+                                                                          'records' => $data['code_list_ref'][$vid],
+                                                                          'filterType' => "RECORD"
+                                                                      ]);
+                                $codeFormatData = ProjectData::getProjectInfoArrayRepeatingInstruments($recordSetCodeList,$pidsArray['CODELIST'])[0];
 
-                                    $codeOptions = empty($codeformat['code_list']) ? $data['code_text'][$vid] : explode(" | ", $codeformat['code_list']);
+                                // Normalize code format fields (handle both array and non-array cases for old and new REDCap data formats)
+                                $codeFormat = is_array($codeFormatData['code_format']) ? $codeFormatData['code_format'][1] : $codeFormatData['code_format'];
+                                $codeList = is_array($codeFormatData['code_list']) ? $codeFormatData['code_list'][1] : $codeFormatData['code_list'];
+                                $codeFile = is_array($codeFormatData['code_file']) ? $codeFormatData['code_file'][1] : $codeFormatData['code_file'];
+                                $codelistUpdateD= is_array($codeFormatData['codelist_update_d']) ? $codeFormatData['codelist_update_d'][1] : $codeFormatData['codelist_update_d'];
 
-                                    if (!empty($codeOptions[0])) {
-                                        $dataFormat .= "<div class='wiki'><div class='panel panel-default'><table border='1' class='table table-bordered table-hover' style='font-size: 13px;'><div class='table-responsive panel-collapse collapse in'>";
-                                        $dataFormat .= "<tbody><tr><td class=''>Code</td>";
-                                        $dataFormat .= "<td class=''>Definition</td></tr>";
-                                    }
-                                    foreach ($codeOptions as $option) {
-                                        $var_codes = preg_split("/=.*?/", $option);
-                                        if($var_codes[0] == ""){
-                                            //split by = except if the first character is =
-                                            $var_codes = preg_split("/([^=])(=)(.*?)/", $option);
+                                switch ($codeFormat) {
+                                    case '1': // Code format 1: List of codes separated by pipe character
+                                        echo "<span><i>(coded)</i></span><br/><br/>";
+
+                                        ProjectData::renderCodeOptions($codeList, $data['code_text'][$vid], 'table');
+
+                                        break;
+
+                                    case '3': // Code format 3: CSV file upload with codes in column 1 and labels in column
+                                        echo $dataFormat." <span><i>(coded)</i></span>";
+                                        if ($codeFile != "") {
+                                            $codeTable = "true";
                                         }
-                                        $dataFormat .= "<tr><td style='text-align: center;'>".trim($var_codes[0])."</td><td>".trim($var_codes[1])."</td></tr>";
-                                    }
-                                    if (!empty($codeOptions[0])) {
-                                        $dataFormat .= "</tbody></table></div></div></div>";
-                                    }
-                                    echo filter_tags($dataFormat);
+                                        break;
 
-                                } else if ($codeformat['code_format'] == '3') {
-                                    echo $dataFormat." <span><i>(coded)</i></span>";
-                                    if (array_key_exists('code_file', $codeformat) && $codeformat['code_file'] != "") {
-                                        $codeTable = "true";
-                                    }
-                                } else {
-                                    echo filter_tags($dataFormat)." <span><i>(coded)</i></span>";
+                                    default: // Other formats
+                                        echo filter_tags($dataFormat) . " <span><i>(coded)</i></span>";
+                                        break;
                                 }
                             }
                         }
@@ -119,8 +119,8 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                         <span class="wiki_title_small">Code list</span>
                         <div class="wiki_text_inside wiki_text_size">
                             <span style="display:block;"><?PHP echo htmlspecialchars($data['variable_name'][$vid],ENT_QUOTES);?> codes ( <i class="fa fa-arrow-down"></i> <a href="<?= $module->getUrl('downloadFile.php?' . parseCSVtoLink($module,$codeformat['code_file']));?>" target="_blank">Download CSV</a> )</span>
-                            <?php if(!empty($codeformat) && array_key_exists('codelist_update_d', $codeformat) && !empty($codeformat['codelist_update_d'])) {
-                                ?><span style="display:block;"><i>Last code list update: <?=htmlspecialchars($codeformat['codelist_update_d'],ENT_QUOTES)?></i></span><?php
+                            <?php if(!empty($codelistUpdateD)) {
+                                ?><span style="display:block;"><i>Last code list update: <?=htmlspecialchars($codelistUpdateD,ENT_QUOTES)?></i></span><?php
                             }else{
                                 ?><span style="display:block;"><i>Unknown Date</i></span><?php
                             }
@@ -132,38 +132,41 @@ $dataformatChoices = $module->getChoiceLabels('data_format', $pidsArray['DATAMOD
                             <div class="panel panel-default">
                                 <div class="panel-heading"><?PHP echo htmlspecialchars($data['variable_name'][$vid],ENT_QUOTES);?></div>
                                 <div class="table-responsive panel-collapse collapse in">
-                                    <table class="table table-bordered table-hover code_modal_table">
-                                        <?PHP if(!empty($codeTable)){ ?>
-                                            <?PHP
-                                            $csv = \Vanderbilt\DataModelBrowserExternalModule\parseCSVtoArray($module,$codeformat['code_file']);
-                                            if(empty($csv)){
-                                                ?><div style="text-align: center;color:red;">No Codes found for file: <?=$codeformat['code_file']?></div><?PHP
-                                            }
-                                            foreach ($csv as $header=>$content){
-                                                ?><tr><?PHP
-                                                $counter = 1;
-                                                foreach ($content as $col=>$value) {
-                                                    $style = "";
-                                                    if($counter % 2){
-                                                        $style = "text-align: center";
+                                    <?php if (!empty($codeTable)): ?>
+                                        <table class="table table-bordered table-hover code_modal_table">
+                                            <?php
+                                            $csv = parseCSVtoArray($module, $codeFile);
+
+                                            // Check if CSV is empty
+                                            if (empty($csv)) {
+                                                echo '<tr><td colspan="100" style="text-align: center; color: red;">No Codes found for file: ' . htmlspecialchars($codeFile, ENT_QUOTES) . '</td></tr>';
+                                            } else {
+                                                // Loop through CSV data
+                                                foreach ($csv as $header => $content) {
+                                                    echo '<tr>';
+                                                    $isHeaderRow = ($header === 0); // Check if it's the header row
+                                                    $counter = 1;
+
+                                                    foreach ($content as $col => $value) {
+                                                        // Escape and encode value
+                                                        $value = mb_convert_encoding($value, 'UTF-8', 'HTML-ENTITIES');
+                                                        $style = ($counter % 2 === 0) ? '' : 'text-align: center'; // Apply style for odd columns
+
+                                                        // Render table cells
+                                                        if ($isHeaderRow) {
+                                                            echo '<td>' . htmlspecialchars($col, ENT_QUOTES) . '</td>';
+                                                        } else {
+                                                            echo '<td style="' . $style . '">' . htmlspecialchars($value, ENT_QUOTES) . '</td>';
+                                                        }
+                                                        $counter++;
                                                     }
-                                                    $value = mb_convert_encoding($value,'UTF-8','HTML-ENTITIES');
-                                                    if($header == 0){
-                                                        ?>
-                                                        <td class=""><?=$col;?></td>
-                                                        <?PHP
-                                                    }else{
-                                                        ?>
-                                                        <td style="<?=$style?>"><?=$value;?></td>
-                                                        <?PHP
-                                                    }
-                                                    $counter++;
+
+                                                    echo '</tr>';
                                                 }
-                                                ?></tr><?PHP
                                             }
                                             ?>
-                                        <?PHP } ?>
-                                    </table>
+                                        </table>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
