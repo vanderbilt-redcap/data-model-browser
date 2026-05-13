@@ -8,25 +8,7 @@ $pid = (int)$_GET['pid'];
 ?>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <?php echo $module->loadREDCapJS(); ?>
-    <script type="text/javascript" src="<?=$module->getUrl('js/functions.js')?>"></script>
-    <script type="text/javascript" src="<?=$module->getUrl('js/jquery-ui.min.js')?>"></script>
-    <script type="text/javascript" src="<?=$module->getUrl('js/jquery.tablesorter.min.js')?>"></script>
-    <script type="text/javascript" src="<?=$module->getUrl('js/dataTables.select.js')?>"></script>
-    <script type="text/javascript" src="<?=$module->getUrl('js/dataTables.buttons.min.js')?>"></script>
-
-    <link type='text/css' href='<?=$module->getUrl('js/fonts-awesome/css/font-awesome.min.css')?>' rel='stylesheet' media='screen' />
-    <link rel="stylesheet" type="text/css" href="<?=$module->getUrl('css/bootstrap.min.css')?>">
-    <link rel="stylesheet" type="text/css" href="<?=$module->getUrl('css/style.css')?>">
-    <link type='text/css' href='<?=$module->getUrl('css/tabs-steps-menu.css')?>' rel='stylesheet' media='screen' />
-    <link type='text/css' href='<?=$module->getUrl('css/sortable-theme-bootstrap.css')?>' rel='stylesheet' media='screen' />
-    <link type='text/css' href='<?=$module->getUrl('css/jquery-ui.min.css')?>' rel='stylesheet' media='screen' />
-
-    <script>
-        var startDDProjects_url = <?=json_encode($module->getUrl('startDDProjects.php'))?>;
-        var downloadPDF_AJAX_url = <?=json_encode($module->getUrl('options/downloadPDF_AJAX.php'))?>;
-        var pid = <?=json_encode($pid)?>;
-    </script>
+    <?php include_once (__DIR__ . "/scripts.php"); ?>
 
     <?php if(array_key_exists('message',$_REQUEST) && $_REQUEST['message']=='S'){?>
         <div class="container" style="margin-top: 80px">
