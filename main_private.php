@@ -108,7 +108,7 @@ if($has_permission){
     }else if( array_key_exists('option', $_REQUEST) && $_REQUEST['option'] === 'search' )
     {
         include('pages/wiki_variable_search.php');
-    }else if( array_key_exists('option', $_REQUEST) && $_REQUEST['option'] === 'json' ) {
+    }else if( array_key_exists('option', $_REQUEST) && $_REQUEST['option'] === 'json'  && ($isAdmin || $designRights == "1")) {
         include('jsoncopy/copyfiles.php');
     }
     ?>
