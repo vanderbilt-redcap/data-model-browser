@@ -20,7 +20,7 @@ namespace Vanderbilt\DataModelBrowserExternalModule;
         if($isAdmin || $designRights == "1"){
         ?>
         <div style="display: inline-block;float: right;padding-right: 10px">
-            <a href="<?=$module->getUrl($page."&pid=".$_GET['pid']."&option=json",false);?>" class="btn btn-default btn-md"><i class="fa fa-file-code-o"></i> JSON</a>
+            <a href="<?=$module->getUrl($page."&pid=".$_GET['pid']."&option=json");?>" class="btn btn-default btn-md"><i class="fa fa-file-code-o"></i> JSON</a>
         </div>
         <?php } ?>
     </div>
