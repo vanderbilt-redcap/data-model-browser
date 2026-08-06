@@ -97,6 +97,7 @@ if(array_key_exists(0, $dataTable) && array_key_exists('variable_order', $dataTa
 <div class="wiki_main">
     <div class='row'>
             <?PHP foreach( $dataTable as $data ){
+                    $data = $module->escape($data);
                    if(!empty($data['record_id']) && $data['table_status'] != "3") {?>
                     <div class="col-md-12">
                         <span class="wiki_title"><?PHP echo htmlspecialchars($data['table_name'],ENT_QUOTES);?></span>
