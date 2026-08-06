@@ -4,6 +4,7 @@
 if($_REQUEST['option'] !== 'search' && $_REQUEST['option'] !== 'variableInfo' && $_REQUEST['option'] !== 'json') {
     include('downloadButtons.php');
 }
+
 ?>
 <div class="container-fluid wiki_container">
     <?PHP
@@ -19,7 +20,7 @@ if($_REQUEST['option'] !== 'search' && $_REQUEST['option'] !== 'variableInfo' &&
         }else if( array_key_exists('option', $_REQUEST) && $_REQUEST['option'] === 'search' )
         {
             include('pages/wiki_variable_search.php');
-        }else if( array_key_exists('option', $_REQUEST) && $_REQUEST['option'] === 'json' ) {
+        }else if( array_key_exists('option', $_REQUEST) && $_REQUEST['option'] === 'json' && ($isAdmin || $designRights == "1")) {
             include('jsoncopy/copyfiles.php');
         }
     ?>
