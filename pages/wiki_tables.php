@@ -77,6 +77,7 @@ $dataTable = generateTableArray($module, $pidsArray['DATAMODEL']);
                                     </thead>';
 
                         foreach( $dataTable as $data ) {
+                            $data = $module->escape($data);
                             if (!empty($data['record_id']) && $data['table_status'] != "3") {
                                 $variable_display = "";
                                 $variable_text = "";
