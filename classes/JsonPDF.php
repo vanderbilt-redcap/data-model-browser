@@ -118,7 +118,7 @@ class JsonPDF
                                             $dataFormat .= "<div style='padding-left:15px'>";
                                         }
                                         foreach ($codeOptions as $option) {
-                                            $dataFormat .= htmlspecialchars($option) . "<br/>";
+                                            $dataFormat .= $option . "<br/>";
                                         }
                                         if (!empty($codeOptions[0])) {
                                             $dataFormat .= "</div>";
