@@ -18,7 +18,7 @@ class DataModelBrowserExternalModule extends \ExternalModules\AbstractExternalMo
     #If it's not the main PID project hide the DES link
     public function redcap_module_link_check_display($project_id, $link)
     {
-        $dd_array = REDCap::getDataDictionary('array');
+        $dd_array = REDCap::getDataDictionary($project_id, 'array');
 
         if ((count($dd_array) != 0 && !array_key_exists('project_constant', $dd_array)) || count($dd_array) == 0) {
             return false;
