@@ -19,7 +19,7 @@ $pid = (int)$_GET['pid'];
     <?php } ?>
 
 <?php
-$dd_array = \REDCap::getDataDictionary('array');
+$dd_array = \REDCap::getDataDictionary($pid, 'array');
 $data_array = \REDCap::getData($pid,'array');
 $des_projectname = $module->getProjectSetting('des-projectname');
 $des_privacy = $module->getProjectSetting('des-privacy');
@@ -38,7 +38,7 @@ if(defined('USERID')) {
 #Only users that are admins or have Design rights
 $designRights = "0";
 if(defined('USERID')) {
-    $q = $module->query("SELECT design FROM redcap_user_rights WHERE project_id=? AND username =?", [$project_id, USERID]);
+    $q = $module->query("SELECT design FROM redcap_user_rights WHERE project_id=? AND username =?", [$pid, USERID]);
 
     while ($row = $q->fetch_assoc()) {
         $designRights = $row['design'];
